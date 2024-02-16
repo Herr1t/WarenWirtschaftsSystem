@@ -31,7 +31,10 @@ Lagerliste_data = c.fetchall()
  
 # print all the data returned by the database
 for e in Lagerliste_data:
-    print(e)
+    row = e.split(",")
+    _ = 0
+    for _ in row[_]:
+        print(f"\t{row[_]}\t")
  
 # finally closing the database connection
 db.close()
