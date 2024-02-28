@@ -1,7 +1,7 @@
 {% extends "webapplication/layout.html" %}
 
 {% block body %}
-    <h1 style="text-align: center;">Lagerliste</h1>
+    <h1 style="text-align: center;">Lagerliste zur Bestellung {{ bestell_nr }}</h1>
     <input style="text-align: left; margin: 5px; border-radius: 5px;" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input style="text-align: left; margin: 5px; border-radius: 5px;" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
     <table style="width: 100%;">
