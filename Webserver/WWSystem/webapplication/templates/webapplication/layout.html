@@ -4,8 +4,8 @@
 <html lang="en">
     <head>
         <title>Waren-Wirtschfts-System</title>
-        <link rel="stylesheet" href="{% static 'webapplication/styles.css' %}">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'webapplication/styles.css' %}">
     </head>
     <body>
         <div>
@@ -14,8 +14,9 @@
             {% else %}
                 Not signed in.
             {% endif %}
+            <img style="float: right; width: 88px; height: auto;" src="https://confluence.med.tu-dresden.de/download/attachments/74285475/ITKB?version=2&modificationDate=1559050749303&api=v2">
+            <h1 style="float: center;">Waren-Wirtschafts-System</h1>
         </div>
-        <h1 style="text-align: center;">Waren-Wirtschafts-System</h1>
         <hr>
         <ul class="nav">
             {% if user.is_authenticated %}
