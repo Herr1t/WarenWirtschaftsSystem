@@ -1,0 +1,50 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Waren-Wirtschfts-System</title>
+        <link rel="stylesheet" href="{% static 'webapplication/styles.css' %}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+    <body>
+        <div>
+            {% if user.is_authenticated %}
+                Signed in as <strong>{{ user.username }}</strong>.
+            {% else %}
+                Not signed in.
+            {% endif %}
+        </div>
+        <h1 style="text-align: center;">Waren-Wirtschafts-System</h1>
+        <hr>
+        <ul class="nav">
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lagerliste' %}">Lagerliste</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'bestell_liste' %}">Bestell_Liste</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'investmittel' %}">Investmittelplan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profile' user.id %}">Profil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+            {% endif %}
+        </ul>
+        <hr>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>

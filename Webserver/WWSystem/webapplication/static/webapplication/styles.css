@@ -1,0 +1,18 @@
+table {
+    margin-bottom: 10px;
+}
+
+table, th ,td {
+    border: 1px solid black;
+    margin-left: 6px;
+}
+
+th, td {
+    padding-left: 5px;
+    padding: 5px;
+}
+
+.link {
+    color: #000;
+    text-decoration: none !important;
+}

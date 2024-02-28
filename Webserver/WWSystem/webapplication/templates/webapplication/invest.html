@@ -1,0 +1,19 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 style="text-align: center;">Investmittelplan</h1>
+    <table style="width: 100%;">
+        <tr>
+            <th>Klinik/OU</th>
+            <th>Investmittel Jahresanfang</th>
+            <th>Investmittel übrig</th>
+        </tr>
+        {% for item in lagerliste %}
+            <tr>
+                <td>{{ item.klinik_ou }}</td>
+                <td>{{ item.investmittel_jahresanfang_in_euro }}</td>
+                <td>{{ item.investmittel_übrig_in_euro }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

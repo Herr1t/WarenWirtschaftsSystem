@@ -1,0 +1,55 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+  <h1 style="text-align: center;">Lagerliste</h1>
+
+  <h2>Aus Lagerliste austragen</h2>
+  <form id="form" action="{% url 'handout_lager' %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <fieldset id="list" class="input-field">
+        <input autofocus class="form-control" type="text" name="0" required onfocusout="focusoutevent()" placeholder="Inventarnummer"/>
+      </fieldset>
+    </div>
+    <div class="form-group">
+      <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="text" name="investmittel" required placeholder="Investmittel: Ja/Nein">
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="text" name="klinik" required placeholder="OU">
+    </div>
+    <input class="btn btn-primary" type="submit", value="Austragen">
+  </form>
+  {% if message %}
+    <div>{{ message }}</div>
+  {% endif %}
+
+
+  <script>
+    const myForm = document.getElementById("list");
+    c = 1;
+
+    function addInputField() {
+      // create an input field to insert
+      const newInputField = document.createElement("input");
+      // set input field data type to text
+      newInputField.type = "text";
+      // set input field name
+      newInputField.name = c;
+      // set required
+      newInputField.setAttribute("required", "");
+
+      newInputField.classList.add("form-control");
+      // insert element
+      myForm.appendChild(newInputField);
+      newInputField.focus()
+      c = c + 1;
+    }
+    
+    const focusoutevent = document.getElementById("form")
+
+    focusoutevent.addEventListener("focusout", newInputField)
+  </script>
+{% endblock %}
