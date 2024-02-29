@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User
+from .models import Lagerliste, BestellListe, Investmittelplan, User, TempLagerliste
 
 # Create your views here.
 
@@ -200,3 +200,60 @@ def detail_lager_profile(request, user_id, bestell_nr):
         "bestellung": bestell_nr,
         "lagerliste": Lagerliste.objects.all().values('inventarnummer', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe', 'klinik', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
     })
+
+def temp_lager(request):
+    return render(request, "webapplication/temp_lager.html", {
+        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("typ")).order_by("-typ")
+    })
+
+def temp_create_lager(request):
+    if request.method == "POST":
+        x = 0
+        list = []
+        ausgegeben = 0
+        investmittel = 'N.A.'
+        typ = request.POST["typ"]
+        modell = request.POST["modell"]
+        spezifikation = request.POST["spezifikation"]
+        try:
+            while True:
+                list.append(request.POST[f"{x}"])
+                x = x + 1
+        except:
+            pass
+        for _ in list:
+            inventarnummer = int(_)
+            try:
+                lagerung = TempLagerliste.objects.create(inventarnummer=inventarnummer, typ=typ, modell=modell, spezifikation=spezifikation, ausgegeben=ausgegeben, investmittel=investmittel)
+                lagerung.save()
+            except IntegrityError:
+                return render(request, "webapplication/temp_create_lager.html", {
+                "message": "Inventarnummer bereits eingetragen"
+            })
+        return render(request, "webapplication/temp_create_lager.html", {
+            "message": "Eintrag/Einträge erfolgreich angelegt"
+        })
+    return render(request, "webapplication/temp_create_lager.html")
+
+def temp_handout_lager(request):
+    if request.method == "POST":
+        x = 0
+        list = []
+        ausgegeben = 1
+        ausgabe = timezone.now
+        investmittel = request.POST["investmittel"]
+        klinik = request.POST["klinik"]
+        herausgeber = request.user
+        try:
+            while True:
+                list.append(request.POST[f"{x}"])
+                x = x + 1
+        except:
+            pass
+        for _ in list:
+            inventarnummer = int(_)
+            ausgeben = TempLagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'investmittel': investmittel, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
+        return render(request, "webapplication/temp_handout_lager.html", {
+            "message": "Einträge erfolgreich ausgetragen"
+        })
+    return render(request, "webapplication/temp_handout_lager.html")

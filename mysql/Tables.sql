@@ -34,3 +34,17 @@ CREATE TABLE `Investmittelplan` (
     `Investmittel_übrig_in_Euro` DECIMAL(6, 2) CHECK(`Investmittel_übrig_in_Euro` >= 0),
     PRIMARY KEY(`Klinik_OU`)
 );
+
+CREATE TABLE `Temp_Lagerliste` (
+    `Inventarnummer` INT NOT NULL,
+    `Klinik` VARCHAR(20),
+    `Typ` VARCHAR(20) NOT NULL,
+    `Modell` VARCHAR(20) NOT NULL,
+    `Spezifikation` TINYTEXT,
+    `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
+    `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
+    `Ausgabe` DATETIME,
+    `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
+    PRIMARY KEY(`Inventarnummer`),
+    FOREIGN KEY(`Herausgeber`) REFERENCES `webapplication_user`(`username`)
+)
