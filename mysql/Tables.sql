@@ -6,10 +6,12 @@ CREATE TABLE `Lagerliste` (
     `Spezifikation` TINYTEXT,
     `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
     `Bestell_Nr.` INT NOT NULL ,
+    `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
     `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
     PRIMARY KEY(`Inventarnummer`),
-    FOREIGN KEY(`Bestell_Nr.`) REFERENCES `Bestell_Liste`(`SAP_Bestell_Nr.`)
+    FOREIGN KEY(`Bestell_Nr.`) REFERENCES `Bestell_Liste`(`SAP_Bestell_Nr.`),
+    FOREIGN KEY(`Herausgeber`) REFERENCES `webapplication_user`(`username`)
 );
 
 CREATE TABLE `Bestell_Liste` (
@@ -19,9 +21,11 @@ CREATE TABLE `Bestell_Liste` (
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
     `Inventarnummern Von-Bis` TINYTEXT,
+    `Ersteller` VARCHAR(35) DEFAULT 'Kein Ersteller',
     `Geliefert` ENUM('1', '0') NOT NULL DEFAULT '0',
     `Geliefert_Anzahl` TINYINT DEFAULT 0,
-    PRIMARY KEY(`SAP_Bestell_Nr.`)
+    PRIMARY KEY(`SAP_Bestell_Nr.`),
+    FOREIGN KEY(`Ersteller`) REFERENCES `webapplication_user`(`username`)
 );
 
 CREATE TABLE `Investmittelplan` (
