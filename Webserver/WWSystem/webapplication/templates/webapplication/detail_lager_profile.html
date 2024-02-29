@@ -1,6 +1,7 @@
 {% extends "webapplication/layout.html" %}
 {% block body %}
     <h1 style="text-align: center;">Ausgetragene Einträge zur Bestellung {{ bestellung }}</h1>
+    <input style="text-align: left; margin: 5px; border-radius: 5px;" value="Zurück" type="button" onclick="window.location.href='{% url 'profile' user.id %}'"></input>
     <input style="text-align: left; margin: 5px; border-radius: 5px;" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input style="text-align: left; margin: 5px; border-radius: 5px;" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
     <table style="width: 99.5%;">
@@ -18,7 +19,7 @@
             <th>Bestell_Nr.</th>
         </tr>
         {% for item in lagerliste %}
-            {% if user_name == item.herausgeber %}
+            {% if username == item.herausgeber %}
                 <tr>
                     <td class="action-checkbox">
                         <input type="checkbox" name="_selected_action" value="{{ item.inventarnummer }}">

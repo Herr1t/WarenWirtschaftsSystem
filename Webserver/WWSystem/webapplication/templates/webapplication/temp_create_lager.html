@@ -2,6 +2,7 @@
 
 {% block body %}
   <h1 style="text-align: center;">Lagerliste ohne Bestellnummer</h1>
+  <input style="text-align: left; margin: 5px; border-radius: 5px;" value="Zurück" type="button" onclick="window.location.href='{% url 'temp_lagerliste' %}'"></input>
 
   <h2>Lagerlisten Eintrag</h2>
   <form id="form" action="{% url 'temp_create_lager' %}" method="POST">

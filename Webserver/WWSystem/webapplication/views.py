@@ -264,6 +264,5 @@ def temp_profile(request, user_id):
     return render(request, "webapplication/temp_profile.html", {
         "user_id": user_id,
         "username": username,
-        "user_name": request.user,
-        "lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("typ")).order_by("-Menge")
+        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("typ")).order_by("-Menge")
     })
