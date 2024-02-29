@@ -30,11 +30,24 @@ c.execute(Lagerliste_select)
 Lagerliste_data = c.fetchall()
  
 # print all the data returned by the database
+Header={"Inventarnummer":[], 
+        "Klinik":[],
+        "Typ":[],
+        "Modell":[],
+        "Spezifikation":[],
+        "Investmittel":[],
+        "Bestell_Nr.":[],
+        "Ausgabe":[],
+        "Ausgegeben":[]}
 for e in Lagerliste_data:
-    row = e.split(",")
     _ = 0
-    for _ in row[_]:
-        print(f"\t{row[_]}\t")
+    for h in Header:
+        Header[h].append(e[_])
+        _ = _ + 1
+
+for row in zip(*([key] + (value) for key, value in Header.items())):
+    print(*row)
+#header=['Inventarnummer','Klinik','Typ','Modell','Spezifikation','Investmittel','Bestell_Nr.','Ausgabe','Ausgegeben']
  
 # finally closing the database connection
 db.close()
