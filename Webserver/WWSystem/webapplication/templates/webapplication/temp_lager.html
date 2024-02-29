@@ -1,4 +1,4 @@
-{% extends "webapplcation/layout.html" %}
+{% extends "webapplication/layout.html" %}
 
 {% block body %}
     <h1 style="text-align: center;">Lagerliste ohne Bestellnummer</h1>
@@ -12,7 +12,6 @@
             <th>
                 <input name="super_checkbox" type="checkbox">
             </th>
-            <th>Inventarnummer</th>
             <th>Typ</th>
             <th>Modell</th>
             <th>Spezifikation</th>
@@ -24,7 +23,6 @@
                     <td class="action-checkbox">
                         <input type="checkbox" name="_selected_action" value="{{ item.inventarnummer }}">
                     </td>
-                    <td>{{ item.inventarnummer }}</td>
                     <td>{{ item.typ }}</td>
                     <td>{{ item.modell }}</td>
                     <td>{{ item.spezifikation }}</td>

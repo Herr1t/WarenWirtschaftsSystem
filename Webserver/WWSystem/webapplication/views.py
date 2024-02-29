@@ -203,7 +203,7 @@ def detail_lager_profile(request, user_id, bestell_nr):
 
 def temp_lager(request):
     return render(request, "webapplication/temp_lager.html", {
-        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("typ")).order_by("-typ")
+        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("typ")).order_by("-Menge")
     })
 
 def temp_create_lager(request):
@@ -257,3 +257,13 @@ def temp_handout_lager(request):
             "message": "Einträge erfolgreich ausgetragen"
         })
     return render(request, "webapplication/temp_handout_lager.html")
+
+def temp_profile(request, user_id):
+    user_name = User.objects.values_list('username').get(pk=user_id)
+    username = user_name[0]
+    return render(request, "webapplication/temp_profile.html", {
+        "user_id": user_id,
+        "username": username,
+        "user_name": request.user,
+        "lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("typ")).order_by("-Menge")
+    })
