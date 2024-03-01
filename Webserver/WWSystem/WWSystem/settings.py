@@ -76,7 +76,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'W-W-System',
-        'USER': 'Helfi',
+        'USER': 'root',
         'PASSWORD': 'pl$E5465',
     }
 }

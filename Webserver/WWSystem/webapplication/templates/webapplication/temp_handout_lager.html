@@ -1,10 +1,11 @@
 {% extends "webapplication/layout.html" %}
 
 {% block body %}
-  <h1 style="text-align: center;">Lagerliste</h1>
+  <h1 style="text-align: center;">Lagerliste ohne Bestellnummer</h1>
+  <input style="text-align: left; margin: 5px; border-radius: 5px;" value="Zurück" type="button" onclick="window.location.href='{% url 'temp_lagerliste' %}'"></input>
 
   <h2>Aus Lagerliste austragen</h2>
-  <form id="form" action="{% url 'handout_lager' %}" method="POST">
+  <form id="form" action="{% url 'temp_handout_lager' %}" method="POST">
     {% csrf_token %}
     <div class="form-group">
       <fieldset id="list" class="input-field">
@@ -20,7 +21,7 @@
     <div class="form-group">
         <input class="form-control" type="text" name="klinik" required placeholder="OU">
     </div>
-    <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Austragen">
+    <input class="btn btn-primary" type="submit", value="Austragen">
   </form>
   {% if message %}
     <div>{{ message }}</div>

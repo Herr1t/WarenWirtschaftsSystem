@@ -17,5 +17,9 @@ urlpatterns = [
     path("handout_lager", views.handout_lager, name="handout_lager"),
     path("lager/<int:bestell_nr>", views.detail_lager, name="detail_lager"),
     path("<int:user_id>", views.profile, name="profile"),
-    path("<int:user_id>/<int:bestell_nr>", views.detail_lager_profile, name="detail_lager_profile")
+    path("<int:user_id>/<int:bestell_nr>", views.detail_lager_profile, name="detail_lager_profile"),
+    path("temp_lager", views.temp_lager, name="temp_lagerliste"),
+    path("temp_create_lager", views.temp_create_lager, name="temp_create_lager"),
+    path("temp_handout_lager", views.temp_handout_lager, name="temp_handout_lager"),
+    path("<int:user_id>/temp_profile", views.temp_profile, name="temp_profile")
 ]
