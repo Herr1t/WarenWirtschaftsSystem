@@ -7,11 +7,8 @@
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
-    <table style="width: 99.5%;">
+    <table class="sortable" style="width: 99.5%;">
         <tr>
-            <th>
-                <input name="super_checkbox" type="checkbox">
-            </th>
             <th>Bestell_Nr.</th>
             <th>Typ</th>
             <th>Modell</th>
@@ -21,9 +18,6 @@
         {% for item in lagerliste %}
             {% if item.ausgegeben != 1 %}
                 <tr class="custom_row">
-                    <td class="action-checkbox">
-                        <input type="checkbox" name="_selected_action" value="{{ item.bestell_nr_field }}">
-                    </td>
                     <td>
                         <a class="link" href="{% url 'detail_lager' item.bestell_nr_field %}">        
                             {{ item.bestell_nr_field }}

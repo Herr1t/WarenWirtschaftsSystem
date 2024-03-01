@@ -2,12 +2,9 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Ausgetragene Einträge zur Bestellung {{ bestellung }}</h1>
     <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'profile' user.id %}'"></input>
-    <table style="width: 99.5%;">
+    <table class="sortable" style="width: 99.5%;">
         <tr>
-            <th>
-                <input type="checkbox">
-            </th>
-            <th>Inventarnummer</th>
+            <th>Inventarnummer/Servicenummer</th>
             <th>Typ</th>
             <th>Modell</th>
             <th>Spezifikation</th>
@@ -17,11 +14,8 @@
             <th>Bestell_Nr.</th>
         </tr>
         {% for item in lagerliste %}
-            {% if username == item.herausgeber %}
+            {% if user_name == item.herausgeber %}
                 <tr class="custom_row">
-                    <td class="action-checkbox">
-                        <input type="checkbox" name="_selected_action" value="{{ item.inventarnummer }}">
-                    </td>
                     <td>{{ item.inventarnummer }}</td>
                     <td>{{ item.typ }}</td>
                     <td>{{ item.modell }}</td>

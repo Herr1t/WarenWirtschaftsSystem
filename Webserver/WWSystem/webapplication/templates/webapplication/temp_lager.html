@@ -7,22 +7,19 @@
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
-    <table style="width: 99.5%;">
-        <tr>
-            <th>
-                <input name="super_checkbox" type="checkbox">
-            </th>
-            <th>Typ</th>
-            <th>Modell</th>
-            <th>Spezifikation</th>
-            <th>Menge</th>
-        </tr>
+    <table class="sortable" style="width: 99.5%;">
+        <thead>
+            <tr>
+                <th style="width: 20%;">Typ</th>
+                <th style="width: 30%;">Modell</th>
+                <th>Spezifikation</th>
+                <th>Menge</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for item in temp_lagerliste %}
             {% if item.ausgegeben != 1 %}
                 <tr class="custom_row">
-                    <td class="action-checkbox">
-                        <input type="checkbox" name="_selected_action" value="{{ item.inventarnummer }}">
-                    </td>
                     <td>{{ item.typ }}</td>
                     <td>{{ item.modell }}</td>
                     <td>{{ item.spezifikation }}</td>
@@ -30,5 +27,6 @@
                 </tr>
             {% endif %}
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

@@ -6,11 +6,8 @@
         <h2 style="float: left; padding-left: 7px;">Aus Lagerliste ohne Bestellnummer ausgetragen</h2>
     </div>
     <div>
-        <table style="width: 99.6%; float: left; margin-right: 7px;">
+        <table class="sortable" style="width: 99.6%; float: left; margin-right: 7px;">
             <tr>
-                <th>
-                    <input type="checkbox">
-                </th>
                 <th>Typ</th>
                 <th>Modell</th>
                 <th>Spezifikation</th>
@@ -21,9 +18,6 @@
             {% for item in temp_lagerliste %}
                 {% if username == item.herausgeber %}
                     <tr class="custom_row">
-                        <td class="action-checkbox">
-                            <input type="checkbox" name="_selected_action" value="{{ item.inventarnummer }}">
-                        </td>
                         <td>{{ item.typ }}</td>
                         <td>{{ item.modell }}</td>
                         <td>{{ item.spezifikation }}</td>

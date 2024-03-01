@@ -7,11 +7,8 @@
         <h2 style="text-align: right; padding-right: 7px;">Aus Lagerliste ausgetragen</h2>
     </div>
     <div>
-        <table style="width: 49%; float: left;">
+        <table class="sortable" style="width: 49%; float: left;">
             <tr>
-                <th>
-                    <input type="checkbox">
-                </th>
                 <th>SAP_Bestell_Nr.</th>
                 <th>Modell</th>
                 <th>Typ</th>
@@ -24,9 +21,6 @@
             {% for item in bestell_liste %}
                 {% if user_name == item.ersteller %}
                     <tr class="custom_row">
-                        <td class="action-checkbox">
-                            <input type="checkbox" name="_selected_action" value="{{ item.sap_bestell_nr_field }}">
-                        </td>
                         <td>{{ item.sap_bestell_nr_field }}</td>
                         <td>{{ item.modell }}</td>
                         <td>{{ item.typ }}</td>
@@ -41,11 +35,8 @@
         </table>
     </div>
     <div>
-        <table style="width: 49%; float: right; margin-right: 7px;">
+        <table class="sortable" style="width: 49%; float: right; margin-right: 7px;">
             <tr>
-                <th>
-                    <input type="checkbox">
-                </th>
                 <th>Bestell_Nr.</th>
                 <th>Typ</th>
                 <th>Modell</th>
@@ -57,9 +48,6 @@
             {% for item in lagerliste %}
                 {% if username == item.herausgeber %}
                     <tr class="custom_row">
-                        <td class="action-checkbox">
-                            <input type="checkbox" name="_selected_action" value="{{ item.bestell_nr_field }}">
-                        </td>
                         <td>
                             <a class="link" href="{% url 'detail_lager_profile' user.id item.bestell_nr_field %}">
                                 {{ item.bestell_nr_field }}

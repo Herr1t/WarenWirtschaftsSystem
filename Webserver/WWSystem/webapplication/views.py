@@ -67,11 +67,21 @@ def register(request):
         return render(request, "webapplication/register.html")
 
 def lager(request):
+    Menge =  BestellListe.objects.values_list('geliefert_anzahl')
     return render(request, "webapplication/lager.html", {
-        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")).order_by("-Menge")
+        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+        "message": Menge[3][0]
     })
 
 def bestell(request):
+    Menge =  BestellListe.objects.values_list('geliefert_anzahl', 'sap_bestell_nr_field')
+    y = 0
+    for _ in Menge:
+        if str(Menge[y][0]) == "None":
+            update = BestellListe.objects.update_or_create(sap_bestell_nr_field=Menge[y][1], defaults={'geliefert_anzahl': 0})
+            y = y + 1
+        else:
+            y = y + 1
     return render(request, "webapplication/bestell.html", {
         "bestell_liste": BestellListe.objects.all()
     })
@@ -188,7 +198,7 @@ def profile(request, user_id):
         "bestell_liste": BestellListe.objects.all(),
         "user_name": request.user,
         "username": username,
-        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("bestell_nr_field")).order_by("-Menge")
+        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("bestell_nr_field"))
     })
 
 def detail_lager_profile(request, user_id, bestell_nr):
@@ -203,7 +213,7 @@ def detail_lager_profile(request, user_id, bestell_nr):
 
 def temp_lager(request):
     return render(request, "webapplication/temp_lager.html", {
-        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("typ")).order_by("-Menge")
+        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("typ"))
     })
 
 def temp_create_lager(request):
@@ -264,5 +274,5 @@ def temp_profile(request, user_id):
     return render(request, "webapplication/temp_profile.html", {
         "user_id": user_id,
         "username": username,
-        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("typ")).order_by("-Menge")
+        "temp_lagerliste": TempLagerliste.objects.all().values('typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("typ"))
     })

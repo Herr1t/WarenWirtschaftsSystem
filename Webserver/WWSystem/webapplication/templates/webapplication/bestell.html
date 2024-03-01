@@ -3,11 +3,11 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Bestell_Liste</h1>
     <input class="button" value="Bestell_Listen Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_bestell' %}'"></input>
-    <table style="width: 99.5%;">
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+    <table class="sortable" style="width: 99.5%;">
         <tr>
-            <th>
-                <input type="checkbox">
-            </th>
             <th>SAP_Bestell_Nr.</th>
             <th>Modell</th>
             <th>Typ</th>
@@ -20,9 +20,6 @@
         {% for item in bestell_liste %}
             {% if item.geliefert != "1" %}
                 <tr class="custom_row">
-                    <td class="action-checkbox">
-                        <input type="checkbox" name="_selected_action" value="{{ item.sap_bestell_nr_field }}">
-                    </td>
                     <td>
                         <a class="link" href="{% url 'detail_lager' item.sap_bestell_nr_field %}">
                             {{ item.sap_bestell_nr_field }}
