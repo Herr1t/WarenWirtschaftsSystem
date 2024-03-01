@@ -1,12 +1,12 @@
 {% extends "webapplication/layout.html" %}
 {% block body %}
-    <h1 style="text-align: center;">Profil Verlauf</h1>
+    <h1 class="header" style="text-align: center;">Profil Verlauf</h1>
     <div>
         <h2 style="float: left;">Erstellte Bestellungen</h2>
         <h2 style="text-align: right; padding-right: 7px;">Aus Lagerliste ausgetragen</h2>
     </div>
     <div>
-        <table style="width: 49.6%; float: left;">
+        <table style="width: 49%; float: left;">
             <tr>
                 <th>
                     <input type="checkbox">
@@ -22,7 +22,7 @@
             </tr>
             {% for item in bestell_liste %}
                 {% if user_name == item.ersteller %}
-                    <tr>
+                    <tr class="custom_row">
                         <td class="action-checkbox">
                             <input type="checkbox" name="_selected_action" value="{{ item.sap_bestell_nr_field }}">
                         </td>
@@ -40,7 +40,7 @@
         </table>
     </div>
     <div>
-        <table style="width: 49.6%; float: right; margin-right: 7px;">
+        <table style="width: 49%; float: right; margin-right: 7px;">
             <tr>
                 <th>
                     <input type="checkbox">
@@ -55,7 +55,7 @@
             </tr>
             {% for item in lagerliste %}
                 {% if username == item.herausgeber %}
-                    <tr>
+                    <tr class="custom_row">
                         <td class="action-checkbox">
                             <input type="checkbox" name="_selected_action" value="{{ item.bestell_nr_field }}">
                         </td>

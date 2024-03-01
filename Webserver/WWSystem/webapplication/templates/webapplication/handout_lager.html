@@ -1,7 +1,8 @@
 {% extends "webapplication/layout.html" %}
 
 {% block body %}
-  <h1 style="text-align: center;">Lagerliste</h1>
+  <h1 class="header" style="text-align: center;">Lagerliste</h1>
+  <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
 
   <h2>Aus Lagerliste austragen</h2>
   <form id="form" action="{% url 'handout_lager' %}" method="POST">
