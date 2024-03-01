@@ -2,8 +2,8 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Ausgetragene Einträge zur Bestellung {{ bestellung }}</h1>
     <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'profile' user.id %}'"></input>
-    <input class="searchbar" type="text" id="searchbar" placeholder="Suchen...">
-    <table class="sortable" style="width: 99.5%;">
+    <input class="searchbar" type="text" id="searchbar" onkeyup="myFunction()" placeholder="Suchen...">
+    <table id="myTable" class="sortable" style="width: 99.5%;">
         <thead>
             <tr>
                 <th>Inventarnummer/Servicenummer</th>
@@ -16,7 +16,7 @@
                 <th>Bestell_Nr.</th>
             </tr>
         </thead>
-        <tbody id="contents">
+        <tbody>
         {% for item in lagerliste %}
             {% if user_name == item.herausgeber %}
                 <tr class="custom_row">

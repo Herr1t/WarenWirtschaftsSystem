@@ -4,11 +4,11 @@
     <h1 class="header" style="text-align: center;">Lagerliste</h1>
     <input class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
-    <input class="searchbar" type="text" id="searchbar" placeholder="Suchen...">
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
-    <table class="sortable" style="width: 99.5%;">
+    <table id="myTable" class="sortable" style="width: 99.5%;">
         <thead>
             <tr>
                 <th>Bestell_Nr.</th>
@@ -18,7 +18,7 @@
                 <th>Menge</th>
             </tr>
         </thead>
-        <tbody id="contents">
+        <tbody>
         {% for item in lagerliste %}
             {% if item.ausgegeben != 1 %}
                 <tr class="custom_row">

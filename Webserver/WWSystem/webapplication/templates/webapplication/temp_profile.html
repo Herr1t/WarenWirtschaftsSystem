@@ -5,9 +5,9 @@
     <div>
         <h2 style="float: left; padding-left: 7px;">Aus Lagerliste ohne Bestellnummer ausgetragen</h2>
     </div>
-    <input class="searchbar" type="text" id="searchbar" placeholder="Suchen...">
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
     <div>
-        <table class="sortable" style="width: 99.6%; float: left; margin-right: 7px;">
+        <table id="myTable" class="sortable" style="width: 99.6%; float: left; margin-right: 7px;">
             <thead>
                 <tr>
                     <th>Typ</th>
@@ -18,7 +18,7 @@
                     <th>Menge</th>
                 </tr>
             </thead>
-            <tbody id="contents">
+            <tbody>
             {% for item in temp_lagerliste %}
                 {% if username == item.herausgeber %}
                     <tr class="custom_row">
