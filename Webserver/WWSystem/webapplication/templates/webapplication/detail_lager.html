@@ -2,6 +2,7 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Lagerliste zur Bestellung {{ bestell_nr }}</h1>
+    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
     <input class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
     <table style="width: 100%;">

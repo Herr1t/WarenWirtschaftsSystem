@@ -1,6 +1,7 @@
 {% extends "webapplication/layout.html" %}
 {% block body %}
     <h1 class="header" style="text-align: center;">Profil Verlauf</h1>
+    <input class="button" value="Artikel ohne Bestellnummer" type="button" onclick="window.location.href='{% url 'temp_profile' user.id %}'"></input>
     <div>
         <h2 style="float: left;">Erstellte Bestellungen</h2>
         <h2 style="text-align: right; padding-right: 7px;">Aus Lagerliste ausgetragen</h2>
