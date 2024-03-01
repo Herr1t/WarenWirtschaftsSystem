@@ -2,12 +2,16 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplan</h1>
+    <input class="searchbar" type="text" id="searchbar" placeholder="Suchen...">
     <table class="sortable" style="width: 99.5%;">
-        <tr>
-            <th>Klinik/OU</th>
-            <th>Investmittel Jahresanfang</th>
-            <th>Investmittel übrig</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Klinik/OU</th>
+                <th>Investmittel Jahresanfang</th>
+                <th>Investmittel übrig</th>
+            </tr>
+        </thead>
+        <tbody id="contents">
         {% for item in lagerliste %}
             <tr class="custom_row">
                 <td>{{ item.klinik_ou }}</td>
@@ -15,5 +19,6 @@
                 <td>{{ item.investmittel_übrig_in_euro }}</td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

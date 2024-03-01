@@ -112,3 +112,14 @@ h2 {
     color: inherit;
     content: '\025B4';
  }
+
+ .searchbar {
+    width: 10%; /* Full-width */
+    margin-right: 7px;
+    font-size: 16px; /* Increase font-size */
+    padding: 12px 20px 12px; /* Add some padding */
+    border: 1px solid rgb(191, 193, 195); /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+    float: right;
+    border-radius: 8px;
+  }

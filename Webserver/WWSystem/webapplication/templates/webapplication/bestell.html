@@ -3,20 +3,24 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Bestell_Liste</h1>
     <input class="button" value="Bestell_Listen Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_bestell' %}'"></input>
+    <input class="searchbar" type="text" id="searchbar" placeholder="Suchen...">
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
     <table class="sortable" style="width: 99.5%;">
-        <tr>
-            <th>SAP_Bestell_Nr.</th>
-            <th>Modell</th>
-            <th>Typ</th>
-            <th>Spezifikation</th>
-            <th>Inventarnummer: Von-Bis</th>
-            <th>Ersteller</th>
-            <th>Menge</th>
-            <th>Anzahl Geliefert</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>SAP_Bestell_Nr.</th>
+                <th>Modell</th>
+                <th>Typ</th>
+                <th>Spezifikation</th>
+                <th>Inventarnummer: Von-Bis</th>
+                <th>Ersteller</th>
+                <th>Menge</th>
+                <th>Anzahl Geliefert</th>
+            </tr>
+        </thead>
+        <tbody id="contents">
         {% for item in bestell_liste %}
             {% if item.geliefert != "1" %}
                 <tr class="custom_row">
@@ -35,5 +39,6 @@
                 </tr>
             {% endif %}
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

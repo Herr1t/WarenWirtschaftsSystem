@@ -4,6 +4,7 @@
     <h1 class="header" style="text-align: center;">Lagerliste ohne Bestellnummer</h1>
     <input class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'temp_create_lager' %}'"></input>
     <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'temp_handout_lager' %}'"></input>
+    <input class="searchbar" type="text" id="searchbar" placeholder="Suchen...">
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
@@ -16,7 +17,7 @@
                 <th>Menge</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="contents">
         {% for item in temp_lagerliste %}
             {% if item.ausgegeben != 1 %}
                 <tr class="custom_row">

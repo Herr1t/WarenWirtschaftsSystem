@@ -6,6 +6,7 @@
         <title>Waren-Wirtschfts-System</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="{% static 'webapplication/styles.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
     <body style="background-color: rgb(244, 245, 247);">
         <div>
@@ -49,11 +50,57 @@
         {% block body %}
         {% endblock %}
         <script>
+           function myFunction() {
+                var input, filter, table, tr, td, cell, i, j;
+                input = document.getElementById("myInput");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("myTable");
+                tr = table.getElementsByTagName("tr");
+                for (i = 1; i < tr.length; i++) {
+                    // Hide the row initially.
+                    tr[i].style.display = "none";
+                    
+                    td = tr[i].getElementsByTagName("td");
+                    for (var j = 0; j < td.length; j++) {
+                    cell = tr[i].getElementsByTagName("td")[j];
+                    if (cell) {
+                        if (cell.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break;
+                        } 
+                    }
+                    }
+                }
+            }
+
+            function myFunction2() {
+                var input, filter, table, tr, td, cell, i, j;
+                input = document.getElementById("myInput2");
+                filter = input.value.toUpperCase();
+                table = document.getElementById("myTable2");
+                tr = table.getElementsByTagName("tr");
+                for (i = 1; i < tr.length; i++) {
+                    // Hide the row initially.
+                    tr[i].style.display = "none";
+                    
+                    td = tr[i].getElementsByTagName("td");
+                    for (var j = 0; j < td.length; j++) {
+                    cell = tr[i].getElementsByTagName("td")[j];
+                    if (cell) {
+                        if (cell.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break;
+                        } 
+                    }
+                    }
+                }
+            }
+
             document.addEventListener('click', function (e) {
                 try {
                     function findElementRecursive(element, tag) {
-                    return element.nodeName === tag ? element : 
-                    findElementRecursive(element.parentNode, tag)
+                        return element.nodeName === tag ? element : 
+                        findElementRecursive(element.parentNode, tag)
                     }
                     var descending_th_class = ' dir-d '
                     var ascending_th_class = ' dir-u '
@@ -67,44 +114,44 @@
                     function reClassify(element, dir) {
                     element.className = element.className.replace(regex_dir, '') + dir
                     }
-                    function getValue(element) {
-                    return (
-                        (alt_sort && element.getAttribute('data-sort-alt')) || 
-                    element.getAttribute('data-sort') || element.innerText
-                    )
+                        function getValue(element) {
+                            return (
+                                (alt_sort && element.getAttribute('data-sort-alt')) || 
+                            element.getAttribute('data-sort') || element.innerText
+                        )
                     }
                     if (regex_table.test(table.className)) {
-                    var column_index
-                    var nodes = tr.cells
-                    for (var i = 0; i < nodes.length; i++) {
-                        if (nodes[i] === element) {
-                        column_index = element.getAttribute('data-sort-col') || i
-                        } else {
-                        reClassify(nodes[i], '')
+                        var column_index
+                        var nodes = tr.cells
+                        for (var i = 0; i < nodes.length; i++) {
+                            if (nodes[i] === element) {
+                                column_index = element.getAttribute('data-sort-col') || i
+                            } else {
+                                reClassify(nodes[i], '')
+                            }
                         }
-                    }
-                    var dir = descending_th_class
-                    if (
-                        element.className.indexOf(descending_th_class) !== -1 ||
-                        (table.className.indexOf(ascending_table_sort_class) !== -1 &&
-                        element.className.indexOf(ascending_th_class) == -1)
-                    ) {
-                        dir = ascending_th_class
-                    }
-                    reClassify(element, dir)
-                    var org_tbody = table.tBodies[0]
-                    var rows = [].slice.call(org_tbody.rows, 0)
-                    var reverse = dir === ascending_th_class
-                    rows.sort(function (a, b) {
-                        var x = getValue((reverse ? a : b).cells[column_index])
-                        var y = getValue((reverse ? b : a).cells[column_index])
-                        return isNaN(x - y) ? x.localeCompare(y) : x - y
-                    })
-                    var clone_tbody = org_tbody.cloneNode()
-                    while (rows.length) {
-                        clone_tbody.appendChild(rows.splice(0, 1)[0])
-                    }
-                    table.replaceChild(clone_tbody, org_tbody)
+                        var dir = descending_th_class
+                        if (
+                            element.className.indexOf(descending_th_class) !== -1 ||
+                            (table.className.indexOf(ascending_table_sort_class) !== -1 &&
+                            element.className.indexOf(ascending_th_class) == -1)
+                        ) {
+                            dir = ascending_th_class
+                        }
+                        reClassify(element, dir)
+                        var org_tbody = table.tBodies[0]
+                        var rows = [].slice.call(org_tbody.rows, 0)
+                        var reverse = dir === ascending_th_class
+                        rows.sort(function (a, b) {
+                            var x = getValue((reverse ? a : b).cells[column_index])
+                            var y = getValue((reverse ? b : a).cells[column_index])
+                            return isNaN(x - y) ? x.localeCompare(y) : x - y
+                        })
+                        var clone_tbody = org_tbody.cloneNode()
+                        while (rows.length) {
+                            clone_tbody.appendChild(rows.splice(0, 1)[0])
+                        }
+                        table.replaceChild(clone_tbody, org_tbody)
                     }
                 } catch (error) {
                 }

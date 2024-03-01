@@ -4,20 +4,25 @@
     <input class="button" value="Artikel ohne Bestellnummer" type="button" onclick="window.location.href='{% url 'temp_profile' user.id %}'"></input>
     <div>
         <h2 style="float: left;">Erstellte Bestellungen</h2>
+        <input style="float: left; margin-left: 27%;" class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+        <input style="float: left; margin-left: 1.25%;" class="searchbar" type="text" id="myInput2" onkeyup="myFunction2()" placeholder="Suchen...">
         <h2 style="text-align: right; padding-right: 7px;">Aus Lagerliste ausgetragen</h2>
     </div>
     <div>
-        <table class="sortable" style="width: 49%; float: left;">
-            <tr>
-                <th>SAP_Bestell_Nr.</th>
-                <th>Modell</th>
-                <th>Typ</th>
-                <th>Spezifikation</th>
-                <th>Inventarnummer: Von-Bis</th>
-                <th>Ersteller</th>
-                <th>Menge</th>
-                <th>Anzahl Geliefert</th>
-            </tr>
+        <table id="myTable" class="sortable" style="width: 49%; float: left;">
+            <thead>
+                <tr>
+                    <th>SAP_Bestell_Nr.</th>
+                    <th>Modell</th>
+                    <th>Typ</th>
+                    <th>Spezifikation</th>
+                    <th>Inventarnummer: Von-Bis</th>
+                    <th>Ersteller</th>
+                    <th>Menge</th>
+                    <th>Anzahl Geliefert</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for item in bestell_liste %}
                 {% if user_name == item.ersteller %}
                     <tr class="custom_row">
@@ -32,19 +37,23 @@
                     </tr>
                 {% endif %}
             {% endfor %}
+            </tbody>
         </table>
     </div>
     <div>
-        <table class="sortable" style="width: 49%; float: right; margin-right: 7px;">
-            <tr>
-                <th>Bestell_Nr.</th>
-                <th>Typ</th>
-                <th>Modell</th>
-                <th>Spezifikation</th>
-                <th>Herausgeber</th>
-                <th>Ausgabe</th>
-                <th>Menge</th>
-            </tr>
+        <table id="myTable2" class="sortable" style="width: 49%; float: right; margin-right: 7px;">
+            <thead>
+                <tr>
+                    <th>Bestell_Nr.</th>
+                    <th>Typ</th>
+                    <th>Modell</th>
+                    <th>Spezifikation</th>
+                    <th>Herausgeber</th>
+                    <th>Ausgabe</th>
+                    <th>Menge</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for item in lagerliste %}
                 {% if username == item.herausgeber %}
                     <tr class="custom_row">
@@ -62,6 +71,7 @@
                     </tr>
                 {% endif %}
             {% endfor %}
+            </tbody>
         </table>
     </div>
 {% endblock %}

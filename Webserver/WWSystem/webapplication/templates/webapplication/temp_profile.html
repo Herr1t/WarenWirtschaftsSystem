@@ -5,16 +5,20 @@
     <div>
         <h2 style="float: left; padding-left: 7px;">Aus Lagerliste ohne Bestellnummer ausgetragen</h2>
     </div>
+    <input class="searchbar" type="text" id="searchbar" placeholder="Suchen...">
     <div>
         <table class="sortable" style="width: 99.6%; float: left; margin-right: 7px;">
-            <tr>
-                <th>Typ</th>
-                <th>Modell</th>
-                <th>Spezifikation</th>
-                <th>Herausgeber</th>
-                <th>Ausgabe</th>
-                <th>Menge</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Typ</th>
+                    <th>Modell</th>
+                    <th>Spezifikation</th>
+                    <th>Herausgeber</th>
+                    <th>Ausgabe</th>
+                    <th>Menge</th>
+                </tr>
+            </thead>
+            <tbody id="contents">
             {% for item in temp_lagerliste %}
                 {% if username == item.herausgeber %}
                     <tr class="custom_row">
@@ -27,6 +31,7 @@
                     </tr>
                 {% endif %}
             {% endfor %}
+            </tbody>
         </table>
     </div>
 {% endblock %}
