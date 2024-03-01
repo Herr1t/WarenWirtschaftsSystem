@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="{% static 'webapplication/styles.css' %}">
     </head>
-    <body>
+    <body style="background-color: rgb(244, 245, 247);">
         <div>
             {% if user.is_authenticated %}
                 Signed in as <strong>{{ user.username }}</strong>.
@@ -15,10 +15,9 @@
                 Not signed in.
             {% endif %}
             <img style="float: right; width: 88px; height: auto;" src="https://confluence.med.tu-dresden.de/download/attachments/74285475/ITKB?version=2&modificationDate=1559050749303&api=v2">
-            <h1 style="float: center;">Waren-Wirtschafts-System</h1>
+            <h1 style="float: center; padding-bottom: 8px;">Waren-Wirtschafts-System</h1>
         </div>
-        <hr>
-        <ul class="nav">
+        <ul style="background-color: rgb(8, 71, 166); padding: 3px; border-top: solid 1px black; border-bottom: solid 1px black;" class="nav">
             {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'lagerliste' %}">Lagerliste</a>
@@ -44,7 +43,6 @@
                 </li>
             {% endif %}
         </ul>
-        <hr>
         {% block body %}
         {% endblock %}
     </body>
