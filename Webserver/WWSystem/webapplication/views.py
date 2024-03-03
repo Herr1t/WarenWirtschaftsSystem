@@ -69,8 +69,7 @@ def register(request):
 def lager(request):
     Menge =  BestellListe.objects.values_list('geliefert_anzahl')
     return render(request, "webapplication/lager.html", {
-        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
-        "message": Menge[3][0]
+        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
     })
 
 def bestell(request):
