@@ -2,7 +2,7 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Lagerliste zur Bestellung {{ bestell_nr }}</h1>
-    <input class="button" value="Zurück zur Bestell_Liste" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
+    <input class="button" value="Zurück zur BestellListe" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
     <input class="button" value="Zurück zur Lagerliste" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
     <input class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
@@ -14,7 +14,7 @@
                 <th>Typ</th>
                 <th>Modell</th>
                 <th>Spezifikation</th>
-                <th>Bestell_Nr.</th>
+                <th>Bestell-Nr.</th>
             </tr>
         </thead>
         <tbody>

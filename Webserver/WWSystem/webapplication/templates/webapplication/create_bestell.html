@@ -1,7 +1,7 @@
 {% extends "webapplication/layout.html" %}
 
 {% block body %}
-    <h1 class="header" style="text-align: center;">Bestell_Liste</h1>
+    <h1 class="header" style="text-align: center;">BestellListe</h1>
     <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
 
     <h2>Bestell_Listen Eintrag</h2>
@@ -9,7 +9,7 @@
     <form action="{% url 'create_bestell' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <input autofocus class="form-control" type="number" name="sap_bestell_nr" required placeholder="SAP Bestell_Nr.">
+            <input autofocus class="form-control" type="number" name="sap_bestell_nr" required placeholder="SAP Bestell-Nr.">
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="modell" required placeholder="Modell">
@@ -21,7 +21,7 @@
             <input class="form-control" type="number" name="menge" required placeholder="Menge">
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" name="spezifikation" placeholder="Spezifikation">
+            <input class="form-control" type="text" name="spezifikation" placeholder="Optional: Spezifikation">
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="inventarnummern_von_bis" placeholder="Optional: Inventarnummern Von-Bis">

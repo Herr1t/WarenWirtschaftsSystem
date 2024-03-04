@@ -81,39 +81,39 @@ h2 {
 
 .sortable th {
     cursor: pointer;
- }
+}
 
- .sortable th.no-sort {
+.sortable th.no-sort {
     pointer-events: none;
- }
+}
 
- .sortable th::after, 
- .sortable th::before {
+.sortable th::after, 
+.sortable th::before {
   transition: color 0.2s ease-in-out;
   font-size: 1.2em;
   color: transparent;
- }
+}
 
- .sortable th::after {
+.sortable th::after {
     margin-left: 3px;
     content: '\025B8';
- }
+}
 
- .sortable th:hover::after {
+.sortable th:hover::after {
     color: inherit;
- }
+}
 
- .sortable th.dir-d::after {
+.sortable th.dir-d::after {
     color: inherit;
     content: '\025BE';
- }
+}
  
- .sortable th.dir-u::after {
+.sortable th.dir-u::after {
     color: inherit;
     content: '\025B4';
- }
+}
 
- .searchbar {
+.searchbar {
     width: 10%; /* Full-width */
     margin-right: 7px;
     font-size: 16px; /* Increase font-size */
@@ -122,4 +122,5 @@ h2 {
     margin-bottom: 12px; /* Add some space below the input */
     float: right;
     border-radius: 8px;
-  }
+}
+
