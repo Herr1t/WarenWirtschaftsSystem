@@ -17,6 +17,8 @@ td, th {
 
 th {
     border-top: none;
+    border-bottom: solid 1px black;
+    font-size: 17px;
 }
 
 td:first-child, th:first-child {
