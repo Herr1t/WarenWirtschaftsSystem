@@ -18,6 +18,7 @@ CREATE TABLE `Bestell_Liste` (
     `SAP_Bestell_Nr.` INT NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Typ` VARCHAR(20) NOT NULL,
+    `Preis_pro_Stück` SMALLINT NOT NULL,
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
     `Inventarnummern Von-Bis` TINYTEXT,
@@ -31,7 +32,7 @@ CREATE TABLE `Bestell_Liste` (
 CREATE TABLE `Investmittelplan` (
     `Klinik_OU` TINYINT NOT NULL,
     `Investmittel_Jahresanfang_in_Euro` DECIMAL(6, 2) NOT NULL CHECK(`Investmittel_Jahresanfang_in_Euro` >= 0) DEFAULT 0,
-    `Investmittel_übrig_in_Euro` DECIMAL(6, 2) CHECK(`Investmittel_übrig_in_Euro` >= 0),
+    `Investmittel_übrig_in_Euro` DECIMAL(6, 2),
     PRIMARY KEY(`Klinik_OU`)
 );
 
