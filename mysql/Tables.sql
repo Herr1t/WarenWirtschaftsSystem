@@ -1,6 +1,6 @@
 CREATE TABLE `Lagerliste` (
     `Inventarnummer` INT NOT NULL,
-    `Klinik` VARCHAR(20),
+    `Klinik` TINYINT,
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
@@ -29,7 +29,7 @@ CREATE TABLE `Bestell_Liste` (
 );
 
 CREATE TABLE `Investmittelplan` (
-    `Klinik_OU` VARCHAR(3) NOT NULL,
+    `Klinik_OU` TINYINT NOT NULL,
     `Investmittel_Jahresanfang_in_Euro` DECIMAL(6, 2) NOT NULL CHECK(`Investmittel_Jahresanfang_in_Euro` >= 0) DEFAULT 0,
     `Investmittel_übrig_in_Euro` DECIMAL(6, 2) CHECK(`Investmittel_übrig_in_Euro` >= 0),
     PRIMARY KEY(`Klinik_OU`)
@@ -37,7 +37,7 @@ CREATE TABLE `Investmittelplan` (
 
 CREATE TABLE `Temp_Lagerliste` (
     `Inventarnummer` INT NOT NULL,
-    `Klinik` VARCHAR(20),
+    `Klinik` TINYINT,
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
