@@ -23,7 +23,7 @@ FIELDS TERMINATED BY ',';
 CREATE PROCEDURE `Insert`()
 BEGIN
 DECLARE i int DEFAULT 1;
-WHILE i <= 100 DO
+WHILE i <= 99 DO
 INSERT INTO `Investmittelplan` (`Klinik_OU`)
 VALUES (i);
 SET i = i + 1;
