@@ -87,7 +87,7 @@ def bestell(request):
 
 def invest(request):
     return render(request, "webapplication/invest.html", {
-        "investmittelplan": Investmittelplan.objects.all()
+        "investmittelplan": Investmittelplan.objects.all().order_by('klinik_ou')
     })
 
 def create_bestell(request):
@@ -96,6 +96,7 @@ def create_bestell(request):
         modell = request.POST["modell"]
         typ = request.POST["typ"]
         menge = request.POST["menge"]
+        preis_pro_stück = request.POST["preis_pro_stück"]
         spezi = request.POST["spezifikation"]
         invnr_von_bis = request.POST["inventarnummern_von_bis"]
         geliefert = 0
@@ -106,8 +107,24 @@ def create_bestell(request):
             return render(request, "webapplication/create_bestell.html", {
             "message": "Menge darf nicht 255 überschreiten"
         })
+        if len(str(modell)) > 20:
+            return render(request, "webapplication/create_bestell.html", {
+            "message": "Modell darf nicht länger als 20 Zeichen sein"
+        })
+        if len(str(typ)) > 20:
+            return render(request, "webapplication/create_bestell.html", {
+            "message": "Typ darf nicht länger als 20 Zeichen sein"
+        })
+        if len(str(spezi)) > 255:
+            return render(request, "webapplication/create_bestell.html", {
+            "message": "Spezifikation darf nicht länger als 255 Zeichen sein"
+        })
+        if len(str(invnr_von_bis)) > 255:
+            return render(request, "webapplication/create_bestell.html", {
+            "message": "Inventarnummer Von-Bis darf nicht länger als 255 Zeichen sein"
+        })
 
-        bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, spezifikation=spezi, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller)
+        bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller)
         bestellung.save()
         return render(request, "webapplication/create_bestell.html", {
             "message": "Eintrag erfolgreich angelegt!"
@@ -149,17 +166,22 @@ def create_lager(request):
                 lagerung.save()
             except IntegrityError:
                 return render(request, "webapplication/create_lager.html", {
-                "message": "Inventarnummer bereits eingetragen"
+                    "message": "Inventarnummer bereits eingetragen"
             })
+            except ValueError:
+                return render(request, "webapplicaiton/create_lager.html", {
+                    "message": "Inventarnummer bitte im Bereich von 0 - 2147483647 eintragen"
+                })
         return render(request, "webapplication/create_lager.html", {
             "message": "Eintrag/Einträge erfolgreich angelegt"
         })
     return render(request, "webapplication/create_lager.html", {
-        "bestell_nr": BestellListe.objects.all()
+        "bestell_nr": BestellListe.objects.all().exclude(geliefert="1")
     })
 
 def handout_lager(request):
     if request.method == "POST":
+        val = ["Ja", "Nein"]
         x = 0
         list = []
         ausgegeben = 1
@@ -167,6 +189,11 @@ def handout_lager(request):
         investmittel = request.POST["investmittel"]
         klinik = request.POST["klinik"]
         herausgeber = request.user
+        check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
+        if str(investmittel) not in val:
+            return render(request, "webapplication/handout_lager.html", {
+            "message": "Investmittel muss als Eintrag 'Ja' oder 'Nein' beinhalten"
+        })
         try:
             while True:
                 list.append(request.POST[f"{x}"])
@@ -176,9 +203,15 @@ def handout_lager(request):
         for _ in list:
             inventarnummer = int(_)
             ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'investmittel': investmittel, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
-        return render(request, "webapplication/handout_lager.html", {
-            "message": "Einträge erfolgreich ausgetragen"
-        })
+        if int(check[0]) < 0:
+                return render(request, "webapplication/handout_lager.html", {
+                "message": "Einträge erfolgreich ausgetragen",
+                "alarm": check
+            })
+        else:
+            return render(request, "webapplication/handout_lager.html", {
+                "message": "Einträge erfolgreich ausgetragen"
+            })
     return render(request, "webapplication/handout_lager.html")
 
 def detail_lager(request, bestell_nr):
@@ -224,6 +257,18 @@ def temp_create_lager(request):
         typ = request.POST["typ"]
         modell = request.POST["modell"]
         spezifikation = request.POST["spezifikation"]
+        if len(str(modell)) > 20:
+            return render(request, "webapplication/create_bestell.html", {
+            "message": "Modell darf nicht länger als 20 Zeichen sein"
+        })
+        if len(str(typ)) > 20:
+            return render(request, "webapplication/create_bestell.html", {
+            "message": "Typ darf nicht länger als 20 Zeichen sein"
+        })
+        if len(str(spezifikation)) > 255:
+            return render(request, "webapplication/create_bestell.html", {
+            "message": "Spezifikation darf nicht länger als 255 Zeichen sein"
+        })
         try:
             while True:
                 list.append(request.POST[f"{x}"])
@@ -246,6 +291,7 @@ def temp_create_lager(request):
 
 def temp_handout_lager(request):
     if request.method == "POST":
+        val = ["Ja", "Nein"]
         x = 0
         list = []
         ausgegeben = 1
@@ -253,6 +299,10 @@ def temp_handout_lager(request):
         investmittel = request.POST["investmittel"]
         klinik = request.POST["klinik"]
         herausgeber = request.user
+        if str(investmittel) not in val:
+            return render(request, "webapplication/handout_lager.html", {
+            "message": "Investmittel muss als Eintrag 'Ja' oder 'Nein' beinhalten"
+        })
         try:
             while True:
                 list.append(request.POST[f"{x}"])

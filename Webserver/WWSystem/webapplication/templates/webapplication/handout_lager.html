@@ -23,6 +23,9 @@
     </div>
     <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Austragen">
   </form>
+  {% if alarm %}
+    <div class="alert alert-danger" role="alert">Die Investmittel der Klinik {{ alarm }} sind im Minusbereich</div>
+  {% endif %}
   {% if message %}
     <div>{{ message }}</div>
   {% endif %}

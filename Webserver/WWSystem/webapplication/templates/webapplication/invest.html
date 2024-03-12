@@ -2,7 +2,7 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplan</h1>
-    <input class="searchbar" type="text" id="myInput" placeholder="Suchen...">
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
     <table id="myTable" class="sortable" style="width: 99.5%;">
         <thead>
             <tr>
@@ -12,7 +12,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for item in lagerliste %}
+        {% for item in investmittelplan %}
             <tr class="custom_row">
                 <td>{{ item.klinik_ou }}</td>
                 <td>{{ item.investmittel_jahresanfang_in_euro }}</td>
