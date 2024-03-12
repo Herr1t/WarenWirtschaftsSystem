@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, TempLagerliste
+from .models import Lagerliste, BestellListe, Investmittelplan, User
 
 # Create your views here.
 
@@ -189,7 +189,6 @@ def handout_lager(request):
         investmittel = request.POST["investmittel"]
         klinik = request.POST["klinik"]
         herausgeber = request.user
-        check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
         if str(investmittel) not in val:
             return render(request, "webapplication/handout_lager.html", {
             "message": "Investmittel muss als Eintrag 'Ja' oder 'Nein' beinhalten"
@@ -203,6 +202,12 @@ def handout_lager(request):
         for _ in list:
             inventarnummer = int(_)
             ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'investmittel': investmittel, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
+            _ = Lagerliste.objects.values_list('bestell_nr_field').filter(inventarnummer=inventarnummer)
+            temp = BestellListe.objects.values_list('preis_pro_stück').filter(sap_bestell_nr_field=_[0])
+            __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
+            abzug = int(__[0]) - int(temp[0])
+            abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik, defaults={'investmittel_übrig_in_euro': abzug})
+        check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
         if int(check[0]) < 0:
                 return render(request, "webapplication/handout_lager.html", {
                 "message": "Einträge erfolgreich ausgetragen",

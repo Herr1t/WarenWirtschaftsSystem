@@ -59,19 +59,3 @@ class Lagerliste(models.Model):
 
     def __str__(self):
         return str(self.bestell_nr_field)
-
-
-class TempLagerliste(models.Model):
-    inventarnummer = models.IntegerField(db_column='Inventarnummer', primary_key=True)  # Field name made lowercase.
-    klinik = models.IntegerField(db_column='Klinik', blank=True, null=True)  # Field name made lowercase.
-    typ = models.CharField(db_column='Typ', max_length=20)  # Field name made lowercase.
-    modell = models.CharField(db_column='Modell', max_length=20)  # Field name made lowercase.
-    spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
-    investmittel = models.CharField(db_column='Investmittel', max_length=4)  # Field name made lowercase.
-    herausgeber = models.ForeignKey(User, models.DO_NOTHING, db_column='Herausgeber', to_field='username', blank=True, null=True)  # Field name made lowercase.
-    ausgabe = models.DateTimeField(db_column='Ausgabe', blank=True, null=True)  # Field name made lowercase.
-    ausgegeben = models.CharField(db_column='Ausgegeben', max_length=1)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'Temp_Lagerliste'
