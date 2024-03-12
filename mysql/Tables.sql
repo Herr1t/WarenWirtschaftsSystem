@@ -18,7 +18,7 @@ CREATE TABLE `Bestell_Liste` (
     `SAP_Bestell_Nr.` INT NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Typ` VARCHAR(20) NOT NULL,
-    `Preis_pro_Stück` SMALLINT NOT NULL,
+    `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
     `Inventarnummern Von-Bis` TINYTEXT,
