@@ -14,8 +14,8 @@
                 <th>Modell</th>
                 <th>Typ</th>
                 <th>Spezifikation</th>
-                <th>Inventarnummer: Von-Bis</th>
                 <th>Ersteller</th>
+                <th>Bearbeitet</th>
                 <th>Preis pro Stück</th>
                 <th>Menge</th>
                 <th>Anzahl Geliefert</th>
@@ -26,15 +26,15 @@
             {% if item.geliefert != "1" %}
                 <tr class="custom_row">
                     <td>
-                        <a class="link" href="{% url 'detail_lager' item.sap_bestell_nr_field %}">
+                        <a class="link" href="{% url 'update_bestell' item.sap_bestell_nr_field %}">
                             {{ item.sap_bestell_nr_field }}
                         </a>
                     </td>
                     <td>{{ item.modell }}</td>
                     <td>{{ item.typ }}</td>
                     <td>{{ item.spezifikation }}</td>
-                    <td>{{ item.inventarnummern_von_bis }}</td>
                     <td>{{ item.ersteller }}</td>
+                    <td>{{ item.bearbeitet }}</td>
                     <td>{{ item.preis_pro_stück }}</td>
                     <td>{{ item.menge }}</td>
                     <td>{{ item.geliefert_anzahl }}</td>

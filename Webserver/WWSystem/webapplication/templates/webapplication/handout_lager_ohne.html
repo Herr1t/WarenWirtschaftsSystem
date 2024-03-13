@@ -1,0 +1,21 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Bestellung Nr. {{ bestell_nr }}</h1>
+    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'lager_ohne' %}'"></input>
+
+    <h2>Austragen aus Lagerliste ohne Invest</h2>
+
+    {% for item in bestell_liste %}
+        <form action="{% url 'update_bestell' bestell_nr %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" type="number" name="menge" placeholder="Momentane Menge: {{ item.geliefert_anzahl }}">
+            </div>
+            <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Austragen">
+            {% if message %}
+                <div class="alert alert-success" role="alert">{{ message }}</div>
+            {% endif %}
+        </form>
+    {% endfor %}
+{% endblock %}
