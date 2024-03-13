@@ -33,8 +33,8 @@ class BestellListe(models.Model):
 
 class Investmittelplan(models.Model):
     klinik_ou = models.IntegerField(db_column='Klinik_OU', primary_key=True)  # Field name made lowercase.
-    investmittel_jahresanfang_in_euro = models.DecimalField(db_column='Investmittel_Jahresanfang_in_Euro', max_digits=6, decimal_places=2)  # Field name made lowercase.
-    investmittel_übrig_in_euro = models.DecimalField(db_column='Investmittel_übrig_in_Euro', max_digits=6, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    investmittel_jahresanfang_in_euro = models.DecimalField(db_column='Investmittel_Jahresanfang_in_Euro', max_digits=8, decimal_places=2)  # Field name made lowercase.
+    investmittel_übrig_in_euro = models.DecimalField(db_column='Investmittel_übrig_in_Euro', max_digits=8, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False

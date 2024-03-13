@@ -201,17 +201,34 @@ def handout_lager(request):
             pass
         for _ in list:
             inventarnummer = int(_)
-            ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'investmittel': investmittel, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
-            _ = Lagerliste.objects.values_list('bestell_nr_field').filter(inventarnummer=inventarnummer)
-            temp = BestellListe.objects.values_list('preis_pro_stück').filter(sap_bestell_nr_field=_[0])
-            __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
-            abzug = int(__[0]) - int(temp[0])
-            abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik, defaults={'investmittel_übrig_in_euro': abzug})
-        check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
-        if int(check[0]) < 0:
+            ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').filter(inventarnummer=inventarnummer)).replace(',', '')
+            if ausgabe_check[13] in "0":
+                if str(investmittel) in "Ja":
+                    _ = Lagerliste.objects.values_list('bestell_nr_field').filter(inventarnummer=inventarnummer)
+                    temp = BestellListe.objects.values_list('preis_pro_stück').filter(sap_bestell_nr_field=str(_[0]).replace(',', '').replace('(', '').replace(')', ''))
+                    try:
+                        __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
+                        abzug = float(str(__[0]).replace(',', '').replace('(', '').replace(')', '').replace("Decimal'", "").replace("'", "")) - float(str(temp[0]).replace('(', '').replace(')', ''). replace("Decimal", "").replace("'", "").replace(',', ''))
+                    except ValueError:
+                        return render(request, "webapplication/handout_lager.html", {
+                            "alert": "Diese Klinik besitzt keine hinterlegten Investmittel!"
+                        })
+                        """
+                        __ = 0.00
+                        abzug = __ - float(str(temp[0]).replace('(', '').replace(')', ''). replace("Decimal", "").replace("'", "").replace(',', ''))
+                        """
+                    ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'investmittel': investmittel, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
+                    abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik, defaults={'investmittel_übrig_in_euro': abzug})
+            else:
+                return render(request, "webapplication/handout_lager.html", {
+                    "alert": "Gerät bereits ausgetragen"
+                })
+        check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(klinik_ou=klinik)
+        if float(check[0]) < 0:
                 return render(request, "webapplication/handout_lager.html", {
                 "message": "Einträge erfolgreich ausgetragen",
-                "alarm": check
+                "alarm": klinik,
+                "geld": float(check[0])
             })
         else:
             return render(request, "webapplication/handout_lager.html", {

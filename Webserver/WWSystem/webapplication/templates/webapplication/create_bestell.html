@@ -31,7 +31,7 @@
         </div>
         <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Eintragen">
         {% if message %}
-            <div style="padding-left: 7px;">{{ message }}</div>
+            <div class="alert alert-success" role="alert">{{ message }}</div>
         {% endif %}
     </form>
 {% endblock %}
