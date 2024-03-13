@@ -23,6 +23,7 @@ CREATE TABLE `Bestell_Liste` (
     `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
     `Inventarnummern Von-Bis` TINYTEXT,
     `Ersteller` VARCHAR(35) DEFAULT 'Kein Ersteller',
+    `Bearbeitet` DATETIME,
     `Geliefert` ENUM('1', '0') NOT NULL DEFAULT '0',
     `Geliefert_Anzahl` TINYINT DEFAULT 0,
     PRIMARY KEY(`SAP_Bestell_Nr.`),
