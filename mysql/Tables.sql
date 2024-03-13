@@ -36,6 +36,12 @@ CREATE TABLE `Investmittelplan` (
     PRIMARY KEY(`Klinik_OU`)
 );
 
+CREATE TABLE `Test` ( 
+    `Klinik_OU` TINYINT NOT NULL, 
+    `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
+    PRIMARY KEY(`Klinik_OU`) 
+);
+
 CREATE TABLE `Temp_Lagerliste` (
     `Inventarnummer` INT NOT NULL,
     `Klinik` TINYINT,
