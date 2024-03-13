@@ -4,7 +4,6 @@ CREATE TABLE `Lagerliste` (
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
-    `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
     `Bestell_Nr.` INT NOT NULL ,
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
@@ -15,14 +14,16 @@ CREATE TABLE `Lagerliste` (
 );
 
 CREATE TABLE `Bestell_Liste` (
-    `SAP_Bestell_Nr.` INT NOT NULL,
+    `SAP_Bestell_Nr.` VARCHAR(15) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Typ` VARCHAR(20) NOT NULL,
     `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
+    `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
     `Inventarnummern Von-Bis` TINYTEXT,
     `Ersteller` VARCHAR(35) DEFAULT 'Kein Ersteller',
+    `Bearbeitet` DATETIME,
     `Geliefert` ENUM('1', '0') NOT NULL DEFAULT '0',
     `Geliefert_Anzahl` TINYINT DEFAULT 0,
     PRIMARY KEY(`SAP_Bestell_Nr.`),
@@ -42,16 +43,16 @@ CREATE TABLE `Test` (
     PRIMARY KEY(`Klinik_OU`) 
 );
 
-CREATE TABLE `Temp_Lagerliste` (
-    `Inventarnummer` INT NOT NULL,
-    `Klinik` TINYINT,
+CREATE TABLE `Lagerliste_ohne_Invest` (
+    `id` INT NOT NULL,
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
-    `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
+    `Bestell_Nr.` INT NOT NULL,
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
     `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
-    PRIMARY KEY(`Inventarnummer`),
-    FOREIGN KEY(`Herausgeber`) REFERENCES `webapplication_user`(`username`)
-)
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`Herausgeber`) REFERENCES `webapplication_user`(`username`),
+    FOREIGN KEY(`Bestell_Nr.`) REFERENCES `Bestell_Liste`(`SAP_Bestell_Nr.`)
+);
