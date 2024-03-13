@@ -31,9 +31,15 @@ CREATE TABLE `Bestell_Liste` (
 
 CREATE TABLE `Investmittelplan` (
     `Klinik_OU` TINYINT NOT NULL,
-    `Investmittel_Jahresanfang_in_Euro` DECIMAL(6, 2) NOT NULL CHECK(`Investmittel_Jahresanfang_in_Euro` >= 0) DEFAULT 0,
-    `Investmittel_übrig_in_Euro` DECIMAL(6, 2),
+    `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL CHECK(`Investmittel_Jahresanfang_in_Euro` >= 0) DEFAULT 0,
+    `Investmittel_übrig_in_Euro` DECIMAL(8, 2),
     PRIMARY KEY(`Klinik_OU`)
+);
+
+CREATE TABLE `Test` ( 
+    `Klinik_OU` TINYINT NOT NULL, 
+    `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
+    PRIMARY KEY(`Klinik_OU`) 
 );
 
 CREATE TABLE `Temp_Lagerliste` (

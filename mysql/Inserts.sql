@@ -30,7 +30,6 @@ SET i = i + 1;
 END WHILE;
 END//
 
-CREATE PROCEDURE `Ausgeben`()
-BEGIN
+LOAD DATA INFILE '/var/lib/mysql-files/Invest 2024.csv' INTO TABLE `Test` FIELDS TERMINATED BY ';' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 
-END//
+UPDATE Investmittelplan AS s JOIN Test AS t ON t.Klinik_OU=s.Klinik_OU SET s.Investmittel_Jahresanfang_in_Euro=t.Investmittel_Jahresanfang_in_Euro;
