@@ -5,7 +5,7 @@ CREATE TABLE `Lagerliste` (
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
     `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
-    `Bestell_Nr.` INT NOT NULL ,
+    `Bestell_Nr.` VARCHAR(15) NOT NULL ,
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
     `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
@@ -15,7 +15,7 @@ CREATE TABLE `Lagerliste` (
 );
 
 CREATE TABLE `Bestell_Liste` (
-    `SAP_Bestell_Nr.` INT NOT NULL,
+    `SAP_Bestell_Nr.` VARCHAR(15) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Typ` VARCHAR(20) NOT NULL,
     `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
