@@ -51,7 +51,7 @@ CREATE TABLE `Lagerliste_ohne_Invest` (
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
     `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
-    PRIMARY KEY(`Inventarnummer`),
+    PRIMARY KEY(`id`),
     FOREIGN KEY(`Herausgeber`) REFERENCES `webapplication_user`(`username`),
     FOREIGN KEY(`Bestell_Nr.`) REFERENCES `Bestell_Liste`(`SAP_Bestell_Nr.`)
 );
