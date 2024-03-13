@@ -54,4 +54,4 @@ CREATE TABLE `Lagerliste_ohne_Invest` (
     PRIMARY KEY(`Inventarnummer`),
     FOREIGN KEY(`Herausgeber`) REFERENCES `webapplication_user`(`username`),
     FOREIGN KEY(`Bestell_Nr.`) REFERENCES `Bestell_Liste`(`SAP_Bestell_Nr.`)
-)
+);
