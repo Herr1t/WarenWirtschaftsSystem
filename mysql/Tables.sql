@@ -4,7 +4,7 @@ CREATE TABLE `Lagerliste` (
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
-    `Bestell_Nr.` VARCHAR(15) NOT NULL ,
+    `Bestell_Nr.` INT NOT NULL ,
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
     `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
