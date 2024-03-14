@@ -98,12 +98,15 @@ def create_bestell(request):
         menge = request.POST["menge"]
         preis_pro_stück = request.POST["preis_pro_stück"]
         spezi = request.POST["spezifikation"]
+        zuweisung = request.POST["zuweisung"]
         investmittel = request.POST["investmittel"]
         invnr_von_bis = ""
         geliefert = 0
         geliefert_anzahl = 0
         ersteller = request.user
 
+        if not zuweisung:
+            zuweisung = "Keine Zuweisung"
         if int(menge) > 255:
             return render(request, "webapplication/create_bestell.html", {
             "message": "Menge darf nicht 255 überschreiten"
@@ -121,10 +124,10 @@ def create_bestell(request):
             "message": "Spezifikation darf nicht länger als 255 Zeichen sein"
         })
 
-        bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel)
+        bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel)
         bestellung.save()
         return render(request, "webapplication/create_bestell.html", {
-            "message": "Eintrag erfolgreich angelegt!"
+            "message": "Einträge erfolgreich angelegt"
         })
     return render(request, "webapplication/create_bestell.html")
 
@@ -138,7 +141,8 @@ def create_lager(request):
             bnr = BestellListe.objects.get(pk=int(request.POST["bestell_nr"]))
         except ValueError:
             return render(request, "webapplication/create_lager.html", {
-                "message": "Bitte wähle eine Bestell_Nr. aus"
+                "message": "Bitte wähle eine Bestell_Nr. aus",
+                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
             })
 
         ausgegeben = 0
@@ -162,14 +166,17 @@ def create_lager(request):
                 lagerung.save()
             except IntegrityError:
                 return render(request, "webapplication/create_lager.html", {
-                    "message": "Inventarnummer bereits eingetragen"
+                    "message": "Inventarnummer bereits eingetragen",
+                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
             })
             except ValueError:
                 return render(request, "webapplicaiton/create_lager.html", {
-                    "message": "Inventarnummer bitte im Bereich von 0 - 2147483647 eintragen"
+                    "message": "Inventarnummer bitte im Bereich von 0 - 2147483647 eintragen",
+                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
                 })
         return render(request, "webapplication/create_lager.html", {
-            "message": "Eintrag/Einträge erfolgreich angelegt"
+            "message": "Eintrag/Einträge erfolgreich angelegt",
+            "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
         })
     return render(request, "webapplication/create_lager.html", {
         "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
@@ -194,7 +201,7 @@ def handout_lager(request):
             ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').filter(inventarnummer=inventarnummer)).replace(',', '')
             if ausgabe_check[13] in "0":
                 _ = Lagerliste.objects.values_list('bestell_nr_field').filter(inventarnummer=inventarnummer)
-                temp = BestellListe.objects.values_list('preis_pro_stück').filter(sap_bestell_nr_field=str(_[0]).replace(',', '').replace('(', '').replace(')', ''))
+                temp = BestellListe.objects.values_list('preis_pro_stück').filter(sap_bestell_nr_field=str(_[0]).replace("'", "").replace("(", "").replace(")", ""). replace(",", ""))
                 try:
                     __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik)
                     abzug = float(str(__[0]).replace(',', '').replace('(', '').replace(')', '').replace("Decimal'", "").replace("'", "")) - float(str(temp[0]).replace('(', '').replace(')', ''). replace("Decimal", "").replace("'", "").replace(',', ''))
@@ -219,7 +226,9 @@ def handout_lager(request):
             return render(request, "webapplication/handout_lager.html", {
                 "message": "Einträge erfolgreich ausgetragen"
             })
-    return render(request, "webapplication/handout_lager.html")
+    return render(request, "webapplication/handout_lager.html", {
+        "message": ""
+    })
 
 def detail_lager(request, bestell_nr):
     nr = bestell_nr
@@ -247,57 +256,66 @@ def detail_lager_profile(request, user_id, bestell_nr):
         "user_id": user_id,
         "user_name": username,
         "bestellung": bestell_nr,
-        "lagerliste": Lagerliste.objects.all().values('inventarnummer', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe', 'klinik', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
+        "lagerliste": Lagerliste.objects.all().values('inventarnummer', 'typ', 'modell', 'spezifikation', 'zuweisung' 'herausgeber', 'ausgabe', 'klinik', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
     })
 
 def update(request, bestell_nr):
     nr = bestell_nr
     if request.method == "POST":
-        sap_bestell_nr_field = request.POST["sap_bestell_nr_field"]
+        if request.POST["sap_bestell_nr_field"]:
+            sap_bestell_nr_field = request.POST["sap_bestell_nr_field"]
+        else:
+            sap_bestell_nr_field = bestell_nr
         modell = request.POST["modell"]
         typ = request.POST["typ"]
         menge = request.POST["menge"]
         preis_pro_stück = request.POST["preis_pro_stück"]
         spezi = request.POST["spezifikation"]
         geliefert_anzahl = request.POST["geliefert_anzahl"]
+        zuweisung = request.POST["zuweisung"]
         geliefert = 1
         i = 0
 
-        if int(menge) > 255:
-            return render(request, "webapplication/update_bestell.html", {
-            "message": "Menge darf nicht 255 überschreiten",
-            "bestell_nr": bestell_nr,
-            "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-        })
-        if len(str(modell)) > 20:
-            return render(request, "webapplication/update_bestell.html", {
-            "message": "Modell darf nicht länger als 20 Zeichen sein",
-            "bestell_nr": bestell_nr,
-            "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-        })
-        if len(str(typ)) > 20:
-            return render(request, "webapplication/update_bestell.html", {
-            "message": "Typ darf nicht länger als 20 Zeichen sein",
-            "bestell_nr": bestell_nr,
-            "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-        })
-        if len(str(spezi)) > 255:
-            return render(request, "webapplication/update_bestell.html", {
-            "message": "Spezifikation darf nicht länger als 255 Zeichen sein",
-            "bestell_nr": bestell_nr,
-            "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-        })
-
-        bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now())
-        bnr = BestellListe.objects.get(pk=int(request.POST["sap_bestell_nr_field"]))
-        if int(geliefert_anzahl) == int(menge):
-            bestellung = BestellListe.objects.update_or_create(sap_bestell_nr_field=sap_bestell_nr_field, defaults={'geliefert': geliefert})
-        if str(BestellListe.objects.values_list('investmittel').filter(sap_bestell_nr_field=sap_bestell_nr_field))[13:17] in "Nein":
-            if menge == geliefert_anzahl:
-                while i < int(geliefert_anzahl):
-                    Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezi, bestell_nr_field=bnr, ausgegeben=0)
-                    i = i + 1
-        if bestell_nr != bnr:
+        if menge:
+            if int(menge) > 255:
+                return render(request, "webapplication/update_bestell.html", {
+                "message": "Menge darf nicht 255 überschreiten",
+                "bestell_nr": bestell_nr,
+                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
+            })
+        if modell:
+            if len(str(modell)) > 20:
+                return render(request, "webapplication/update_bestell.html", {
+                "message": "Modell darf nicht länger als 20 Zeichen sein",
+                "bestell_nr": bestell_nr,
+                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
+            })
+        if typ:
+            if len(str(typ)) > 20:
+                return render(request, "webapplication/update_bestell.html", {
+                "message": "Typ darf nicht länger als 20 Zeichen sein",
+                "bestell_nr": bestell_nr,
+                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
+            })
+        if spezi:
+            if len(str(spezi)) > 255:
+                return render(request, "webapplication/update_bestell.html", {
+                "message": "Spezifikation darf nicht länger als 255 Zeichen sein",
+                "bestell_nr": bestell_nr,
+                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
+            })
+        
+        bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, zuweisung = zuweisung, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now())
+        bnr = BestellListe.objects.get(pk=str(sap_bestell_nr_field))
+        if geliefert_anzahl:
+            if int(geliefert_anzahl) == int(menge):
+                bestellung = BestellListe.objects.update_or_create(sap_bestell_nr_field=sap_bestell_nr_field, defaults={'geliefert': geliefert})
+            if str(BestellListe.objects.values_list('investmittel').filter(sap_bestell_nr_field=sap_bestell_nr_field))[13:17] in "Nein":
+                if int(geliefert_anzahl) == int(menge):
+                    while i < int(geliefert_anzahl):
+                        Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezi, bestell_nr_field=bnr, ausgegeben=0)
+                        i = i + 1
+        if bnr != bestell_nr:
             return render(request, "webapplication/bestell.html", {
                 "bestell_liste": BestellListe.objects.all()
             })
@@ -314,13 +332,13 @@ def update(request, bestell_nr):
 def lager_ohne_invest(request):
     Menge =  BestellListe.objects.values_list('geliefert_anzahl')
     return render(request, "webapplication/lager_ohne_invest.html", {
-        "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
+        "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
     })
 
-def detail_profile_lager_ohne(request, user_id):
+def profile_lager_ohne(request, user_id):
     user_name = User.objects.values_list('username').get(pk=user_id)
     username = user_name[0]
-    return render(request, "webapplication/detail_profile_lager_ohne.html", {
+    return render(request, "webapplication/profile_lager_ohne.html", {
         "user_id": user_id,
         "username": username,
         "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("bestell_nr_field"))
@@ -328,7 +346,53 @@ def detail_profile_lager_ohne(request, user_id):
 
 def handout_lager_ohne(request, bestell_nr):
     nr = bestell_nr
+    if request.method == "POST":
+        list =[]
+        ausgabe_menge = request.POST["menge"]
+        ausgegeben = 1
+        herausgeber = request.user
+        ausgabe = timezone.now
+        i = 0
+        x = 0
+        id = Lagerliste_ohne_Invest.objects.values_list('id').filter(bestell_nr_field=bestell_nr).exclude(ausgegeben="1")
+        __ = Lagerliste_ohne_Invest.objects.values_list('bestell_nr_field').filter(bestell_nr_field=bestell_nr).exclude(ausgegeben="1")
+        try:
+            while True:
+                list.append(str(Lagerliste_ohne_Invest.objects.values_list('bestell_nr_field').filter(bestell_nr_field=bestell_nr).exclude(ausgegeben="1")[x]).replace(',', ''). replace("(", "").replace(")", ""))
+                x = x + 1
+        except:
+            pass
+        if int(ausgabe_menge) > len(list):
+            return render(request, "webapplication/handout_lager_ohne.html", {
+                "message": "Menge zu hoch",
+                "lagerliste": Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+                "bestell_nr": nr
+            })
+        while i < int(ausgabe_menge):
+            Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).update_or_create(id=int(str((id)[0]).replace(',', ''). replace("(", "").replace(")", "")), defaults={'ausgegeben': ausgegeben, 'herausgeber': herausgeber, 'ausgabe': ausgabe})
+            i = i + 1
+        if Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).exclude(ausgegeben="1"):
+            return render(request, "webapplication/handout_lager_ohne.html", {
+                "message": "Einträge erfolgreich ausgetragen",
+                "lagerliste": Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+                "bestell_nr": nr
+            })
+        else:
+            Menge =  BestellListe.objects.values_list('geliefert_anzahl')
+            return render(request, "webapplication/lager_ohne_invest.html", {
+                "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+            })
     return render(request, "webapplication/handout_lager_ohne.html", {
-        "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr),
+        "lagerliste": Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
         "bestell_nr": nr
+    })
+
+def detail_profile_lager_ohne(request, user_id, bestell_nr):
+    user_name = User.objects.values_list('username').get(pk=user_id)
+    username = user_name[0]
+    return render(request, "webapplication/detail_profile_lager_ohne.html", {
+        "user_id": user_id,
+        "user_name": username,
+        "bestellung": bestell_nr,
+        "lagerliste": Lagerliste_ohne_Invest.objects.all().values('id', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
     })

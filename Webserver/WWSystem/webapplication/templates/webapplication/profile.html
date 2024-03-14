@@ -1,7 +1,7 @@
 {% extends "webapplication/layout.html" %}
 {% block body %}
     <h1 class="header" style="text-align: center;">Profil Verlauf</h1>
-    <input class="button" value="Lagerliste ohne Invest" type="button" onclick="window.location.href='{% url 'detail_lager_ohne' user.id %}'"></input>
+    <input class="button" value="Lagerliste ohne Invest" type="button" onclick="window.location.href='{% url 'profile_lager_ohne' user.id %}'"></input>
     <div>
         <h2 style="float: left;">Erstellte Bestellungen</h2>
         <input style="float: left; margin-left: 27%;" class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
@@ -16,6 +16,7 @@
                     <th>Modell</th>
                     <th>Typ</th>
                     <th>Spezifikation</th>
+                    <th>Zuweisung</th>
                     <th>Ersteller</th>
                     <th>Menge</th>
                     <th>Anzahl Geliefert</th>
@@ -29,6 +30,7 @@
                         <td>{{ item.modell }}</td>
                         <td>{{ item.typ }}</td>
                         <td>{{ item.spezifikation }}</td>
+                        <td>{{ item.zuweisung }}</td>
                         <td>{{ item.ersteller }}</td>
                         <td>{{ item.menge }}</td>
                         <td>{{ item.geliefert_anzahl }}</td>

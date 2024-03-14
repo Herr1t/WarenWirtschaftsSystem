@@ -1,0 +1,43 @@
+{% extends "webapplication/layout.html" %}
+{% block body %}
+    <h1 class="header" style="text-align: center;">Profil Verlauf</h1>
+    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'profile' user.id %}'"></input>
+    <div>
+        <h2 style="float: left;">Aus Lagerliste ohne Invest ausgetragen</h2>
+        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    </div>
+    <div>
+        <table id="myTable" class="sortable" style="width: 99.5%;" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Bestell-Nr.</th>
+                    <th>Typ</th>
+                    <th>Modell</th>
+                    <th>Spezifikation</th>
+                    <th>Herausgeber</th>
+                    <th>Ausgabe</th>
+                    <th>Menge</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in lagerliste %}
+                {% if username == item.herausgeber %}
+                    <tr class="custom_row">
+                        <td>
+                            <a class="link" href="{% url 'detail_profile_lager_ohne' user.id item.bestell_nr_field %}">
+                                {{ item.bestell_nr_field }}
+                            </a>
+                        </td>
+                        <td>{{ item.typ }}</td>
+                        <td>{{ item.modell }}</td>
+                        <td>{{ item.spezifikation }}</td>
+                        <td>{{ item.herausgeber }}</td>
+                        <td>{{ item.ausgabe }}</td>
+                        <td>{{ item.Menge }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -6,11 +6,11 @@
 
     <h2>Austragen aus Lagerliste ohne Invest</h2>
 
-    {% for item in bestell_liste %}
-        <form action="{% url 'update_bestell' bestell_nr %}" method="post">
+    {% for item in lagerliste %}
+        <form action="{% url 'handout_lager_ohne' bestell_nr %}" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <input class="form-control" type="number" name="menge" placeholder="Momentane Menge: {{ item.geliefert_anzahl }}">
+                <input class="form-control" type="number" name="menge" placeholder="Momentane Menge: {{ item.Menge }}">
             </div>
             <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Austragen">
             {% if message %}

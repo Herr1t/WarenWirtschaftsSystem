@@ -12,12 +12,13 @@ class User(AbstractUser):
     pass
 
 class BestellListe(models.Model):
-    sap_bestell_nr_field = models.IntegerField(db_column='SAP_Bestell_Nr.', primary_key=True)  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
+    sap_bestell_nr_field = models.CharField(db_column='SAP_Bestell_Nr.', max_length=20, primary_key=True)  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
     modell = models.CharField(db_column='Modell', max_length=20)  # Field name made lowercase.
     typ = models.CharField(db_column='Typ', max_length=20)  # Field name made lowercase.
     preis_pro_stück = models.DecimalField(db_column='Preis_pro_Stück', max_digits=6, decimal_places=2)  # Field name made lowercase.
     menge = models.IntegerField(db_column='Menge')  # Field name made lowercase.
     spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
+    zuweisung = models.TextField(db_column='Zuweisung', blank=True, null=True)  # Field name made lowercase.
     inventarnummern_von_bis = models.TextField(db_column='Inventarnummern Von-Bis', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
     ersteller = models.ForeignKey(User, models.DO_NOTHING, db_column='Ersteller', to_field='username', blank=True, null=True)  # Field name made lowercase.
     bearbeitet = models.DateTimeField(db_column='Bearbeitet', blank=True, null=True)  # Field name made lowercase.
