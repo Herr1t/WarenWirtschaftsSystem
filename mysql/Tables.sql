@@ -20,6 +20,7 @@ CREATE TABLE `Bestell_Liste` (
     `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
+    `Zuweisung` TINYTEXT,
     `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
     `Inventarnummern Von-Bis` TINYTEXT,
     `Ersteller` VARCHAR(35) DEFAULT 'Kein Ersteller',
