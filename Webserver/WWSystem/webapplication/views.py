@@ -262,17 +262,15 @@ def detail_lager_profile(request, user_id, bestell_nr):
 def update(request, bestell_nr):
     nr = bestell_nr
     if request.method == "POST":
-        if request.POST["sap_bestell_nr_field"]:
-            sap_bestell_nr_field = request.POST["sap_bestell_nr_field"]
-        else:
-            sap_bestell_nr_field = bestell_nr
-        modell = request.POST["modell"]
-        typ = request.POST["typ"]
-        menge = request.POST["menge"]
-        preis_pro_stück = request.POST["preis_pro_stück"]
-        spezi = request.POST["spezifikation"]
-        geliefert_anzahl = request.POST["geliefert_anzahl"]
-        zuweisung = request.POST["zuweisung"]
+        items = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'menge', 'preis_pro_stück', 'spezifikation', 'geliefert_anzahl', 'zuweisung').get(pk=nr)
+        sap_bestell_nr_field = request.POST["sap_bestell_nr_field"] or items[0]
+        modell = request.POST["modell"] or items[1]
+        typ = request.POST["typ"] or items[2]
+        menge = request.POST["menge"] or items[3]
+        preis_pro_stück = request.POST["preis_pro_stück"] or items[4]
+        spezi = request.POST["spezifikation"] or items[5]
+        geliefert_anzahl = request.POST["geliefert_anzahl"] or items[6]
+        zuweisung = request.POST["zuweisung"] or items[7]
         geliefert = 1
         i = 0
 
@@ -332,7 +330,7 @@ def update(request, bestell_nr):
 def lager_ohne_invest(request):
     Menge =  BestellListe.objects.values_list('geliefert_anzahl')
     return render(request, "webapplication/lager_ohne_invest.html", {
-        "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+        "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
     })
 
 def profile_lager_ohne(request, user_id):
