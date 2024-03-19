@@ -4,7 +4,7 @@ CREATE TABLE `Lagerliste` (
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
-    `Bestell_Nr.` INT NOT NULL ,
+    `Bestell_Nr.` VARCHAR(20) NOT NULL ,
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
     `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
@@ -14,12 +14,13 @@ CREATE TABLE `Lagerliste` (
 );
 
 CREATE TABLE `Bestell_Liste` (
-    `SAP_Bestell_Nr.` VARCHAR(15) NOT NULL,
+    `SAP_Bestell_Nr.` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Typ` VARCHAR(20) NOT NULL,
     `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
+    `Zuweisung` TINYTEXT,
     `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
     `Inventarnummern Von-Bis` TINYTEXT,
     `Ersteller` VARCHAR(35) DEFAULT 'Kein Ersteller',
@@ -44,11 +45,11 @@ CREATE TABLE `Test` (
 );
 
 CREATE TABLE `Lagerliste_ohne_Invest` (
-    `id` INT NOT NULL,
+    `id` INT NOT NULL AUTO_INCREMENT,
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(20) NOT NULL,
     `Spezifikation` TINYTEXT,
-    `Bestell_Nr.` INT NOT NULL,
+    `Bestell_Nr.` VARCHAR(20) NOT NULL,
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
     `Ausgegeben` ENUM('1', '0') NOT NULL DEFAULT '0',
