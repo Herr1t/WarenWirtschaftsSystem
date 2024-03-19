@@ -45,7 +45,7 @@ class Investmittelplan(models.Model):
 
 
 class Lagerliste(models.Model):
-    inventarnummer = models.IntegerField(db_column='Inventarnummer', primary_key=True)  # Field name made lowercase.
+    inventarnummer = models.CharField(db_column='Inventarnummer', max_length=20, primary_key=True)  # Field name made lowercase.
     klinik = models.IntegerField(db_column='Klinik', blank=True, null=True)  # Field name made lowercase.
     typ = models.CharField(db_column='Typ', max_length=20)  # Field name made lowercase.
     modell = models.CharField(db_column='Modell', max_length=20)  # Field name made lowercase.

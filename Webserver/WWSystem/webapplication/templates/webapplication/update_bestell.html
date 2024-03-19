@@ -37,6 +37,9 @@
             {% if message %}
                 <div class="alert alert-success" role="alert">{{ message }}</div>
             {% endif %}
+            {% if alert %}
+                <div class="alert alert-success" role="alert">{{ alert }}</div>
+            {% endif %}
         </form>
     {% endfor %}
 {% endblock %}
