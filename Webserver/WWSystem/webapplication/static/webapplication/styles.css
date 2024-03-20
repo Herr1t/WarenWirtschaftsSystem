@@ -125,3 +125,34 @@ h2 {
     float: right;
     border-radius: 8px;
 }
+
+
+.page {
+    margin-left: 5px; 
+    margin-right: 5px; 
+    border: solid transparent 1px; 
+    padding: 5px; 
+    border-radius: 3px; 
+    background-color: rgb(228, 230, 234); 
+    padding-left: 10px; 
+    padding-right: 10px; 
+    color: black;
+}
+
+.page:hover {
+    background-color: rgb(217, 219, 222);
+    background-image: none;
+    text-decoration: none !important;
+    color: black;
+}
+
+.current {
+    margin-left: 5px; 
+    margin-right: 5px; 
+    border: solid black 1px; 
+    padding: 15%; 
+    border-radius: 3px; 
+    background-color: rgb(228, 230, 234); 
+    padding-left: 12px; 
+    padding-right: 12px;
+}
