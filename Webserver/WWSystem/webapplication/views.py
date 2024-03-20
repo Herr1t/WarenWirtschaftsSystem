@@ -89,7 +89,7 @@ def bestell(request):
 def invest(request):
     investmittelplan = Investmittelplan.objects.all().order_by('klinik_ou')
     page = request.GET.get('page', 1)
-    paginator = Paginator(investmittelplan, 25)
+    paginator = Paginator(investmittelplan, 50)
     try:
         invest = paginator.page(page)
     except PageNotAnInteger:
