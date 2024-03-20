@@ -50,7 +50,7 @@ class Lagerliste(models.Model):
     typ = models.CharField(db_column='Typ', max_length=20)  # Field name made lowercase.
     modell = models.CharField(db_column='Modell', max_length=20)  # Field name made lowercase.
     spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
-    bestell_nr_field = models.ForeignKey(BestellListe, models.DO_NOTHING, db_column='Bestell_Nr.')  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
+    bestell_nr_field = models.ForeignKey(BestellListe, on_delete=models.CASCADE, db_column='Bestell_Nr.')  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
     herausgeber = models.ForeignKey(User, models.DO_NOTHING, db_column='Herausgeber', to_field='username', blank=True, null=True)  # Field name made lowercase.
     ausgabe = models.DateTimeField(db_column='Ausgabe', blank=True, null=True)  # Field name made lowercase.
     ausgegeben = models.CharField(db_column='Ausgegeben', max_length=1)  # Field name made lowercase.

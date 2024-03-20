@@ -1,0 +1,69 @@
+{% extends 'webapplication/layout.html' %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Lagerliste</h1>
+    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
+
+    <h2>Rückgabe eintragen</h2>
+    <form id="form" action="{% url 'rückgabe' %}" method="POST">
+        {% csrf_token %}
+        <div style="display: none;" class="form-group">
+            <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
+        </div>
+        <div id="inputs" class="form-group">
+            <fieldset id="list" class="input-field">
+                <input autofocus class="form-control" type="text" name="0" required placeholder="Inventarnummer/Servicenummer"/>
+            </fieldset>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
+        </div>
+        <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Rückgabe">
+    </form>
+    {% if message %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+    {% endif %}
+    {% if alert %}
+        <div class="alert alert-success" role="alert">{{ alert }}</div>
+    {% endif %}
+
+    <script>
+        c = 1;
+    
+        function addInputField() {
+            var div = document.createElement("div");
+            var div2 = document.createElement("div");
+        
+            // create an input field to insert
+            var newInputField = document.createElement("input");
+            // set input field data type to text
+            newInputField.type = "text";
+            // set input field name
+            newInputField.name = c;
+            // set required
+            newInputField.placeholder = "Inventarnummer/Servicenummer";
+            newInputField.style = "max-width: 96%; margin-left: 4%; margin-top: 1%;";
+            newInputField.setAttribute("required", "");
+        
+            newInputField.classList.add("form-control");
+        
+            var newDeleteButton = document.createElement("button");
+            newDeleteButton.type = '';
+            newDeleteButton.value = "Delete";
+            newDeleteButton.name = 'c';
+            newDeleteButton.style = "float: left; padding-left: 40px; padding-top: 4px; padding-bottom: 4px; background-color: black; border: solid 1px black; margin-top: 15px; margin-left: 13px; border-radius: 2px;";
+            newDeleteButton.addEventListener("click", deleteHandler);
+        
+            // insert element
+            div.appendChild(newDeleteButton);
+            div2.appendChild(newInputField);
+            div.appendChild(div2);
+            document.getElementById('inputs').appendChild(div);
+            c = c + 1;
+        }
+        function deleteHandler() {
+            var parent = this.parentElement;
+            parent.parentElement.removeChild(parent);
+        }
+    </script>
+{% endblock %}

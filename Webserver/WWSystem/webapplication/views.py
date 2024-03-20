@@ -395,3 +395,42 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
         "bestellung": bestell_nr,
         "lagerliste": Lagerliste_ohne_Invest.objects.all().values('id', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
     })
+
+def rückgabe(request):
+    if request.method == 'POST':
+        x = 0
+        list = []
+        ausgegeben = 0
+        ausgabe = ""
+        herausgeber = User.objects.get(pk=1)
+        try:
+            while True:
+                list.append(request.POST[f"{x}"])
+                x = x + 1
+        except:
+            pass
+        for _ in list:
+            inventarnummer = str(_)
+            klinik_ou = Lagerliste.objects.values_list('klinik').get(pk=inventarnummer)[0]
+            ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').filter(inventarnummer=inventarnummer)).replace(',', '')
+            if ausgabe_check[13] in "1":
+                _ = Lagerliste.objects.values_list('bestell_nr_field').filter(inventarnummer=inventarnummer)
+                temp = BestellListe.objects.values_list('preis_pro_stück').filter(sap_bestell_nr_field=str(_[0]).replace("'", "").replace("(", "").replace(")", ""). replace(",", ""))
+                try:
+                    __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').filter(klinik_ou=klinik_ou)
+                    abzug = float(str(__[0]).replace(',', '').replace('(', '').replace(')', '').replace("Decimal'", "").replace("'", "")) + float(str(temp[0]).replace('(', '').replace(')', ''). replace("Decimal", "").replace("'", "").replace(',', ''))
+                except ValueError:
+                    return render(request, "webapplication/handout_lager.html", {
+                        "alert": "Diese Klinik besitzt keine hinterlegten Investmittel!"
+                    })
+                ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben})
+                ausgeben2 = Lagerliste.objects.filter(inventarnummer=inventarnummer).update(herausgeber=None, klinik=None, ausgabe=None)
+                abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik_ou, defaults={'investmittel_übrig_in_euro': abzug})
+            else:
+                return render(request, "webapplication/handout_lager.html", {
+                    "alert": "Gerät bereits im Lager"
+                })
+        return render(request, "webapplication/rückgabe.html", {
+            "message": "Geräte erfolgreich zurückgegeben"
+        }) 
+    return render(request, "webapplication/rückgabe.html")
