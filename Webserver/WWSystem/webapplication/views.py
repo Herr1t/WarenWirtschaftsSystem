@@ -114,7 +114,7 @@ def create_bestell(request):
         })
         if len(str(modell)) > 20:
             return render(request, "webapplication/create_bestell.html", {
-            "alert": "Modell darf nicht länger als 20 Zeichen sein"
+            "alert": "Modell darf nicht länger als 30 Zeichen sein"
         })
         if len(str(typ)) > 20:
             return render(request, "webapplication/create_bestell.html", {
@@ -283,7 +283,7 @@ def update(request, bestell_nr):
         if modell:
             if len(str(modell)) > 20:
                 return render(request, "webapplication/update_bestell.html", {
-                "alert": "Modell darf nicht länger als 20 Zeichen sein",
+                "alert": "Modell darf nicht länger als 30 Zeichen sein",
                 "bestell_nr": bestell_nr,
                 "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
             })
