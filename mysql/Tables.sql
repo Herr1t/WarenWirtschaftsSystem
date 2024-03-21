@@ -4,6 +4,7 @@ CREATE TABLE `Lagerliste` (
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(30) NOT NULL,
     `Spezifikation` TINYTEXT,
+    `Zuweisung` TINYTEXT,
     `Bestell_Nr.` VARCHAR(20) NOT NULL ,
     `Herausgeber` VARCHAR(35) DEFAULT 'Kein Herausgeber',
     `Ausgabe` DATETIME,
