@@ -168,12 +168,13 @@ def create_lager(request):
                 typ = entrys[y][1]
                 modell = entrys[y][2]
                 spezifikation = entrys[y][3]
+                zuweisung = entrys[y][4]
             else:
                 y = y + 1
         for _ in list:
             inventarnummer = _
             try:
-                lagerung = Lagerliste.objects.create(inventarnummer=inventarnummer, typ=typ, modell=modell, spezifikation=spezifikation, bestell_nr_field=bnr, ausgegeben=ausgegeben)
+                lagerung = Lagerliste.objects.create(inventarnummer=inventarnummer, typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bnr, ausgegeben=ausgegeben)
                 lagerung.save()
             except IntegrityError:
                 return render(request, "webapplication/create_lager.html", {
@@ -260,7 +261,7 @@ def profile(request, user_id):
         "bestell_liste": BestellListe.objects.all(),
         "user_name": request.user,
         "username": username,
-        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("bestell_nr_field"))
+        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("bestell_nr_field"))
     })
 
 def detail_lager_profile(request, user_id, bestell_nr):
@@ -270,7 +271,7 @@ def detail_lager_profile(request, user_id, bestell_nr):
         "user_id": user_id,
         "user_name": username,
         "bestellung": bestell_nr,
-        "lagerliste": Lagerliste.objects.all().values('inventarnummer', 'typ', 'modell', 'spezifikation', 'zuweisung' 'herausgeber', 'ausgabe', 'klinik', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
+        "lagerliste": Lagerliste.objects.all().values('inventarnummer', 'typ', 'modell', 'spezifikation', 'zuweisung', 'herausgeber', 'ausgabe', 'klinik', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
     })
 
 def update(request, bestell_nr):
