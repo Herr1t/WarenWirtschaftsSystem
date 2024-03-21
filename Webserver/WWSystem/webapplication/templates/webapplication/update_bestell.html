@@ -30,9 +30,11 @@
             <div class="form-group">
                 <input class="form-control" type="text" name="zuweisung" placeholder="Zuweisung: {{ item.zuweisung }}">
             </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
-            </div>
+            {% if item.investmittel == 'Nein' %}
+                <div class="form-group">
+                    <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
+                </div>
+            {% endif %}
             <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Aktualisieren">
             {% if message %}
                 <div class="alert alert-success" role="alert">{{ message }}</div>

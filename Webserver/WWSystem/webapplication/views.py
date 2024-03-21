@@ -450,3 +450,16 @@ def rückgabe(request):
             "message": "Geräte erfolgreich zurückgegeben"
         }) 
     return render(request, "webapplication/rückgabe.html")
+
+def löschen(request, bestell_nr):
+    if request.method == 'POST':
+        answer = request.POST["confirm"]
+        if answer in "yes":
+            Lagerliste.objects.filter(bestell_nr_field=bestell_nr).delete()
+            BestellListe.objects.update_or_create(sap_bestell_nr_field=bestell_nr, defaults={'geliefert': 0, 'geliefert_anzahl': 0})
+            return HttpResponseRedirect(reverse('lagerliste'))
+        else:
+            return HttpResponseRedirect(reverse('detail_lager', args=[bestell_nr]))
+    return render(request, "webapplication/löschen.html", {
+        "bestell_nr": bestell_nr
+    })
