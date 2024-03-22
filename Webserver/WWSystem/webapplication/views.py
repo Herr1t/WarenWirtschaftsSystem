@@ -155,7 +155,9 @@ def create_lager(request):
         x = 0
         y = 0
         list = []
-        entrys = BestellListe.objects.values_list('sap_bestell_nr_field', 'typ', 'modell', 'spezifikation')
+        dupe = ""
+        fail = ""
+        entrys = BestellListe.objects.values_list('sap_bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung')
         try:
             bnr = BestellListe.objects.get(pk=str(request.POST["bestell_nr"]))
         except ValueError:
@@ -183,18 +185,26 @@ def create_lager(request):
         for _ in list:
             inventarnummer = _
             try:
-                lagerung = Lagerliste.objects.create(inventarnummer=inventarnummer, typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bnr, ausgegeben=ausgegeben)
-                lagerung.save()
+                Lagerliste.objects.create(inventarnummer=inventarnummer, typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bnr, ausgegeben=ausgegeben)
+                obj = Lagerliste.objects.get(pk=inventarnummer)
+                if obj is None:
+                    fail = fail + inventarnummer + ", "
             except IntegrityError:
-                return render(request, "webapplication/create_lager.html", {
-                    "alert": "Inventarnummer bereits eingetragen",
-                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
+                dupe = dupe + inventarnummer + ", "
+                continue
+        if fail:
+            fail = fail[:-2]
+            return render(request, "webapplication/create_lager.html", {
+                "dupe": dupe,
+                "fail": fail,
+                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
             })
-            except ValueError:
-                return render(request, "webapplication/create_lager.html", {
-                    "alert": "Inventarnummer/Servicenummer bitte ",
-                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
-                })
+        if dupe:
+            dupe = dupe[:-2]
+            return render(request, "webapplication/create_lager.html", {
+                "dupe": dupe,
+                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
+            })
         return render(request, "webapplication/create_lager.html", {
             "message": "Eintrag/Einträge erfolgreich angelegt",
             "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
@@ -215,7 +225,7 @@ def handout_lager(request):
             check = request.POST.get(f"{x}", False)
             if check:
                 list.append(request.POST[f"{x}"])
-                x = x + 1 
+                x = x + 1
             else:
                 break
         for _ in list:
