@@ -215,7 +215,7 @@ def handout_lager(request):
             check = request.POST.get(f"{x}", False)
             if check:
                 list.append(request.POST[f"{x}"])
-                x = x + 1
+                x = x + 1 
             else:
                 break
         for _ in list:
