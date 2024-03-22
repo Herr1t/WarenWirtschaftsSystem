@@ -34,6 +34,10 @@
                 <div class="form-group">
                     <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
                 </div>
+            {% else %}
+                <div style="display: none;" class="form-group">
+                    <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
+                </div>
             {% endif %}
             <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Aktualisieren">
             {% if message %}

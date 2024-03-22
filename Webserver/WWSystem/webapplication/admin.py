@@ -4,10 +4,10 @@ from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste
 # Register your models here.
 
 class Bestell_ListeAdmin(admin.ModelAdmin):
-    list_display = ("sap_bestell_nr_field", "modell", "typ", "menge", "preis_pro_stück", "spezifikation", "investmittel", "bearbeitet", "ersteller", "geliefert", "geliefert_anzahl")
+    list_display = ("sap_bestell_nr_field", "modell", "typ", "menge", "preis_pro_stück", "spezifikation", "zuweisung", "investmittel", "bearbeitet", "ersteller", "geliefert", "geliefert_anzahl")
 
 class LagerlisteAdmin(admin.ModelAdmin):
-    list_display = ("inventarnummer", "klinik", "typ", "modell", "spezifikation", "bestell_nr_field", "herausgeber", "ausgabe", "ausgegeben")
+    list_display = ("inventarnummer", "klinik", "typ", "modell", "spezifikation", "zuweisung", "bestell_nr_field", "herausgeber", "ausgabe", "ausgegeben")
 
 class Lagerliste_ohne_InvestAdmin(admin.ModelAdmin):
     list_display = ("id", "typ", "modell", "spezifikation", "bestell_nr_field", "herausgeber", "ausgabe", "ausgegeben")

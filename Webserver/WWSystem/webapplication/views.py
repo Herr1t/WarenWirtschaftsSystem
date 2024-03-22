@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from time import sleep
 
 from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest
 
@@ -68,9 +69,16 @@ def register(request):
         return render(request, "webapplication/register.html")
 
 def lager(request):
-    Menge =  BestellListe.objects.values_list('geliefert_anzahl')
+    Menge =  Lagerliste.objects.values_list('zuweisung', 'inventarnummer')
+    y = 0
+    for _ in Menge:
+        if str(Menge[y][0]) == "None":
+            update = Lagerliste.objects.update_or_create(inventarnummer=Menge[y][1], defaults={'zuweisung': "Keine Zuweisung"})
+            y = y + 1
+        else:
+            y = y + 1
     return render(request, "webapplication/lager.html", {
-        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
+        "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
     })
 
 def bestell(request):
@@ -147,7 +155,7 @@ def create_lager(request):
         x = 0
         y = 0
         list = []
-        entrys = BestellListe.objects.values_list('sap_bestell_nr_field', 'typ', 'modell', 'spezifikation')
+        entrys = BestellListe.objects.values_list('sap_bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung')
         try:
             bnr = BestellListe.objects.get(pk=str(request.POST["bestell_nr"]))
         except ValueError:
@@ -176,11 +184,15 @@ def create_lager(request):
             try:
                 lagerung = Lagerliste.objects.create(inventarnummer=inventarnummer, typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bnr, ausgegeben=ausgegeben)
                 lagerung.save()
+                sleep(0.05)
             except IntegrityError:
+                continue
+                """
                 return render(request, "webapplication/create_lager.html", {
                     "alert": "Inventarnummer bereits eingetragen",
                     "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
             })
+            """
             except ValueError:
                 return render(request, "webapplication/create_lager.html", {
                     "alert": "Inventarnummer/Servicenummer bitte ",
