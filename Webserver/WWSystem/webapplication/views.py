@@ -144,7 +144,6 @@ def create_bestell(request):
         })
 
         bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet)
-        bestellung.save()
         return render(request, "webapplication/create_bestell.html", {
             "message": "Einträge erfolgreich angelegt"
         })
