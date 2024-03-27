@@ -1,5 +1,5 @@
 CREATE TABLE `Lagerliste` (
-    `Inventarnummer` INT NOT NULL,
+    `Inventarnummer` VARCHAR(20) NOT NULL,
     `Klinik` TINYINT,
     `Typ` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(30) NOT NULL,
