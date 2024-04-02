@@ -13,8 +13,8 @@ class User(AbstractUser):
 
 class BestellListe(models.Model):
     sap_bestell_nr_field = models.CharField(db_column='SAP_Bestell_Nr.', max_length=20, primary_key=True)  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
-    modell = models.CharField(db_column='Modell', max_length=30)  # Field name made lowercase.
-    typ = models.CharField(db_column='Typ', max_length=20)  # Field name made lowercase.
+    modell = models.CharField(db_column='Modell', max_length=50)  # Field name made lowercase.
+    typ = models.CharField(db_column='Typ', max_length=50)  # Field name made lowercase.
     preis_pro_stück = models.DecimalField(db_column='Preis_pro_Stück', max_digits=6, decimal_places=2)  # Field name made lowercase.
     menge = models.IntegerField(db_column='Menge')  # Field name made lowercase.
     spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
@@ -47,8 +47,8 @@ class Investmittelplan(models.Model):
 class Lagerliste(models.Model):
     inventarnummer = models.CharField(db_column='Inventarnummer', max_length=20, primary_key=True)  # Field name made lowercase.
     klinik = models.IntegerField(db_column='Klinik', blank=True, null=True)  # Field name made lowercase.
-    typ = models.CharField(db_column='Typ', max_length=20)  # Field name made lowercase.
-    modell = models.CharField(db_column='Modell', max_length=30)  # Field name made lowercase.
+    typ = models.CharField(db_column='Typ', max_length=50)  # Field name made lowercase.
+    modell = models.CharField(db_column='Modell', max_length=50)  # Field name made lowercase.
     spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
     zuweisung = models.TextField(db_column='Zuweisung', blank=True, null=True)  # Field name made lowercase.
     bestell_nr_field = models.ForeignKey(BestellListe, on_delete=models.CASCADE, db_column='Bestell_Nr.')  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
@@ -65,9 +65,10 @@ class Lagerliste(models.Model):
     
 class Lagerliste_ohne_Invest(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True)  # Field name made lowercase.
-    typ = models.CharField(db_column='Typ', max_length=20)  # Field name made lowercase.
-    modell = models.CharField(db_column='Modell', max_length=30)  # Field name made lowercase.
+    typ = models.CharField(db_column='Typ', max_length=50)  # Field name made lowercase.
+    modell = models.CharField(db_column='Modell', max_length=50)  # Field name made lowercase.
     spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
+    zuweisung = models.TextField(db_column='Zuweisung', blank=True, null=True)  # Field name made lowercase.
     bestell_nr_field = models.ForeignKey(BestellListe, models.DO_NOTHING, db_column='Bestell_Nr.')  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
     herausgeber = models.ForeignKey(User, models.DO_NOTHING, db_column='Herausgeber', to_field='username', blank=True, null=True)  # Field name made lowercase.
     ausgabe = models.DateTimeField(db_column='Ausgabe', blank=True, null=True)  # Field name made lowercase.

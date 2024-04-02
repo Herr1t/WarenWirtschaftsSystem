@@ -130,13 +130,13 @@ def create_bestell(request):
             return render(request, "webapplication/create_bestell.html", {
             "alert": "Menge darf 255 nicht überschreiten"
         })
-        if len(str(modell)) > 30:
+        if len(str(modell)) > 50:
             return render(request, "webapplication/create_bestell.html", {
-            "alert": "Modell darf nicht länger als 30 Zeichen sein"
+            "alert": "Modell darf nicht länger als 50 Zeichen sein"
         })
-        if len(str(typ)) > 20:
+        if len(str(typ)) > 50:
             return render(request, "webapplication/create_bestell.html", {
-            "alert": "Typ darf nicht länger als 20 Zeichen sein"
+            "alert": "Typ darf nicht länger als 50 Zeichen sein"
         })
         if len(str(spezi)) > 255:
             return render(request, "webapplication/create_bestell.html", {
@@ -324,16 +324,16 @@ def update(request, bestell_nr):
                 "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
             })
         if modell:
-            if len(str(modell)) > 20:
+            if len(str(modell)) > 50:
                 return render(request, "webapplication/update_bestell.html", {
-                "alert": "Modell darf nicht länger als 30 Zeichen sein",
+                "alert": "Modell darf nicht länger als 50 Zeichen sein",
                 "bestell_nr": bestell_nr,
                 "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
             })
         if typ:
-            if len(str(typ)) > 20:
+            if len(str(typ)) > 50:
                 return render(request, "webapplication/update_bestell.html", {
-                "alert": "Typ darf nicht länger als 20 Zeichen sein",
+                "alert": "Typ darf nicht länger als 50 Zeichen sein",
                 "bestell_nr": bestell_nr,
                 "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
             })
@@ -355,7 +355,7 @@ def update(request, bestell_nr):
                     y = "test"
                     i = anzahl
                     while i < int(geliefert_anzahl):
-                        Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezi, bestell_nr_field=bnr, ausgegeben=0)
+                        Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezi, bestell_nr_field=bnr, zuweisung=zuweisung, ausgegeben=0)
                         i = i + 1
         if str(bnr) != str(nr) or int(geliefert_anzahl) == int(menge):
             return render(request, "webapplication/bestell.html", {
@@ -372,9 +372,16 @@ def update(request, bestell_nr):
     })
 
 def lager_ohne_invest(request):
-    Menge =  BestellListe.objects.values_list('geliefert_anzahl')
+    Menge =  Lagerliste_ohne_Invest.objects.values_list('zuweisung', 'id')
+    y = 0
+    for _ in Menge:
+        if str(Menge[y][0]) == "None":
+            update = Lagerliste_ohne_Invest.objects.update_or_create(id=Menge[y][1], defaults={'zuweisung': "Keine Zuweisung"})
+            y = y + 1
+        else:
+            y = y + 1
     return render(request, "webapplication/lager_ohne_invest.html", {
-        "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
+        "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
     })
 
 def profile_lager_ohne(request, user_id):
