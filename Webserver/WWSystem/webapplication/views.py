@@ -219,6 +219,7 @@ def create_lager(request):
 def handout_lager(request):
     if request.method == "POST":
         x = 0
+        c = 0
         list = []
         ausgegeben = 1
         ausgabe = timezone.now
@@ -230,7 +231,10 @@ def handout_lager(request):
                 list.append(request.POST[f"{x}"])
                 x = x + 1
             else:
-                break
+                x = x + 1
+                c = c + 1
+                if c == 50:
+                    break
         for _ in list:
             inventarnummer = str(_)
             ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').filter(inventarnummer=inventarnummer)).replace(',', '')
