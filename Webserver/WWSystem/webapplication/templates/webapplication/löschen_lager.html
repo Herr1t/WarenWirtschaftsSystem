@@ -4,7 +4,7 @@
     <h1 class="header" style="text-align: center;">Löschung der Lagerliste zur Bestellung {{ bestell_nr }}</h1>
     <h2 style="float: left;">Bist du dir Sicher?</h2>
 
-    <form id="form" action="{% url 'löschen' bestell_nr %}" method="POST">
+    <form id="form" action="{% url 'löschen_lager' bestell_nr %}" method="POST">
         {% csrf_token %}
         <div class="form-group">
             <select autofocus class="form-control" name="confirm">

@@ -3,6 +3,7 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Bestellung {{ bestell_nr }}</h1>
     <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
+    <input class="button" value="Bestellung Löschen" type="button" style="color: red;" onclick="window.location.href='{% url 'löschen_bestell' bestell_nr %}'"></input>
 
     <h2>BestellListen Eintrag Aktualisieren</h2>
 

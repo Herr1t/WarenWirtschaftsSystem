@@ -449,16 +449,21 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
 def rückgabe(request):
     if request.method == 'POST':
         x = 0
+        c = 0
         list = []
         ausgegeben = 0
         ausgabe = ""
         herausgeber = User.objects.get(pk=1)
-        try:
-            while True:
+        while True:
+            check = request.POST.get(f"{x}", False)
+            if check:
                 list.append(request.POST[f"{x}"])
                 x = x + 1
-        except:
-            pass
+            else:
+                x = x + 1
+                c = c + 1
+                if c == 50:
+                    break
         for _ in list:
             inventarnummer = str(_)
             klinik_ou = Lagerliste.objects.values_list('klinik').get(pk=inventarnummer)[0]
@@ -485,7 +490,7 @@ def rückgabe(request):
         }) 
     return render(request, "webapplication/rückgabe.html")
 
-def löschen(request, bestell_nr):
+def löschen_lager(request, bestell_nr):
     if request.method == 'POST':
         answer = request.POST["confirm"]
         if answer in "yes":
@@ -494,6 +499,25 @@ def löschen(request, bestell_nr):
             return HttpResponseRedirect(reverse('lagerliste'))
         else:
             return HttpResponseRedirect(reverse('detail_lager', args=[bestell_nr]))
-    return render(request, "webapplication/löschen.html", {
+    return render(request, "webapplication/löschen_lager.html", {
         "bestell_nr": bestell_nr
+    })
+
+def löschen_bestell(request, bestell_nr):
+    if request.method == 'POST':
+        answer = request.POST["confirm"]
+        if answer in "yes":
+            try:
+                BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).delete()
+                return HttpResponseRedirect(reverse('bestell_liste'))
+            except IntegrityError:
+                return render(request, "webapplication/update_bestell.html", {
+                    "bestell_nr": bestell_nr,
+                    "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=bestell_nr),
+                    "alert": "Bestellung kann nicht gelöscht werden, Grund: Lagereinträge für diese Bestellung vorhanden!"
+                })
+        else:
+            return HttpResponseRedirect(reverse('update_bestell', args=[bestell_nr]))
+    return render(request, "webapplication/löschen_bestell.html", {
+        "sap_bestell_nr": bestell_nr
     })
