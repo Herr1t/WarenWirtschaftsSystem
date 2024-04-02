@@ -11,9 +11,9 @@
       <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
     </div>
     <div id="inputs" class="form-group">
-      <fieldset id="list" class="input-field">
+      <div>
         <input autofocus class="form-control" type="text" name="0" required placeholder="Inventarnummer/Servicenummer"/>
-      </fieldset>
+      </div>
     </div>
     <div class="form-group">
       <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
@@ -61,7 +61,7 @@
       var newDeleteButton = document.createElement("button");
       newDeleteButton.type = '';
       newDeleteButton.value = "Delete";
-      newDeleteButton.name = 'c';
+      newDeleteButton.name = c;
       newDeleteButton.style = "float: left; padding-left: 40px; padding-top: 4px; padding-bottom: 4px; background-color: black; border: solid 1px black; margin-top: 15px; margin-left: 13px; border-radius: 2px;";
       newDeleteButton.addEventListener("click", deleteHandler);
 
@@ -70,7 +70,7 @@
       div2.appendChild(newInputField);
       div.appendChild(div2);
       document.getElementById('inputs').appendChild(div);
-      c = c + 1;
+      c++;
     }
     function deleteHandler() {
         var parent = this.parentElement;

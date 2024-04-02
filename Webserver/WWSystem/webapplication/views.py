@@ -128,9 +128,9 @@ def create_bestell(request):
             zuweisung = "Keine Zuweisung"
         if int(menge) > 255:
             return render(request, "webapplication/create_bestell.html", {
-            "alert": "Menge darf nicht 255 überschreiten"
+            "alert": "Menge darf 255 nicht überschreiten"
         })
-        if len(str(modell)) > 20:
+        if len(str(modell)) > 30:
             return render(request, "webapplication/create_bestell.html", {
             "alert": "Modell darf nicht länger als 30 Zeichen sein"
         })
@@ -151,8 +151,9 @@ def create_bestell(request):
 
 def create_lager(request):
     if request.method == "POST":
-        x = 0
-        y = 0
+        x = int(0)
+        y = int(0)
+        c = 0
         list = []
         dupe = ""
         fail = ""
@@ -172,7 +173,10 @@ def create_lager(request):
                 list.append(request.POST[f"{x}"])
                 x = x + 1
             else:
-                break
+                x = x + 1
+                c = c + 1
+                if c == 50:
+                    break
         for __ in entrys:
             if str(bnr) in str(entrys[y][0]):
                 typ = entrys[y][1]
