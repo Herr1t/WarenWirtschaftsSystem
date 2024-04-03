@@ -114,7 +114,7 @@ def create_bestell(request):
         modell = request.POST["modell"]
         typ = request.POST["typ"]
         menge = request.POST["menge"]
-        preis_pro_stück = request.POST["preis_pro_stück"]
+        preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(",", ".")
         spezi = request.POST["spezifikation"]
         zuweisung = request.POST["zuweisung"]
         investmittel = request.POST["investmittel"]
@@ -142,7 +142,7 @@ def create_bestell(request):
             return render(request, "webapplication/create_bestell.html", {
             "alert": "Spezifikation darf nicht länger als 255 Zeichen sein"
         })
-
+        
         bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet)
         return render(request, "webapplication/create_bestell.html", {
             "message": "Einträge erfolgreich angelegt"

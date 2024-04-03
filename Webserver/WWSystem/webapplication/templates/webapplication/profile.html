@@ -24,7 +24,7 @@
             </thead>
             <tbody>
             {% for item in bestell_liste %}
-                <!---{% if user_name == item.ersteller %}--->
+                {% if user_name == item.ersteller %}
                     <tr class="custom_row">
                         <td>{{ item.sap_bestell_nr_field }}</td>
                         <td>{{ item.modell }}</td>
@@ -35,7 +35,7 @@
                         <td>{{ item.menge }}</td>
                         <td>{{ item.geliefert_anzahl }}</td>
                     </tr>
-                <!---{% endif %}--->
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>
@@ -56,7 +56,7 @@
             </thead>
             <tbody>
             {% for item in lagerliste %}
-                <!---{% if username == item.herausgeber %}--->
+                {% if username == item.herausgeber %}
                     <tr class="custom_row">
                         <td>
                             <a class="link" href="{% url 'detail_lager_profile' user.id item.bestell_nr_field %}">
@@ -71,7 +71,7 @@
                         <td>{{ item.ausgabe }}</td>
                         <td>{{ item.Menge }}</td>
                     </tr>
-                <!---{% endif %}--->
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>
