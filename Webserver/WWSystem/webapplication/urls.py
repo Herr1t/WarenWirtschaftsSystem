@@ -12,6 +12,7 @@ urlpatterns = [
     path("lager", views.lager, name="lagerliste"),
     path("bestell", views.bestell, name="bestell_liste"),
     path("invest", views.invest, name="investmittel"),
+    path("invest/<int:klinik_ou>", views.detail_invest, name="detail_investmittel"),
     path("create_bestll", views.create_bestell, name="create_bestell"),
     path("create_lager", views.create_lager, name="create_lager"),
     path("handout_lager", views.handout_lager, name="handout_lager"),
