@@ -27,7 +27,11 @@
         <tbody>
         {% for item in investmittelplan %}
             <tr class="custom_row">
-                <td>{{ item.klinik_ou }}</td>
+                <td>
+                    <a class="link" href="{% url 'detail_investmittel' item.klinik_ou %}">
+                        {{ item.klinik_ou }}
+                    </a>
+                </td>
                 <td>{{ item.investmittel_jahresanfang_in_euro }}</td>
                 <td>{{ item.investmittel_übrig_in_euro }}</td>
             </tr>

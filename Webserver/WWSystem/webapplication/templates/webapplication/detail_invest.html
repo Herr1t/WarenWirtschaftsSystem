@@ -1,0 +1,37 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Investmittel der Klinik {{ klinik_ou }}</h1>
+    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+
+    <table id="myTable" class="sortable" style="width: 99.5%;">
+        <thead>
+            <tr>
+                <th>Klinik/OU</th>
+                <th>Bestell-Nr.</th>
+                <th>Modell</th>
+                <th>Typ</th>
+                <th>Spezifikation</th>
+                <th>Preis pro Stück</th>
+                <th>Menge</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in detail_invest %}
+            <tr class="custom_row">
+                <td>{{ item.klinik }}</td>
+                <td>{{ item.bestell_nr_field }}</td>
+                <td>{{ item.modell }}</td>
+                <td>{{ item.typ }}</td>
+                <td>{{ item.spezifikation }}</td>
+                <td>{{ item.bestell_nr_field__preis_pro_stück }}</td>
+                <td>{{ item.Menge }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if message %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+    {% endif %}
+{% endblock %}

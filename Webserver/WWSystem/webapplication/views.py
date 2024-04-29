@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.db.models import Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from time import sleep
+from django.db.models import Q
 
 from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest
 
@@ -520,4 +521,13 @@ def löschen_bestell(request, bestell_nr):
             return HttpResponseRedirect(reverse('update_bestell', args=[bestell_nr]))
     return render(request, "webapplication/löschen_bestell.html", {
         "sap_bestell_nr": bestell_nr
+    })
+
+def detail_invest(request, klinik_ou):
+    ou = klinik_ou
+    nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
+    detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
+    return render(request, "webapplication/detail_invest.html", {
+        "detail_invest": detail_invest,
+        "klinik_ou": ou
     })
