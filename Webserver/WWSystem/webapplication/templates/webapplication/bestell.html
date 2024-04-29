@@ -4,6 +4,8 @@
     <h1 class="header" style="text-align: center;">BestellListe</h1>
     <input class="button" value="BestellListen Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_bestell' %}'"></input>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <input class="button" value="Heute" type="button" id="today" onclick="today()">
+    <input class="button" value="Alle" type="button" id="today" onclick="undo()">
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}

@@ -2,6 +2,8 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Profil Verlauf</h1>
     <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'profile' user.id %}'"></input>
+    <input class="button" value="Heute" type="button" id="today" onclick="today()">
+    <input class="button" value="Alle" type="button" id="today" onclick="undo()">
     <div>
         <h2 style="float: left;">Aus Lagerliste ohne Invest ausgetragen</h2>
         <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
