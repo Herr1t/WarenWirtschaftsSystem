@@ -283,12 +283,14 @@ def detail_lager(request, bestell_nr):
 
 def profile(request, user_id):
     user_name = User.objects.values_list('username').get(pk=user_id)
+    user = User.objects.values('username').exclude(pk=user_id)
     username = user_name[0]
     return render(request, "webapplication/profile.html", {
         "user_id": user_id,
         "bestell_liste": BestellListe.objects.all(),
         "user_name": request.user,
         "username": username,
+        "user": user,
         "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung', 'herausgeber', 'ausgabe').exclude(ausgegeben="0").annotate(Menge=Count("bestell_nr_field"))
     })
 

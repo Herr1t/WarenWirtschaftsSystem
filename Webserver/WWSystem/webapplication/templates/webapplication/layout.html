@@ -53,6 +53,10 @@
         {% block body %}
         {% endblock %}
         <script>
+            function user() {
+                var rows = document.getElementById("myTable2").querySelectorAll('table tr')
+
+            }
             function undo() {
                 var rows = document.querySelectorAll('table tr')
                 rows.forEach(function(row, index) {
@@ -226,7 +230,34 @@
                     }
                 } catch (error) {
                 }
-                });
+            });
+            
+            window.onload = function() {
+                var select = document.getElementById('usernameSelect');
+                // Function to handle the change event of the select element
+                select.onchange = function() {
+                    var selectedUsername = this.value; // Get the selected username
+                    
+                    // Get all rows of the table
+                    var rows = document.getElementById("myTable2").querySelectorAll('table tr');
+                    
+                    // Loop through each row
+                    rows.forEach(function(row, index) {
+                        if (index !== 0) { // Skip header row
+                            // Get the value of the username column in the current row
+                            var usernameColumn = row.cells[5].textContent.trim(); // Assuming the username column is the second column (index 1)
+                            
+                            // Check if the username matches the selected username
+                            if (usernameColumn === selectedUsername) {
+                                row.style.display = ''; // Show the row
+                            } else {
+                                row.style.display = 'none'; // Hide the row
+                            }
+                        }
+                    });
+                };
+                select.onchange();
+            };
         </script>
     </body>
 </html>
