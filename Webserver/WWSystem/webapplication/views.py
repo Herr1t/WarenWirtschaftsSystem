@@ -494,7 +494,6 @@ def detail_lager_profile(request, user_id, bestell_nr):
     username = user_name[0]
     return render(request, "webapplication/detail_lager_profile.html", {
         "user_id": user_id,
-        "user_name": username,
         "bestellung": bestell_nr,
         "lagerliste": Lagerliste.objects.all().values('inventarnummer', 'typ', 'modell', 'spezifikation', 'zuweisung', 'herausgeber', 'ausgabe', 'klinik', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
     })
