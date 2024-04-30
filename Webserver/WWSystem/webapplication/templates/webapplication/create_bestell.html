@@ -9,13 +9,49 @@
     <form action="{% url 'create_bestell' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
+            <select class="form-control" id="selectOption">
+                <option>Standardbestellungen</option>
+                <option value="option1">Monitor 24"</option>
+                <option value="option2">Monitor 27"</option>
+                <option value="option3">Notebook 17"</option>
+                <option value="option4">Notebook 15"</option>
+                <option value="option5">Notebook 14"</option>
+                <option value="option6">Tower-PC</option>
+                <option value="option7">SFF-PC</option>
+                <option value="option8">Micro-PC</option>
+                <option value="option9">Rezeptdrucker</option>
+                <option value="option10">Laboretikettendrucker</option>
+                <option value="option11">Etikettendrucker</option>
+                <option value="option12">Dokumentenscanner</option>
+                <option value="option13">Handscanner</option>
+                <option value="option14">Dockingstation</option>
+                <option value="option15">Diktiergerät</option>
+                <option value="option16">Fußschalter</option>
+            </select>
+        </div>
+        <div class="form-group">
             <input autofocus class="form-control" type="text" name="sap_bestell_nr" required placeholder="SAP Bestell-Nr.">
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" name="modell" required placeholder="Modell">
+            <input class="form-control" type="text" name="modell" id="modell" required placeholder="Modell">
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" name="typ" required placeholder="Typ">
+            <select name="typ" id="typ" class="form-control"
+                onchange="if(this.options[this.selectedIndex].value=='customOption'){
+                    toggleField(this,this.nextSibling);
+                    this.selectedIndex='0';
+                }">
+                <option>Bitte Typ auswählen</option>
+                <option value="customOption">[Eigenen Typ eintragen]</option>
+                <option value="Monitor">Monitor</option>
+                <option value="Notebook">Notebook</option>
+                <option value="Desktop-PC">Desktop-PC</option>
+                <option value="Drucker">Drucker</option>
+                <option value="Scanner">Scanner</option>
+                <option value="Dockingstation">Dockingstation</option>
+                <option value="Diktiergerät">Diktiergerät</option>
+                <option value="Transkription">Transkription</option>
+            </select><input placeholder="Typ" class="form-control" name="typ" id="typ" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
         </div>
         <div class="form-group">
             <input class="form-control" type="number" name="menge" required placeholder="Menge">
@@ -24,7 +60,7 @@
             <input class="form-control" type="float" name="preis_pro_stück" required placeholder="Preis pro Stück">
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" name="spezifikation" placeholder="Optional: Spezifikation">
+            <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Optional: Spezifikation">
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="zuweisung" required placeholder="Optional: Zuweisung">
@@ -44,4 +80,108 @@
             <div class="alert alert-danger" role="alert">{{ alert }}</div>
         {% endif %}
     </form>
+
+    <script>
+        function toggleField(hideObj,showObj){
+            hideObj.disabled=true;        
+            hideObj.style.display='none';
+            showObj.disabled=false;   
+            showObj.style.display='inline';
+            showObj.focus();
+        }
+
+        document.getElementById('selectOption').addEventListener('change', function() {
+        var selectedOption = this.value;
+        var modellInput = document.getElementById('modell');
+        var typInput = document.getElementById('typ');
+        var spezifikationInput = document.getElementById('spezifikation');
+
+        switch (selectedOption) {
+            case 'option1':
+            modellInput.value = 'DELL P2400';
+            typInput.value = 'Monitor';
+            spezifikationInput.value = '24 Zoll';
+            break;
+            case 'option2':
+            modellInput.value = 'DELL P2700';
+            typInput.value = 'Monitor';
+            spezifikationInput.value = '27 Zoll';
+            break;
+            case 'option3':
+            modellInput.value = 'HP 470';
+            typInput.value = 'Notebook';
+            spezifikationInput.value = '17 Zoll';
+            break;
+            case 'option4':
+            modellInput.value = 'Latitude 5500';
+            typInput.value = 'Notebook';
+            spezifikationInput.value = '15 Zoll';
+            break;
+            case 'option5':
+            modellInput.value = 'Latitude 5400';
+            typInput.value = 'Notebook';
+            spezifikationInput.value = '14 Zoll';
+            break;
+            case 'option6':
+            modellInput.value = 'Optifelx 7010 Tower';
+            typInput.value = 'Desktop-PC';
+            spezifikationInput.value = 'Tower-Desktop-PC';
+            break;
+            case 'option7':
+            modellInput.value = 'Optifelx 7010 SFF';
+            typInput.value = 'Desktop-PC';
+            spezifikationInput.value = 'Small Form Factor';
+            break;
+            case 'option8':
+            modellInput.value = 'Optiflex 7010 Micro';
+            typInput.value = 'Desktop-PC';
+            spezifikationInput.value = 'Micro-Desktop-PC';
+            break;
+            case 'option9':
+            modellInput.value = 'Epson Drucker';
+            typInput.value = 'Drucker';
+            spezifikationInput.value = 'Rezeptdrucker';
+            break;
+            case 'option10':
+            modellInput.value = 'Zebra ZD411';
+            typInput.value = 'Drucker';
+            spezifikationInput.value = 'Laboretikettendrucker';
+            break;
+            case 'option11':
+            modellInput.value = 'Zebra ZD421t';
+            typInput.value = 'Drucker';
+            spezifikationInput.value = 'Etikettendrucker';
+            break;
+            case 'option12':
+            modellInput.value = 'Ricoh FI-8150';
+            typInput.value = 'Scanner';
+            spezifikationInput.value = 'Dokumentenscanner';
+            break;
+            case 'option13':
+            modellInput.value = 'Datalogic';
+            typInput.value = 'Scanner';
+            spezifikationInput.value = 'Handscanner';
+            break;
+            case 'option14':
+            modellInput.value = 'DELL WD19S';
+            typInput.value = 'Dockingstation';
+            spezifikationInput.value = 'Dockingstation';
+            break;
+            case 'option15':
+            modellInput.value = 'SpeechMike';
+            typInput.value = 'Diktiergerät';
+            spezifikationInput.value = 'Diktiergerät';
+            break;
+            case 'option16':
+            modellInput.value = 'SpeechExec';
+            typInput.value = 'Transkription';
+            spezifikationInput.value = 'ergonomischer Fußschalter';
+            break;
+            default:
+            modellInput.value = '';
+            typInput.value = '';
+            spezifikationInput.value = '';
+        }
+        });
+    </script>
 {% endblock %}

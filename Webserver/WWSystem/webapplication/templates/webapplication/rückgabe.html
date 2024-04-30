@@ -26,44 +26,4 @@
     {% if alert %}
         <div class="alert alert-danger" role="alert">{{ alert }}</div>
     {% endif %}
-
-    <script>
-        c = 1;
-    
-        function addInputField() {
-            var div = document.createElement("div");
-            var div2 = document.createElement("div");
-        
-            // create an input field to insert
-            var newInputField = document.createElement("input");
-            // set input field data type to text
-            newInputField.type = "text";
-            // set input field name
-            newInputField.name = c;
-            // set required
-            newInputField.placeholder = "Inventarnummer/Servicenummer";
-            newInputField.style = "max-width: 96%; margin-left: 4%; margin-top: 1%;";
-            newInputField.setAttribute("required", "");
-        
-            newInputField.classList.add("form-control");
-        
-            var newDeleteButton = document.createElement("button");
-            newDeleteButton.type = '';
-            newDeleteButton.value = "Delete";
-            newDeleteButton.name = 'c';
-            newDeleteButton.style = "float: left; padding-left: 40px; padding-top: 4px; padding-bottom: 4px; background-color: black; border: solid 1px black; margin-top: 15px; margin-left: 13px; border-radius: 2px;";
-            newDeleteButton.addEventListener("click", deleteHandler);
-        
-            // insert element
-            div.appendChild(newDeleteButton);
-            div2.appendChild(newInputField);
-            div.appendChild(div2);
-            document.getElementById('inputs').appendChild(div);
-            c = c + 1;
-        }
-        function deleteHandler() {
-            var parent = this.parentElement;
-            parent.parentElement.removeChild(parent);
-        }
-    </script>
 {% endblock %}
