@@ -53,10 +53,33 @@
         {% block body %}
         {% endblock %}
         <script>
-            function user() {
-                var rows = document.getElementById("myTable2").querySelectorAll('table tr')
-
-            }
+            window.onload = function() {
+                var select = document.getElementById('usernameSelect');
+                // Function to handle the change event of the select element
+                select.onchange = function() {
+                    var selectedUsername = this.value; // Get the selected username
+                    
+                    // Get all rows of the table
+                    var rows = document.getElementById("myTable2").querySelectorAll('table tr');
+                    
+                    // Loop through each row
+                    rows.forEach(function(row, index) {
+                        if (index !== 0) { // Skip header row
+                            // Get the value of the username column in the current row
+                            var usernameColumn = row.cells[5].textContent.trim(); // Assuming the username column is the second column (index 1)
+                            
+                            // Check if the username matches the selected username
+                            if (usernameColumn === selectedUsername) {
+                                row.classList.remove("hidden"); // Show the row
+                            } else {
+                                row.classList.add("hidden"); // Hide the row
+                            }
+                        }
+                    });
+                };
+                select.onchange();
+            };
+            
             function undo() {
                 var rows = document.querySelectorAll('table tr')
                 rows.forEach(function(row, index) {
@@ -231,33 +254,43 @@
                 } catch (error) {
                 }
             });
-            
-            window.onload = function() {
-                var select = document.getElementById('usernameSelect');
-                // Function to handle the change event of the select element
-                select.onchange = function() {
-                    var selectedUsername = this.value; // Get the selected username
-                    
-                    // Get all rows of the table
-                    var rows = document.getElementById("myTable2").querySelectorAll('table tr');
-                    
-                    // Loop through each row
-                    rows.forEach(function(row, index) {
-                        if (index !== 0) { // Skip header row
-                            // Get the value of the username column in the current row
-                            var usernameColumn = row.cells[5].textContent.trim(); // Assuming the username column is the second column (index 1)
-                            
-                            // Check if the username matches the selected username
-                            if (usernameColumn === selectedUsername) {
-                                row.style.display = ''; // Show the row
-                            } else {
-                                row.style.display = 'none'; // Hide the row
-                            }
-                        }
-                    });
-                };
-                select.onchange();
-            };
+
+            c = 1;
+            function addInputField() {
+                var div = document.createElement("div");
+                var div2 = document.createElement("div");
+
+                // create an input field to insert
+                var newInputField = document.createElement("input");
+                // set input field data type to text
+                newInputField.type = "text";
+                // set input field name
+                newInputField.name = c;
+                // set required
+                newInputField.placeholder = "Inventarnummer/Servicenummer";
+                newInputField.style = "max-width: 96%; margin-left: 4%; margin-top: 1%;";
+                newInputField.setAttribute("required", "");
+
+                newInputField.classList.add("form-control");
+
+                var newDeleteButton = document.createElement("button");
+                newDeleteButton.type = '';
+                newDeleteButton.value = "Delete";
+                newDeleteButton.name = c;
+                newDeleteButton.style = "float: left; padding-left: 40px; padding-top: 4px; padding-bottom: 4px; background-color: black; border: solid 1px black; margin-top: 15px; margin-left: 13px; border-radius: 2px;";
+                newDeleteButton.addEventListener("click", deleteHandler);
+
+                // insert element
+                div.appendChild(newDeleteButton);
+                div2.appendChild(newInputField);
+                div.appendChild(div2);
+                document.getElementById('inputs').appendChild(div);
+                c++;
+            }
+            function deleteHandler() {
+                var parent = this.parentElement;
+                parent.parentElement.removeChild(parent);
+            }
         </script>
     </body>
 </html>
