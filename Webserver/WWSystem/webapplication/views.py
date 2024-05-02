@@ -269,7 +269,7 @@ def rückgabe(request):
             klinik_ou = Lagerliste.objects.values_list('klinik').get(pk=inventarnummer)[0]
             ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
             # Checks if entry isnt already "zurückgegeben"
-            if ausgabe_check[13] in "1":
+            if ausgabe_check[0] in "('1',)":
                 _ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
                 temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=_[0])
                 __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(pk=klinik_ou)
