@@ -8,7 +8,7 @@
         <input style="float: left; margin-left: 1.25%;" class="searchbar" type="text" id="myInput2" onkeyup="myFunction2()" placeholder="Suchen...">
         <input style="float: left;" class="button" value="Heute" type="button" id="today" onclick="today2()">
         <input style="float: left;" class="button" value="Alle" type="button" id="today" onclick="undo()">
-        <select style="width: 6%; float: left; margin-top: 0.14cm; margin-left: 7px;" class="form-control" name="herausgeber" id="usernameSelect">
+        <select style="width: 7%; float: left; margin-top: 0.14cm; margin-left: 7px;" class="form-control" name="herausgeber" id="usernameSelect">
             <option value="{{ username }}">{{ username }}</option>
             {% for item in users %}
                 <option value="{{ item.username }}">{{ item.username }}</option>
