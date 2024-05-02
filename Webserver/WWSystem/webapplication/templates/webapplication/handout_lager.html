@@ -32,4 +32,10 @@
   {% if alert %}
     <div class="alert alert-danger" role="alert">{{ alert }}</div>
   {% endif %}
+  {% if fail %}
+    <div class="alert alert-danger" role="alert">Die Inventarnummern {{ fail }} konnten nicht ausgegeben werden. Grund: Geräte waren bereits ausgegeben.</div>
+  {% endif %}
+  {% if dne %}
+    <div class="alert alert-danger" role="alert">Die Inventarnummern {{ dne }} konnten nicht ausgetragen werden. Grund: Inventarnummern nicht in der Lagerliste hinterlegt.</div>
+  {% endif %}
 {% endblock %}

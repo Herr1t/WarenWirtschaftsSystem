@@ -26,4 +26,7 @@
     {% if alert %}
         <div class="alert alert-danger" role="alert">{{ alert }}</div>
     {% endif %}
+    {% if fail %}
+        <div class="alert alert-danger" role="alert">Die Inventarnummern {{ fail }} konnten nicht zurückgegeben werden. Grund: Geräte waren nicht ausgegeben.</div>
+    {% endif %}
 {% endblock %}
