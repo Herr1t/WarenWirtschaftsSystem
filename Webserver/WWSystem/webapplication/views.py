@@ -179,6 +179,7 @@ def handout_lager(request):
         klinik = request.POST["klinik"]
         herausgeber = request.user
         dne = ""
+        fail = ""
         # Appends all entries in the obejct "list"
         while True:
             check = request.POST.get(f"{x}", False)
@@ -196,7 +197,7 @@ def handout_lager(request):
             try:
                 ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
                 # Checks if entry isnt already "ausgegeben"
-                if ausgabe_check[13] in "0":
+                if ausgabe_check[0] in "('0',)":
                     ___ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
                     temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=___[0])
                     __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(pk=klinik)
@@ -218,7 +219,8 @@ def handout_lager(request):
             fail = fail[:-2]
             return render(request, "webapplication/handout_lager.html", {
                 "dne": dne,
-                "fail": fail
+                "fail": fail,
+                "message": ausgabe_check
             })
         # If there is at least one entry in "dne" then it uses this output
         if dne:
