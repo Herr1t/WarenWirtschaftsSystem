@@ -467,6 +467,7 @@ def update(request, bestell_nr):
         zuweisung = request.POST["zuweisung"] or items[7]
         geliefert = 1
         anzahl = int(BestellListe.objects.values_list('geliefert_anzahl').get(pk=bestell_nr)[0])
+        link = request.POST["link"] or ' '
 
         # If "Menge" is bigger than "255" it uses this output
         if menge:
@@ -502,7 +503,7 @@ def update(request, bestell_nr):
             })
         
         # Updating the entry in BestellListe
-        bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, zuweisung = zuweisung, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now())
+        bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, zuweisung = zuweisung, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now(), link=link)
         bnr = BestellListe.objects.get(pk=sap_bestell_nr_field)
         # If the column "geliefert_anzahl" was updated
         if geliefert_anzahl:
