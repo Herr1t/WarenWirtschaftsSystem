@@ -502,7 +502,8 @@ def update(request, bestell_nr):
                         i = i + 1
         # If the column "Menge" is equal to "geliefert_anzahl" it uses this output
         if int(geliefert_anzahl) == int(menge):
-            return render(request, "webapplication/update_bestell.html", {
+            return render(request, "webapplication/bestell.html", {
+                "bestell_nr": bestell_nr,
                 "bestell_liste": BestellListe.objects.all()
             })
         # If the column "sap_bestell_nr_field" was changed it uses this output
