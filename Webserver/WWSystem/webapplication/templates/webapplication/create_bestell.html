@@ -85,123 +85,140 @@
     </form>
 
     <script>
-        function toggleField(hideObj,showObj){
-            hideObj.disabled=true;        
-            hideObj.style.display='none';
-            showObj.disabled=false;   
-            showObj.style.display='inline';
+        /**
+         * Toggles visibility and enables/disables input fields based on selection.
+         * This function is typically used to switch between input fields based on user interaction.
+         * @param {HTMLElement} hideObj - The input field to hide and disable.
+         * @param {HTMLElement} showObj - The input field to show and enable.
+         */
+        function toggleField(hideObj, showObj) {
+            // Disable and hide the input field to be hidden
+            hideObj.disabled = true;
+            hideObj.style.display = 'none';
+            
+            // Enable and show the input field to be shown
+            showObj.disabled = false;
+            showObj.style.display = 'inline';
+            
+            // Set focus to the shown input field
             showObj.focus();
         }
 
+        // Event listener for change event on select element with id 'selectOption'
         document.getElementById('selectOption').addEventListener('change', function() {
-        var selectedOption = this.value;
-        var modellInput = document.getElementById('modell');
-        var typInput = document.getElementById('typ');
-        var spezifikationInput = document.getElementById('spezifikation');
-        var preisprostück = document.getElementById('preis_pro_stück');
+            // Get the value of the selected option
+            var selectedOption = this.value;
 
-        switch (selectedOption) {
-            case 'option1':
-            modellInput.value = 'DELL P2400';
-            typInput.value = 'Monitor';
-            spezifikationInput.value = '24 Zoll';
-            preisprostück.value = '180';
-            break;
-            case 'option2':
-            modellInput.value = 'DELL P2700';
-            typInput.value = 'Monitor';
-            spezifikationInput.value = '27 Zoll';
-            preisprostück.value = '280';
-            break;
-            case 'option3':
-            modellInput.value = 'HP 470';
-            typInput.value = 'Notebook';
-            spezifikationInput.value = '17 Zoll';
-            preisprostück.value = '890';
-            break;
-            case 'option4':
-            modellInput.value = 'Latitude 5500';
-            typInput.value = 'Notebook';
-            spezifikationInput.value = '15 Zoll';
-            preisprostück.value = '1080';
-            break;
-            case 'option5':
-            modellInput.value = 'Latitude 5400';
-            typInput.value = 'Notebook';
-            spezifikationInput.value = '14 Zoll';
-            preisprostück.value = '1080';
-            break;
-            case 'option6':
-            modellInput.value = 'OptiPlex 7010 Tower';
-            typInput.value = 'Desktop-PC';
-            spezifikationInput.value = 'Tower-Desktop-PC';
-            preisprostück.value = '840';
-            break;
-            case 'option7':
-            modellInput.value = 'OptiPlex 7010 SFF';
-            typInput.value = 'Desktop-PC';
-            spezifikationInput.value = 'Small Form Factor';
-            preisprostück.value = '840';
-            break;
-            case 'option8':
-            modellInput.value = 'OptiPlex 7010 Micro';
-            typInput.value = 'Desktop-PC';
-            spezifikationInput.value = 'Micro-Desktop-PC';
-            preisprostück.value = '800';
-            break;
-            case 'option9':
-            modellInput.value = 'Epson Drucker';
-            typInput.value = 'Drucker';
-            spezifikationInput.value = 'Rezeptdrucker';
-            preisprostück.value = '630';
-            break;
-            case 'option10':
-            modellInput.value = 'Zebra ZD411';
-            typInput.value = 'Drucker';
-            spezifikationInput.value = 'Laboretikettendrucker';
-            preisprostück.value = '420';
-            break;
-            case 'option11':
-            modellInput.value = 'Zebra ZD421t';
-            typInput.value = 'Drucker';
-            spezifikationInput.value = 'Etikettendrucker';
-            preisprostück.value = '360';
-            break;
-            case 'option12':
-            modellInput.value = 'Ricoh FI-8150';
-            typInput.value = 'Scanner';
-            spezifikationInput.value = 'Dokumentenscanner';
-            preisprostück.value = '500';
-            break;
-            case 'option13':
-            modellInput.value = 'Datalogic';
-            typInput.value = 'Scanner';
-            spezifikationInput.value = 'Handscanner';
-            preisprostück.value = '250';
-            break;
-            case 'option14':
-            modellInput.value = 'DELL WD19S';
-            typInput.value = 'Dockingstation';
-            spezifikationInput.value = 'Dockingstation';
-            preisprostück.value = '250';
-            break;
-            case 'option15':
-            modellInput.value = 'SpeechMike';
-            typInput.value = 'Diktiergerät';
-            spezifikationInput.value = 'Diktiergerät';
-            preisprostück.value = '280';
-            break;
-            case 'option16':
-            modellInput.value = 'SpeechExec';
-            typInput.value = 'Transkription';
-            spezifikationInput.value = 'ergonomischer Fußschalter';
-            preisprostück.value = '500';
-            break;
-            default:
-            modellInput.value = '';
-            typInput.value = '';
-            spezifikationInput.value = '';
-        }
-        });
+            // Get input fields by id
+            var modellInput = document.getElementById('modell');
+            var typInput = document.getElementById('typ');
+            var spezifikationInput = document.getElementById('spezifikation');
+            var preisprostück = document.getElementById('preis_pro_stück');
+
+            // Populate input fields based on selected option
+            switch (selectedOption) {
+                case 'option1':
+                    modellInput.value = 'DELL P2400';
+                    typInput.value = 'Monitor';
+                    spezifikationInput.value = '24 Zoll';
+                    preisprostück.value = '180';
+                    break;
+                    case 'option2':
+                    modellInput.value = 'DELL P2700';
+                    typInput.value = 'Monitor';
+                    spezifikationInput.value = '27 Zoll';
+                    preisprostück.value = '280';
+                    break;
+                    case 'option3':
+                    modellInput.value = 'HP 470';
+                    typInput.value = 'Notebook';
+                    spezifikationInput.value = '17 Zoll';
+                    preisprostück.value = '890';
+                    break;
+                    case 'option4':
+                    modellInput.value = 'Latitude 5500';
+                    typInput.value = 'Notebook';
+                    spezifikationInput.value = '15 Zoll';
+                    preisprostück.value = '1080';
+                    break;
+                    case 'option5':
+                    modellInput.value = 'Latitude 5400';
+                    typInput.value = 'Notebook';
+                    spezifikationInput.value = '14 Zoll';
+                    preisprostück.value = '1080';
+                    break;
+                    case 'option6':
+                    modellInput.value = 'OptiPlex 7010 Tower';
+                    typInput.value = 'Desktop-PC';
+                    spezifikationInput.value = 'Tower-Desktop-PC';
+                    preisprostück.value = '840';
+                    break;
+                    case 'option7':
+                    modellInput.value = 'OptiPlex 7010 SFF';
+                    typInput.value = 'Desktop-PC';
+                    spezifikationInput.value = 'Small Form Factor';
+                    preisprostück.value = '840';
+                    break;
+                    case 'option8':
+                    modellInput.value = 'OptiPlex 7010 Micro';
+                    typInput.value = 'Desktop-PC';
+                    spezifikationInput.value = 'Micro-Desktop-PC';
+                    preisprostück.value = '800';
+                    break;
+                    case 'option9':
+                    modellInput.value = 'Epson Drucker';
+                    typInput.value = 'Drucker';
+                    spezifikationInput.value = 'Rezeptdrucker';
+                    preisprostück.value = '630';
+                    break;
+                    case 'option10':
+                    modellInput.value = 'Zebra ZD411';
+                    typInput.value = 'Drucker';
+                    spezifikationInput.value = 'Laboretikettendrucker';
+                    preisprostück.value = '420';
+                    break;
+                    case 'option11':
+                    modellInput.value = 'Zebra ZD421t';
+                    typInput.value = 'Drucker';
+                    spezifikationInput.value = 'Etikettendrucker';
+                    preisprostück.value = '360';
+                    break;
+                    case 'option12':
+                    modellInput.value = 'Ricoh FI-8150';
+                    typInput.value = 'Scanner';
+                    spezifikationInput.value = 'Dokumentenscanner';
+                    preisprostück.value = '500';
+                    break;
+                    case 'option13':
+                    modellInput.value = 'Datalogic';
+                    typInput.value = 'Scanner';
+                    spezifikationInput.value = 'Handscanner';
+                    preisprostück.value = '250';
+                    break;
+                    case 'option14':
+                    modellInput.value = 'DELL WD19S';
+                    typInput.value = 'Dockingstation';
+                    spezifikationInput.value = 'Dockingstation';
+                    preisprostück.value = '250';
+                    break;
+                    case 'option15':
+                    modellInput.value = 'SpeechMike';
+                    typInput.value = 'Diktiergerät';
+                    spezifikationInput.value = 'Diktiergerät';
+                    preisprostück.value = '280';
+                    break;
+                    case 'option16':
+                    modellInput.value = 'SpeechExec';
+                    typInput.value = 'Transkription';
+                    spezifikationInput.value = 'ergonomischer Fußschalter';
+                    preisprostück.value = '500';
+                    break;
+                    default:
+                    // Clear input fields if no option is selected
+                    modellInput.value = '';
+                    typInput.value = '';
+                    spezifikationInput.value = '';
+                }
+            });
     </script>
 {% endblock %}

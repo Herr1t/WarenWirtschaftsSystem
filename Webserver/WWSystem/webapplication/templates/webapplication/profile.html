@@ -125,7 +125,7 @@
             rows.forEach(function(row, index) {
                 if (index !== 0) { // Skip header row
                     // Get the value of the "ausgabe" column in the current row
-                    var ausgabeColumn = row.cells[6].textContent.trim(); // Assuming the "ausgabe" column is the second column (index 1)
+                    var ausgabeColumn = row.cells[6].textContent.trim(); // Assuming the "ausgabe" column is the eigth column (index 1)
                         
                     // Parse the date string in the "ausgabe" column
                     var dateParts = ausgabeColumn.split(' ');
@@ -143,24 +143,43 @@
             });
         };
 
+        /**
+         * Filters table rows based on user input.
+         * This function is typically triggered by an input event.
+         */
         function myFunction2() {
-            var input, filter, table, tr, td, cell, i, j;
+            // Get the input element and its value
+            var input, filter;
             input = document.getElementById("myInput2");
             filter = input.value.toUpperCase();
+
+            // Get the table and its rows
+            var table, tr, td, cell;
             table = document.getElementById("myTable2");
             tr = table.getElementsByTagName("tr");
-            for (i = 1; i < tr.length; i++) {
-                // Hide the row initially.
+
+            // Loop through each row of the table
+            for (var i = 1; i < tr.length; i++) { // Start from 1 to skip header row
+                // Hide the row initially
                 tr[i].style.display = "none";
-                    
+
+                // Get the cells of the current row
                 td = tr[i].getElementsByTagName("td");
+
+                // Loop through each cell of the row
                 for (var j = 0; j < td.length; j++) {
+                    // Get the current cell
                     cell = tr[i].getElementsByTagName("td")[j];
+
+                    // Check if the cell exists
                     if (cell) {
+                        // Check if the cell's content matches the filter
                         if (cell.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                        break;
-                        } 
+                            // Display the row if the filter matches
+                            tr[i].style.display = "";
+                            // Break the inner loop since the row should be displayed
+                            break;
+                        }
                     }
                 }
             }

@@ -74,6 +74,7 @@
                 return months[germanMonth];
             }      
 
+            // Function to undo the today() Function
             function undo() {
                 var rows = document.querySelectorAll('table tr')
                 rows.forEach(function(row, index) {
@@ -95,7 +96,7 @@
             rows.forEach(function(row, index) {
                 if (index !== 0) { // Skip header row
                     // Get the value of the "ausgabe" column in the current row
-                    var ausgabeColumn = row.cells[7].textContent.trim(); // Assuming the "ausgabe" column is the second column (index 1)
+                    var ausgabeColumn = row.cells[7].textContent.trim(); // Assuming the "ausgabe" column is the eigth column (index 1)
                         
                     // Parse the date string in the "ausgabe" column
                     var dateParts = ausgabeColumn.split(' ');
@@ -113,56 +114,94 @@
             });
         };
 
-           function myFunction() {
-                var input, filter, table, tr, td, cell, i, j;
+           /**
+             * Filters table rows based on user input.
+             * This function is typically triggered by an input event.
+             */
+            function myFunction() {
+                // Get the input element and its value
+                var input, filter;
                 input = document.getElementById("myInput");
                 filter = input.value.toUpperCase();
+
+                // Get the table and its rows
+                var table, tr, td, cell;
                 table = document.getElementById("myTable");
                 tr = table.getElementsByTagName("tr");
-                for (i = 1; i < tr.length; i++) {
-                    // Hide the row initially.
+
+                // Loop through each row of the table
+                for (var i = 1; i < tr.length; i++) { // Start from 1 to skip header row
+                    // Hide the row initially
                     tr[i].style.display = "none";
-                    
+
+                    // Get the cells of the current row
                     td = tr[i].getElementsByTagName("td");
+
+                    // Loop through each cell of the row
                     for (var j = 0; j < td.length; j++) {
-                    cell = tr[i].getElementsByTagName("td")[j];
-                    if (cell) {
-                        if (cell.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                        break;
-                        } 
-                    }
+                        // Get the current cell
+                        cell = tr[i].getElementsByTagName("td")[j];
+
+                        // Check if the cell exists
+                        if (cell) {
+                            // Check if the cell's content matches the filter
+                            if (cell.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                // Display the row if the filter matches
+                                tr[i].style.display = "";
+                                // Break the inner loop since the row should be displayed
+                                break;
+                            }
+                        }
                     }
                 }
             }
 
+            /**
+             * Event listener for sorting table columns on click.
+             * It sorts the table rows based on the clicked column header.
+             */
             document.addEventListener('click', function (e) {
                 try {
+                    // Function to find the ancestor element with a specific tag
                     function findElementRecursive(element, tag) {
                         return element.nodeName === tag ? element : 
-                        findElementRecursive(element.parentNode, tag)
+                            findElementRecursive(element.parentNode, tag)
                     }
+                    
+                    // CSS classes for sorting
                     var descending_th_class = ' dir-d '
                     var ascending_th_class = ' dir-u '
                     var ascending_table_sort_class = 'asc'
+                    
+                    // Regular expressions
                     var regex_dir = / dir-(u|d) /
                     var regex_table = /\bsortable\b/
+                    
+                    // Check if alt key is pressed
                     var alt_sort = e.shiftKey || e.altKey
+                    
+                    // Find the clicked TH element
                     var element = findElementRecursive(e.target, 'TH')
                     var tr = findElementRecursive(element, 'TR')
                     var table = findElementRecursive(tr, 'TABLE')
+                    
+                    // Function to reclassify element with sorting direction
                     function reClassify(element, dir) {
-                    element.className = element.className.replace(regex_dir, '') + dir
+                        element.className = element.className.replace(regex_dir, '') + dir
                     }
-                        function getValue(element) {
-                            return (
-                                (alt_sort && element.getAttribute('data-sort-alt')) || 
-                            element.getAttribute('data-sort') || element.innerText
-                        )
+                    
+                    // Function to get value for sorting from element
+                    function getValue(element) {
+                        return ((alt_sort && element.getAttribute('data-sort-alt')) || 
+                            element.getAttribute('data-sort') || element.innerText)
                     }
+                    
+                    // Check if the table is sortable
                     if (regex_table.test(table.className)) {
                         var column_index
                         var nodes = tr.cells
+                        
+                        // Find column index of clicked TH element
                         for (var i = 0; i < nodes.length; i++) {
                             if (nodes[i] === element) {
                                 column_index = element.getAttribute('data-sort-col') || i
@@ -170,6 +209,8 @@
                                 reClassify(nodes[i], '')
                             }
                         }
+                        
+                        // Determine sorting direction
                         var dir = descending_th_class
                         if (
                             element.className.indexOf(descending_th_class) !== -1 ||
@@ -179,6 +220,8 @@
                             dir = ascending_th_class
                         }
                         reClassify(element, dir)
+                        
+                        // Sorting logic
                         var org_tbody = table.tBodies[0]
                         var rows = [].slice.call(org_tbody.rows, 0)
                         var reverse = dir === ascending_th_class
@@ -187,6 +230,8 @@
                             var y = getValue((reverse ? b : a).cells[column_index])
                             return isNaN(x - y) ? x.localeCompare(y) : x - y
                         })
+                        
+                        // Replace tbody with sorted rows
                         var clone_tbody = org_tbody.cloneNode()
                         while (rows.length) {
                             clone_tbody.appendChild(rows.splice(0, 1)[0])
@@ -194,42 +239,67 @@
                         table.replaceChild(clone_tbody, org_tbody)
                     }
                 } catch (error) {
+                    // Handle any errors silently
                 }
             });
 
             c = 1;
+            /**
+             * Adds a new input field with a delete button.
+             * This function is typically called when a user wants to add a new input field dynamically.
+             */
             function addInputField() {
+                // Create div elements to structure the input field and delete button
                 var div = document.createElement("div");
                 var div2 = document.createElement("div");
 
-                // create an input field to insert
+                // Create an input field to insert
                 var newInputField = document.createElement("input");
-                // set input field data type to text
+                // Set input field data type to text
                 newInputField.type = "text";
-                // set input field name
+                // Set input field name (using 'c' variable, assuming it's declared elsewhere)
                 newInputField.name = c;
-                // set required
+                // Set placeholder text
                 newInputField.placeholder = "Inventarnummer/Servicenummer";
+                // Set input field style
                 newInputField.style = "max-width: 96%; margin-left: 4%; margin-top: 1%;";
+                // Set input field as required
                 newInputField.setAttribute("required", "");
 
+                // Add CSS class to input field
                 newInputField.classList.add("form-control");
 
+                // Create a delete button
                 var newDeleteButton = document.createElement("button");
+                // Set button type (assuming it's empty)
                 newDeleteButton.type = '';
+                // Set button value (assuming it's not really used)
                 newDeleteButton.value = "Delete";
+                // Set button name (using 'c' variable, assuming it's declared elsewhere)
                 newDeleteButton.name = c;
+                // Set button style
                 newDeleteButton.style = "float: left; padding-left: 40px; padding-top: 4px; padding-bottom: 4px; background-color: black; border: solid 1px black; margin-top: 15px; margin-left: 13px; border-radius: 2px;";
+                // Add event listener for click event to handle deletion
                 newDeleteButton.addEventListener("click", deleteHandler);
 
-                // insert element
+                // Insert elements into divs
                 div.appendChild(newDeleteButton);
                 div2.appendChild(newInputField);
                 div.appendChild(div2);
+                
+                // Append the div containing the input field and delete button to the parent element with id 'inputs'
                 document.getElementById('inputs').appendChild(div);
+                
+                // Increment counter variable for input field name
                 c++;
             }
+
+            /**
+             * Handles deletion of input field and associated elements.
+             * This function is typically triggered when the delete button associated with an input field is clicked.
+             */
             function deleteHandler() {
+                // Find the parent element (div) of the delete button and remove it from the DOM
                 var parent = this.parentElement;
                 parent.parentElement.removeChild(parent);
             }
