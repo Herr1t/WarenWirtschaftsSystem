@@ -17,6 +17,7 @@
                 <th>Typ</th>
                 <th>Spezifikation</th>
                 <th>Zuweisung</th>
+                <th>Link</th>
                 <th>Ersteller</th>
                 <th>Bearbeitet</th>
                 <th>Invest</th>
@@ -38,6 +39,15 @@
                     <td>{{ item.typ }}</td>
                     <td>{{ item.spezifikation }}</td>
                     <td>{{ item.zuweisung }}</td>
+                    {% if item.link != ' ' %}
+                        <td>
+                            <a class="link" href="{{ item.link }}">
+                                Link
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>{{ item.link }}</td>
+                    {% endif %}
                     <td>{{ item.ersteller }}</td>
                     <td>{{ item.bearbeitet|date:"d. E Y - H:i" }}</td>
                     <td>{{ item.investmittel }}</td>

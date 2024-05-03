@@ -422,6 +422,7 @@ def create_bestell(request):
         geliefert_anzahl = 0
         ersteller = request.user
         bearbeitet = timezone.now()
+        link = request.POST["link"] or ' '
 
         # If "Menge" is bigger than "255" it uses this output
         if int(menge) > 255:
@@ -445,7 +446,7 @@ def create_bestell(request):
         })
         
         # Creation of the new entry for BestellListe
-        bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet)
+        bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet, link=link)
         return render(request, "webapplication/create_bestell.html", {
             "message": "Einträge erfolgreich angelegt"
         })
