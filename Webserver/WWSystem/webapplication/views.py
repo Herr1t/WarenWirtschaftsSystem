@@ -374,6 +374,23 @@ def handout_lager_ohne(request, bestell_nr):
         "bestell_nr": nr
     })
 
+# View Function that proscesses the deletion of all entries with a specific Bestell_Nr. in Lagerliste_ohne_Invest
+def löschen_lager_ohne(request, bestell_nr):
+    if request.method == 'POST':
+        # Double checking if the user really wants to delete the selected entries
+        answer = request.POST["confirm"]
+        # Deletion of entries if selected "yes"
+        if answer in "yes":
+            Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).delete()
+            BestellListe.objects.update_or_create(sap_bestell_nr_field=bestell_nr, defaults={'geliefert': 0, 'geliefert_anzahl': 0})
+            return HttpResponseRedirect(reverse('lager_ohne'))
+        # Cancelation of deletion if "no" is selected
+        else:
+            return HttpResponseRedirect(reverse('detail_lager', args=[bestell_nr]))
+    return render(request, "webapplication/löschen_lager_ohne.html", {
+        "bestell_nr": bestell_nr
+    })
+
 # View Function that represents the content of BestellListe
 def bestell(request):
     Menge =  BestellListe.objects.values_list('geliefert_anzahl', 'sap_bestell_nr_field')
@@ -516,8 +533,7 @@ def update(request, bestell_nr):
         return render(request, "webapplication/update_bestell.html", {
             "message": "Einträge erflogreich aktualisiert",
             "bestell_nr": bestell_nr,
-            "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr),
-            "alert": BestellListe.objects.get(pk=sap_bestell_nr_field)
+            "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
         })
     return render(request, "webapplication/update_bestell.html", {
         "bestell_nr": bestell_nr,

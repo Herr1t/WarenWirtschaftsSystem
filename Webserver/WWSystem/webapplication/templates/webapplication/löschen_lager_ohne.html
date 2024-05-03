@@ -1,0 +1,19 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Löschung der Lagerliste zur Bestellung {{ bestell_nr }}</h1>
+    <h2 style="float: left;">Bist du dir Sicher?</h2>
+
+    <form id="form" action="{% url 'löschen_lager_ohne' bestell_nr %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <select autofocus class="form-control" name="confirm">
+                <option value="">Ja oder Nein auswählen</option>
+                <option value="yes">Ja</option>
+                <option value="no">Nein</option>
+            </select>
+        </div>
+
+        <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Bestätigen">
+    </form>   
+{% endblock %}

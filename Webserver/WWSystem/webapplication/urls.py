@@ -26,5 +26,6 @@ urlpatterns = [
     path("lager_ohne", views.lager_ohne_invest, name="lager_ohne"),
     path("profile/<int:user_id>", views.profile_lager_ohne, name="profile_lager_ohne"),
     path("lager_ohne/<str:bestell_nr>", views.handout_lager_ohne, name="handout_lager_ohne"),
-    path("<int:user_id>/detail_profile_lager_ohne/<str:bestell_nr>", views.detail_profile_lager_ohne, name="detail_profile_lager_ohne")
+    path("<int:user_id>/detail_profile_lager_ohne/<str:bestell_nr>", views.detail_profile_lager_ohne, name="detail_profile_lager_ohne"),
+    path("lager_ohne/<str:bestell_nr>/löschen_lager_ohne", views.löschen_lager_ohne, name="löschen_lager_ohne")
 ]

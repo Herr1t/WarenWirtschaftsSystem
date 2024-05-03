@@ -3,6 +3,7 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Bestellung Nr. {{ bestell_nr }}</h1>
     <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'lager_ohne' %}'"></input>
+    <input class="button" value="Liste Löschen" type="button" style="color: red;" onclick="window.location.href='{% url 'löschen_lager_ohne' bestell_nr %}'"></input>
 
     <h2>Austragen aus Lagerliste ohne Invest</h2>
 
