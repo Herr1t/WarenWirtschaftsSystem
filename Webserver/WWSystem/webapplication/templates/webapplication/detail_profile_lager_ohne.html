@@ -24,7 +24,7 @@
                     <td>{{ item.modell }}</td>
                     <td>{{ item.spezifikation }}</td>
                     <td>{{ item.herausgeber }}</td>
-                    <td>{{ item.ausgabe }}</td>
+                    <td>{{ item.ausgabe|date:"d. E Y - H:i" }}</td>
                     <td>{{ item.bestell_nr_field }}</td>
                 </tr>
             {% endif %}

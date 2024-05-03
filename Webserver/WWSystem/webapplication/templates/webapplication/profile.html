@@ -75,7 +75,7 @@
                     <td>{{ item.spezifikation }}</td>
                     <td>{{ item.zuweisung }}</td>
                     <td>{{ item.herausgeber }}</td>
-                    <td>{{ item.ausgabe }}</td>
+                    <td>{{ item.ausgabe|date:"d. E Y - H:i" }}</td>
                     <td>{{ item.Menge }}</td>
                 </tr>
             {% endfor %}
