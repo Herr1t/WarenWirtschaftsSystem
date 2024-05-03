@@ -61,6 +61,7 @@
         </div>
         <div class="form-group">
             <input class="form-control" type="float" name="preis_pro_stück" id="preis_pro_stück" required placeholder="Preis pro Stück">
+            <span style="color: red;" id="preisError" class="error"></span>
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Optional: Spezifikation">
@@ -94,14 +95,16 @@
             var typ = document.getElementById('type').value;
             var menge = document.getElementById('menge').value;
             var spezifikation = document.getElementById('spezifikation').value;
+            var preis = document.getElementById('preis_pro_stück');
         
             var modellError = document.getElementById('modellError');
             var typError = document.getElementById('typeError');
             var mengeError = document.getElementById('mengeError');
             var spezifikationError = document.getElementById('spezifikationError');
+            var preisError = document.getElementById('preisError');
         
             var isValid = true;
-        
+
             if (modell.length > 50) {
                 modellError.textContent = "Modell darf nicht länger als 50 Zeichen sein";
                 isValid = false;
