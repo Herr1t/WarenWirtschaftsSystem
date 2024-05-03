@@ -423,27 +423,6 @@ def create_bestell(request):
         ersteller = request.user
         bearbeitet = timezone.now()
         link = request.POST["link"] or ' '
-
-        # If "Menge" is bigger than "255" it uses this output
-        if int(menge) > 255:
-            return render(request, "webapplication/create_bestell.html", {
-            "alert": "Menge darf 255 nicht überschreiten"
-        })
-        # If "Modell" is longer than "50" characters it uses this output
-        if len(str(modell)) > 50:
-            return render(request, "webapplication/create_bestell.html", {
-            "alert": "Modell darf nicht länger als 50 Zeichen sein"
-        })
-        # If "Typ" is longer than "50" characters it uses this output
-        if len(str(typ)) > 50:
-            return render(request, "webapplication/create_bestell.html", {
-            "alert": "Typ darf nicht länger als 50 Zeichen sein"
-        })
-        # If "Spezifikation" is longer than "255" characters it uses this output
-        if len(str(spezi)) > 255:
-            return render(request, "webapplication/create_bestell.html", {
-            "alert": "Spezifikation darf nicht länger als 255 Zeichen sein"
-        })
         
         # Creation of the new entry for BestellListe
         bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet, link=link)
@@ -468,39 +447,6 @@ def update(request, bestell_nr):
         geliefert = 1
         anzahl = int(BestellListe.objects.values_list('geliefert_anzahl').get(pk=bestell_nr)[0])
         link = request.POST["link"] or ' '
-
-        # If "Menge" is bigger than "255" it uses this output
-        if menge:
-            if int(menge) > 255:
-                return render(request, "webapplication/update_bestell.html", {
-                "alert": "Menge darf nicht 255 überschreiten",
-                "bestell_nr": bestell_nr,
-                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-            })
-        # If "Modell" is longer than "50" characters it uses this output
-        if modell:
-            if len(str(modell)) > 50:
-                return render(request, "webapplication/update_bestell.html", {
-                "alert": "Modell darf nicht länger als 50 Zeichen sein",
-                "bestell_nr": bestell_nr,
-                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-            })
-        # If "Typ" is longer than "50" characters it uses this output
-        if typ:
-            if len(str(typ)) > 50:
-                return render(request, "webapplication/update_bestell.html", {
-                "alert": "Typ darf nicht länger als 50 Zeichen sein",
-                "bestell_nr": bestell_nr,
-                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-            })
-        # If "Spezifikation" is longer than "255" characters it uses this output
-        if spezi:
-            if len(str(spezi)) > 255:
-                return render(request, "webapplication/update_bestell.html", {
-                "alert": "Spezifikation darf nicht länger als 255 Zeichen sein",
-                "bestell_nr": bestell_nr,
-                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
-            })
         
         # Updating the entry in BestellListe
         bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, zuweisung = zuweisung, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now(), link=link)

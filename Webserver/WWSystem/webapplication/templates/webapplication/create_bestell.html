@@ -6,7 +6,7 @@
 
     <h2>BestellListen Eintrag</h2>
 
-    <form action="{% url 'create_bestell' %}" method="post">
+    <form action="{% url 'create_bestell' %}" method="post" onsubmit="return validateForm()">
         {% csrf_token %}
         <div class="form-group">
             <select class="form-control" id="selectOption">
@@ -34,6 +34,7 @@
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="modell" id="modell" required placeholder="Modell">
+            <span style="color: red;" id="modellError" class="error"></span>
         </div>
         <div class="form-group">
             <select name="typ" id="typ" class="form-control"
@@ -51,16 +52,19 @@
                 <option value="Dockingstation">Dockingstation</option>
                 <option value="Diktiergerät">Diktiergerät</option>
                 <option value="Transkription">Transkription</option>
-            </select><input placeholder="Typ" class="form-control" name="typ" id="typ" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
+            </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
+            <span style="color: red;" id="typeError" class="error"></span>
         </div>
         <div class="form-group">
-            <input class="form-control" type="number" name="menge" required placeholder="Menge">
+            <input class="form-control" type="number" name="menge" id="menge" required placeholder="Menge">
+            <span style="color: red;" id="mengeError" class="error"></span>
         </div>
         <div class="form-group">
             <input class="form-control" type="float" name="preis_pro_stück" id="preis_pro_stück" required placeholder="Preis pro Stück">
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Optional: Spezifikation">
+            <span style="color: red;" id="spezifikationError" class="error"></span>
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="zuweisung" required placeholder="Zuweisung">
@@ -85,6 +89,49 @@
     </form>
 
     <script>
+        function validateForm() {
+            var modell = document.getElementById('modell').value;
+            var typ = document.getElementById('type').value;
+            var menge = document.getElementById('menge').value;
+            var spezifikation = document.getElementById('spezifikation').value;
+        
+            var modellError = document.getElementById('modellError');
+            var typError = document.getElementById('typeError');
+            var mengeError = document.getElementById('mengeError');
+            var spezifikationError = document.getElementById('spezifikationError');
+        
+            var isValid = true;
+        
+            if (modell.length > 50) {
+                modellError.textContent = "Modell darf nicht länger als 50 Zeichen sein";
+                isValid = false;
+            } else {
+                modellError.textContent = "";
+            }
+        
+            if (typ.length > 50) {
+                typError.textContent = "Typ darf nicht länger als 50 Zeichen sein";
+                isValid = false;
+            } else {
+                typError.textContent = "";
+            }
+        
+            if (menge > 255) {
+                mengeError.textContent = "Menge darf nicht größer als 255 sein";
+                isValid = false;
+            } else {
+                mengeError.textContent = "";
+            }
+        
+            if (spezifikation.length > 255) {
+                spezifikationError.textContent = "Spezifikation darf nicht länger als 255 Zeichen sein";
+                isValid = false;
+            } else {
+                spezifikationError.textContent = "";
+            }
+        
+            return isValid;
+        }
         /**
          * Toggles visibility and enables/disables input fields based on selection.
          * This function is typically used to switch between input fields based on user interaction.
