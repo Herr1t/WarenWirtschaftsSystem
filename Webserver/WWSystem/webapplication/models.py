@@ -25,6 +25,7 @@ class BestellListe(models.Model):
     geliefert = models.CharField(db_column='Geliefert', max_length=1)  # Field name made lowercase.
     geliefert_anzahl = models.IntegerField(db_column='Geliefert_Anzahl', blank=True, null=True)  # Field name made lowercase.
     investmittel = models.CharField(db_column='Investmittel', max_length=4)  # Field name made lowercase.
+    link = models.URLField(db_column='Link', max_length=250, default='')
 
     class Meta:
         managed = False
