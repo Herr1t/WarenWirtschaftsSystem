@@ -22,6 +22,7 @@ CREATE TABLE `Bestell_Liste` (
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
     `Zuweisung` TINYTEXT,
+    `Link` VARCHAR(2083) DEFAULT ' ',
     `Investmittel` ENUM('Ja', 'Nein', 'N.A.') NOT NULL DEFAULT 'N.A.',
     `Inventarnummern Von-Bis` TINYTEXT,
     `Ersteller` VARCHAR(35) DEFAULT 'Kein Ersteller',
