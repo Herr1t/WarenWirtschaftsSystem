@@ -11,7 +11,7 @@
         <form action="{% url 'handout_lager_ohne' bestell_nr %}" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <input class="form-control" type="number" name="menge" placeholder="Momentane Menge: {{ item.Menge }}">
+                <input class="form-control" type="number" name="menge" required placeholder="Momentane Menge: {{ item.Menge }}">
             </div>
             <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Austragen">
             {% if alert %}

@@ -19,7 +19,7 @@
       <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
     </div>
     <div class="form-group">
-      <select class="form-control" name="bestell_nr">
+      <select class="form-control" required name="bestell_nr">
         <option value="">Bitte Bestell-Nr. auswählen</option>
         {% for nr in bestell_nr %}
           <option value="{{ nr.sap_bestell_nr_field }}">{{ nr }}</option>
