@@ -54,7 +54,26 @@
         </ul>
         {% block body %}
         {% endblock %}
-        <script>           
+        <script>
+            // Function to convert German month name to its corresponding number
+            function germanMonthToNumber(germanMonth) {
+                var months = {
+                    "Januar": 0,
+                    "Februar": 1,
+                    "März": 2,
+                    "April": 3,
+                    "Mai": 4,
+                    "Juni": 5,
+                    "Juli": 6,
+                    "August": 7,
+                    "September": 8,
+                    "Oktober": 9,
+                    "November": 10,
+                    "Dezember": 11
+                };
+                return months[germanMonth];
+            }      
+
             function undo() {
                 var rows = document.querySelectorAll('table tr')
                 rows.forEach(function(row, index) {
@@ -63,35 +82,36 @@
             }
 
             function today() {
-                // Get the current date
-                var currentDate = new Date();
-                var currentYear = currentDate.getFullYear();
-                var currentMonth = currentDate.getMonth();
-                var currentDay = currentDate.getDate();
-                
-                // Get all rows of the table
-                var rows = document.getElementById("myTable").querySelectorAll('table tr');
-                
-                // Loop through each row
-                rows.forEach(function(row, index) {
-                    if (index !== 0) { // Skip header row
-                        // Get the value of the "ausgabe" column in the current row
-                        var ausgabeColumn = row.cells[6].textContent.trim(); // Assuming the "ausgabe" column is the second column (index 1)
+            // Get the current date
+            var currentDate = new Date();
+            var currentYear = currentDate.getFullYear();
+            var currentMonth = currentDate.getMonth();
+            var currentDay = currentDate.getDate();
+            
+            // Get all rows of the table
+            var rows = document.getElementById("myTable").querySelectorAll('table tr');
+            
+            // Loop through each row
+            rows.forEach(function(row, index) {
+                if (index !== 0) { // Skip header row
+                    // Get the value of the "ausgabe" column in the current row
+                    var ausgabeColumn = row.cells[7].textContent.trim(); // Assuming the "ausgabe" column is the second column (index 1)
                         
-                        // Parse the date string in the "ausgabe" column
-                        var dateParts = ausgabeColumn.split(',');
-                        var dateString = dateParts[0] + dateParts[1];
-                        var date = new Date(dateString);
-                        
-                        // Check if the date parts match the current date
-                        if (!isNaN(date.getTime()) && date.getFullYear() === currentYear && date.getMonth() === currentMonth && date.getDate() === currentDay) {
-                            row.style.display = ''; // Show the row
-                        } else {
-                            row.style.display = 'none'; // Hide the row
-                        }
+                    // Parse the date string in the "ausgabe" column
+                    var dateParts = ausgabeColumn.split(' ');
+                    var day = parseInt(dateParts[0]);
+                    var month = germanMonthToNumber(dateParts[1]);
+                    var year = parseInt(dateParts[2]);
+                    
+                    // Check if the parsed date matches the current date
+                    if (day === currentDay && month === currentMonth && year === currentYear) {
+                        row.style.display = ''; // Show the row
+                    } else {
+                        row.style.display = 'none'; // Hide the row
                     }
-                });
-            };
+                }
+            });
+        };
 
            function myFunction() {
                 var input, filter, table, tr, td, cell, i, j;

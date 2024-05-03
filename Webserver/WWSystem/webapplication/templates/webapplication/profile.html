@@ -117,10 +117,10 @@
             var currentYear = currentDate.getFullYear();
             var currentMonth = currentDate.getMonth();
             var currentDay = currentDate.getDate();
-                
+            
             // Get all rows of the table
             var rows = document.getElementById("myTable2").querySelectorAll('table tr');
-                
+            
             // Loop through each row
             rows.forEach(function(row, index) {
                 if (index !== 0) { // Skip header row
@@ -128,12 +128,13 @@
                     var ausgabeColumn = row.cells[6].textContent.trim(); // Assuming the "ausgabe" column is the second column (index 1)
                         
                     // Parse the date string in the "ausgabe" column
-                    var dateParts = ausgabeColumn.split(',');
-                    var dateString = dateParts[0] + dateParts[1];
-                    var date = new Date(dateString);
-                        
-                    // Check if the date parts match the current date
-                    if (!isNaN(date.getTime()) && date.getFullYear() === currentYear && date.getMonth() === currentMonth && date.getDate() === currentDay) {
+                    var dateParts = ausgabeColumn.split(' ');
+                    var day = parseInt(dateParts[0]);
+                    var month = germanMonthToNumber(dateParts[1]);
+                    var year = parseInt(dateParts[2]);
+                    
+                    // Check if the parsed date matches the current date
+                    if (day === currentDay && month === currentMonth && year === currentYear) {
                         row.style.display = ''; // Show the row
                     } else {
                         row.style.display = 'none'; // Hide the row
