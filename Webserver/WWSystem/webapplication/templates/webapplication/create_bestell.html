@@ -90,6 +90,15 @@
     </form>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const preisInput = document.getElementById('preis_pro_stück');
+            
+            preisInput.addEventListener('input', function() {
+                // Replace any characters that are not numbers, periods, or commas with an empty string
+                preisInput.value = preisInput.value.replace(/[^0-9.,]/g, '');
+            });
+        });
+
         function validateForm() {
             var modell = document.getElementById('modell').value;
             var typ = document.getElementById('type').value;
