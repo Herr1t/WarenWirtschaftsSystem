@@ -219,8 +219,7 @@ def handout_lager(request):
             fail = fail[:-2]
             return render(request, "webapplication/handout_lager.html", {
                 "dne": dne,
-                "fail": fail,
-                "message": ausgabe_check
+                "fail": fail
             })
         # If there is at least one entry in "dne" then it uses this output
         if dne:
@@ -252,6 +251,7 @@ def rückgabe(request):
         ausgabe = ""
         herausgeber = User.objects.get(pk=1)
         fail = ""
+        dne = ""
         # Appends all entries in the obejct "list"
         while True:
             check = request.POST.get(f"{x}", False)
@@ -266,28 +266,40 @@ def rückgabe(request):
         # "Rückgabe" of the entries in "list"
         for _ in list:
             inventarnummer = str(_)
-            klinik_ou = Lagerliste.objects.values_list('klinik').get(pk=inventarnummer)[0]
-            ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
-            # Checks if entry isnt already "zurückgegeben"
-            if ausgabe_check[0] in "('1',)":
-                _ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
-                temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=_[0])
-                __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(pk=klinik_ou)
-                # Adding the "preis_pro_stück" of the entries in "list" to the column "investmittel_übrig_in_euro" of the previously selected "ou" in Investmittelplan
-                abzug = __[0] + temp[0]
-                abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik_ou, defaults={'investmittel_übrig_in_euro': abzug})
-                # Updating the information of the "zurückgegebenen" entries in Lagerliste
-                ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben})
-                ausgeben2 = Lagerliste.objects.filter(inventarnummer=inventarnummer).update(herausgeber=None, klinik=None, ausgabe=None)
-            # Output if entry is already "zurückgegeben"
-            else:
-                fail = fail + inventarnummer + ", "
+            try:
+                klinik_ou = Lagerliste.objects.values_list('klinik').get(pk=inventarnummer)[0]
+                ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
+                # Checks if entry isnt already "zurückgegeben"
+                if ausgabe_check[0] in "('1',)":
+                    _ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
+                    temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=_[0])
+                    __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(pk=klinik_ou)
+                    # Adding the "preis_pro_stück" of the entries in "list" to the column "investmittel_übrig_in_euro" of the previously selected "ou" in Investmittelplan
+                    abzug = __[0] + temp[0]
+                    abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik_ou, defaults={'investmittel_übrig_in_euro': abzug})
+                    # Updating the information of the "zurückgegebenen" entries in Lagerliste
+                    ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben})
+                    ausgeben2 = Lagerliste.objects.filter(inventarnummer=inventarnummer).update(herausgeber=None, klinik=None, ausgabe=None)
+                # Output if entry is already "zurückgegeben"
+                else:
+                    fail = fail + inventarnummer + ", "
+                    continue
+            # If entry does not exist in Lagerliste then it gets appended to the variable "dne"
+            except ObjectDoesNotExist:
+                dne = dne + inventarnummer + ", "
                 continue
         # Output if there is at least one entry in fail then it uses this output
         if fail:
             fail = fail[:-2]
             return render(request, "webapplication/rückgabe.html", {
-                "fail": fail
+                "fail": fail,
+                "dne": dne
+            })
+        # If there is at least one entry in "dne" then it uses this output
+        if dne:
+            dne = dne[:-2]
+            return render(request, "webapplication/rückgabe.html", {
+                "dne": dne
             })
         return render(request, "webapplication/rückgabe.html", {
             "message": "Geräte erfolgreich zurückgegeben"

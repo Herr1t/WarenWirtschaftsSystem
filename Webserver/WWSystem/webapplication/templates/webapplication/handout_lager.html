@@ -24,7 +24,7 @@
     <input style="margin-left: 7px; margin-bottom: 8px;" class="btn btn-primary" type="submit", value="Austragen">
   </form>
   {% if alarm %}
-    <div class="alert alert-danger" role="alert">Die Investmittel der OU {{ alarm }} sind im Minusbereich: {{ geld }}€ momentan</div>
+    <div class="alert alert-danger" role="alert">Die Investmittel der OU <b>{{ alarm }}</b> sind im Minusbereich: {{ geld }}€ momentan</div>
   {% endif %}
   {% if message %}
     <div class="alert alert-success" role="alert">{{ message }}</div>
@@ -33,9 +33,9 @@
     <div class="alert alert-danger" role="alert">{{ alert }}</div>
   {% endif %}
   {% if fail %}
-    <div class="alert alert-danger" role="alert">Die Inventarnummern {{ fail }} konnten nicht ausgegeben werden. Grund: Geräte waren bereits ausgegeben.</div>
+    <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ fail }}</b> konnten nicht ausgegeben werden. Grund: Geräte waren bereits ausgegeben.</div>
   {% endif %}
   {% if dne %}
-    <div class="alert alert-danger" role="alert">Die Inventarnummern {{ dne }} konnten nicht ausgetragen werden. Grund: Inventarnummern nicht in der Lagerliste hinterlegt.</div>
+    <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ dne }}</b> konnten nicht ausgetragen werden. Grund: Inventarnummern nicht in der Lagerliste hinterlegt.</div>
   {% endif %}
 {% endblock %}

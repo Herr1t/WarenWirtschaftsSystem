@@ -27,6 +27,9 @@
         <div class="alert alert-danger" role="alert">{{ alert }}</div>
     {% endif %}
     {% if fail %}
-        <div class="alert alert-danger" role="alert">Die Inventarnummern {{ fail }} konnten nicht zurückgegeben werden. Grund: Geräte waren nicht ausgegeben.</div>
+        <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ fail }}</b> konnten nicht zurückgegeben werden. Grund: Geräte waren nicht ausgegeben.</div>
+    {% endif %}
+    {% if dne %}
+        <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ dne }}</b> konnten nicht ausgetragen werden. Grund: Inventarnummern nicht in der Lagerliste hinterlegt.</div>
     {% endif %}
 {% endblock %}
