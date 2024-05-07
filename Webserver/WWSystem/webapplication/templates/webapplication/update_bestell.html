@@ -18,7 +18,22 @@
             <span style="color: red;" id="modellError" class="error"></span>
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" name="typ" id="typ" placeholder="Typ: {{ item.typ }}">
+            <select name="typ" id="typ" class="form-control"
+                onchange="if(this.options[this.selectedIndex].value=='customOption'){
+                    toggleField(this,this.nextSibling);
+                    this.selectedIndex='0';
+                }">
+                <option value="">Typ: {{ item.typ }}</option>
+                <option value="customOption">[Eigenen Typ eintragen]</option>
+                <option value="Monitor">Monitor</option>
+                <option value="Notebook">Notebook</option>
+                <option value="Desktop-PC">Desktop-PC</option>
+                <option value="Drucker">Drucker</option>
+                <option value="Scanner">Scanner</option>
+                <option value="Dockingstation">Dockingstation</option>
+                <option value="Diktiergerät">Diktiergerät</option>
+                <option value="Transkription">Transkription</option>
+            </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
             <span style="color: red;" id="typError" class="error"></span>
         </div>
         <div class="form-group">
@@ -57,49 +72,68 @@
     </form>
     
     <script>
-    function validateForm() {
-        var modell = document.getElementById('modell').value;
-        var typ = document.getElementById('typ').value;
-        var menge = document.getElementById('menge').value;
-        var spezifikation = document.getElementById('spezifikation').value;
-    
-        var modellError = document.getElementById('modellError');
-        var typError = document.getElementById('typError');
-        var mengeError = document.getElementById('mengeError');
-        var spezifikationError = document.getElementById('spezifikationError');
-    
-        var isValid = true;
-    
-        if (modell.length > 50) {
-            modellError.textContent = "Modell darf nicht länger als 50 Zeichen sein";
-            isValid = false;
-        } else {
-            modellError.textContent = "";
+        /**
+         * Toggles visibility and enables/disables input fields based on selection.
+         * This function is typically used to switch between input fields based on user interaction.
+         * @param {HTMLElement} hideObj - The input field to hide and disable.
+         * @param {HTMLElement} showObj - The input field to show and enable.
+         */
+        function toggleField(hideObj, showObj) {
+            // Disable and hide the input field to be hidden
+            hideObj.disabled = true;
+            hideObj.style.display = 'none';
+            
+            // Enable and show the input field to be shown
+            showObj.disabled = false;
+            showObj.style.display = 'inline';
+            
+            // Set focus to the shown input field
+            showObj.focus();
         }
+
+        function validateForm() {
+            var modell = document.getElementById('modell').value;
+            var typ = document.getElementById('typ').value;
+            var menge = document.getElementById('menge').value;
+            var spezifikation = document.getElementById('spezifikation').value;
         
-        if (typ.length > 50) {
-            typError.textContent = "Typ darf nicht länger als 50 Zeichen sein";
-            isValid = false;
-        } else {
-            typError.textContent = "";
-        }
+            var modellError = document.getElementById('modellError');
+            var typError = document.getElementById('typError');
+            var mengeError = document.getElementById('mengeError');
+            var spezifikationError = document.getElementById('spezifikationError');
         
-        if (menge > 255) {
-            mengeError.textContent = "Menge darf nicht größer als 255 sein";
-            isValid = false;
-        } else {
-            mengeError.textContent = "";
+            var isValid = true;
+        
+            if (modell.length > 50) {
+                modellError.textContent = "Modell darf nicht länger als 50 Zeichen sein";
+                isValid = false;
+            } else {
+                modellError.textContent = "";
+            }
+            
+            if (typ.length > 50) {
+                typError.textContent = "Typ darf nicht länger als 50 Zeichen sein";
+                isValid = false;
+            } else {
+                typError.textContent = "";
+            }
+            
+            if (menge > 255) {
+                mengeError.textContent = "Menge darf nicht größer als 255 sein";
+                isValid = false;
+            } else {
+                mengeError.textContent = "";
+            }
+        
+            if (spezifikation.length > 255) {
+                spezifikationError.textContent = "Spezifikation darf nicht länger als 255 Zeichen sein";
+                isValid = false;
+            } else {
+                spezifikationError.textContent = "";
+            }
+        
+            return isValid;
         }
-    
-        if (spezifikation.length > 255) {
-            spezifikationError.textContent = "Spezifikation darf nicht länger als 255 Zeichen sein";
-            isValid = false;
-        } else {
-            spezifikationError.textContent = "";
-        }
-    
-        return isValid;
-    }
     </script>
     {% endfor %}
 {% endblock %}
