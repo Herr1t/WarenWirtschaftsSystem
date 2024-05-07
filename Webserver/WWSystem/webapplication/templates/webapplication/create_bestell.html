@@ -37,12 +37,12 @@
             <span style="color: red;" id="modellError" class="error"></span>
         </div>
         <div class="form-group">
-            <select name="typ" id="typ" class="form-control"
+            <select required name="typ" id="typ" class="form-control"
                 onchange="if(this.options[this.selectedIndex].value=='customOption'){
                     toggleField(this,this.nextSibling);
                     this.selectedIndex='0';
                 }">
-                <option>Bitte Typ auswählen</option>
+                <option value="">Bitte Typ auswählen</option>
                 <option value="customOption">[Eigenen Typ eintragen]</option>
                 <option value="Monitor">Monitor</option>
                 <option value="Notebook">Notebook</option>
