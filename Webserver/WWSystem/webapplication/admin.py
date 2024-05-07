@@ -22,8 +22,11 @@ class InvestmittelpanAdmin(admin.ModelAdmin):
     list_display = ("klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro")
     search_fields = ("klinik_ou", )
 
+class UserAdmin(admin.ModelAdmin):
+    list_display = ("username", "is_staff")
+
 admin.site.register(Lagerliste, LagerlisteAdmin)
 admin.site.register(Lagerliste_ohne_Invest, Lagerliste_ohne_InvestAdmin)
 admin.site.register(BestellListe, Bestell_ListeAdmin)
 admin.site.register(Investmittelplan, InvestmittelpanAdmin)
-admin.site.register(User)
+admin.site.register(User, UserAdmin)
