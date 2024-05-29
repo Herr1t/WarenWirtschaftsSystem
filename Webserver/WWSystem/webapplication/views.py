@@ -9,7 +9,7 @@ from django.db.models import Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll
 
 # View Function if nothing of the below is loaded
 def index(request):
@@ -598,16 +598,46 @@ def detail_invest(request, klinik_ou):
 
 def invest_soll(request):
     investmittelplan_soll = Investmittelplan_Soll.objects.all().order_by('ou')
-    # Values for the pagination
-    page = request.GET.get('page', 1)
-    paginator = Paginator(investmittelplan_soll, 50)
-    # Pagination failsaves
-    try:
-        invest_soll = paginator.page(page)
-    except PageNotAnInteger:
-        invest_soll = paginator.page(1)
-    except EmptyPage:
-        invest_soll = paginator.page(paginator.num_pages)
+    alle = Investmittelplan_Soll.objects.values_list('investmittel_gesamt')
+    l = len(alle)
+    i = 0
+    c = 0.00
+    while i < l:
+        c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
+        i = i + 1
     return render(request, "webapplication/invest_soll.html", {
-        "investmittelplan_soll": invest_soll
+        "investmittelplan_soll": investmittelplan_soll,
+        "alle": c
+    })
+
+def detail_invest_soll(request, ou):
+    return render(request, "webapplication/detail_invest_soll.html", {
+        "ou": ou,
+        "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_invsoll=ou)
+    })
+
+def create_invest_soll(request, ou):
+    if request.method == "POST":
+        ou_invsoll = Investmittelplan_Soll.objects.get(ou=ou)
+        typ = request.POST["typ"]
+        modell = request.POST["modell"]
+        menge = request.POST["menge"]
+        preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(",", ".")
+        admin = request.user
+        spezifikation = request.POST["spezifikation"]
+
+        invest_planung = Detail_Investmittelplan_Soll.objects.create(ou_invsoll=ou_invsoll, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis_pro_stück, admin=admin, spezifikation=spezifikation)
+        preis = Detail_Investmittelplan_Soll.objects.values_list('preis_pro_stück').filter(ou_invsoll=ou_invsoll)
+        meng = Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_invsoll=ou_invsoll)
+        length = len(preis) - 1
+        gesamt = float(str(preis[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(meng[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
+        jetzt = Investmittelplan_Soll.objects.values_list('investmittel_gesamt').get(ou=ou)
+        neu = float(jetzt[0]) + gesamt
+        Investmittelplan_Soll.objects.update_or_create(ou = ou, defaults={'investmittel_gesamt': neu})
+        return render(request, "webapplication/create_invest_soll.html", {
+            "message": "Eintrag erfolgreich geplant",
+            "ou": ou
+        })
+    return render(request, "webapplication/create_invest_soll.html", {
+        "ou": ou
     })
