@@ -81,3 +81,18 @@ class Lagerliste_ohne_Invest(models.Model):
 
     def __str__(self):
         return str(self.bestell_nr_field)
+    
+class Investmittelplan_Soll(models.Model):
+    ou = models.IntegerField(db_column='OU', primary_key=True)  # Field name made lowercase.
+    investmittel_gesamt = models.DecimalField(db_column='Investmittel_gesamt', max_digits=8, decimal_places=2)  # Field name made lowercase.
+    typ = models.CharField(db_column='Typ', max_length=50)
+    modell = models.CharField(db_column='Modell', max_length=50)
+    menge = models.IntegerField(db_column='Menge')
+    preis_pro_stück = models.DecimalField(db_column='Preis_pro_Stück', max_digits=6, decimal_places=2)
+    admin = models.ForeignKey(User, models.DO_NOTHING, db_column='Admin', to_field='username', blank=True, null=True)
+    spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)
+    investmittel_übrig_in_euro = models.DecimalField(db_column='Investmittel_übrig_in_Euro', max_digits=8, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Investmittelplan'
