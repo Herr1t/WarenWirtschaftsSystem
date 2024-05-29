@@ -96,3 +96,6 @@ class Investmittelplan_Soll(models.Model):
     class Meta:
         managed = False
         db_table = 'Investmittelplan'
+
+    def __str__(self):
+        return str(self.ou)
