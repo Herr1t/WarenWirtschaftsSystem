@@ -40,6 +40,19 @@ CREATE TABLE `Investmittelplan` (
     PRIMARY KEY(`Klinik_OU`)
 );
 
+CREATE TABLE `Investmittelplan_Soll` (
+    `OU` TINYINT NOT NULL,
+    `Investmittel_Gesamt` DECIMAL(8, 2) NOT NULL DEFAULT 0,
+    `Typ` VARCHAR(50) NOT NULL,
+    `Modell` VARCHAR(50) NOT NULL,
+    `Menge` TINYINT NOT NULL,
+    `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
+    `Admin` VARCHAR(35) NOT NULL,
+    `Spezifikation` TINYTEXT,
+    PRIMARY KEY(`OU`),
+    FOREIGN KEY(`Admin`) REFERENCES `webapplication_user`(`username`)
+);
+
 CREATE TABLE `Test` ( 
     `Klinik_OU` TINYINT NOT NULL, 
     `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
