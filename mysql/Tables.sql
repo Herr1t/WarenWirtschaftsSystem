@@ -43,16 +43,22 @@ CREATE TABLE `Investmittelplan` (
 CREATE TABLE `Investmittelplan_Soll` (
     `OU` TINYINT NOT NULL,
     `Investmittel_Gesamt` DECIMAL(8, 2) NOT NULL DEFAULT 0,
-    `Typ` VARCHAR(50) NOT NULL DEFAULT ' ',
-    `Modell` VARCHAR(50) NOT NULL DEFAULT ' ',
-    `Menge` TINYINT NOT NULL DEFAULT 0,
-    `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
-    `Admin` VARCHAR(35) NOT NULL DEFAULT 'Kein Ersteller',
-    `Spezifikation` TINYTEXT,
-    PRIMARY KEY(`OU`),
-    FOREIGN KEY(`Admin`) REFERENCES `webapplication_user`(`username`)
+    PRIMARY KEY(`OU`)
 );
 
+CREATE TABLE `Detail_Investmittelplan_Soll` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `OU_InvSoll` TINYINT NOT NULL,
+    `Typ` VARCHAR(50) NOT NULL,
+    `Modell` VARCHAR(50) NOT NULL,
+    `Spezifikation` TINYTEXT,
+    `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
+    `Admin` VARCHAR(35) DEFAULT 'Kein Ersteller',
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`Admin`) REFERENCES `webapplication_user`(`username`),
+    FOREIGN KEY(`OU_InvSoll`) REFERENCES `Investmittelplan_Soll`(`OU`)
+);
+    
 CREATE TABLE `Test` ( 
     `Klinik_OU` TINYINT NOT NULL, 
     `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
