@@ -84,7 +84,7 @@ class Lagerliste_ohne_Invest(models.Model):
     
 class Investmittelplan_Soll(models.Model):
     ou = models.IntegerField(db_column='OU', primary_key=True)  # Field name made lowercase.
-    investmittel_gesamt = models.DecimalField(db_column='Investmittel_gesamt', max_digits=8, decimal_places=2)  # Field name made lowercase.
+    investmittel_gesamt = models.DecimalField(db_column='Investmittel_gesamt', max_digits=9, decimal_places=2)  # Field name made lowercase.
 
     class Meta:
         managed = False
