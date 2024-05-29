@@ -52,6 +52,7 @@ CREATE TABLE `Detail_Investmittelplan_Soll` (
     `Typ` VARCHAR(50) NOT NULL,
     `Modell` VARCHAR(50) NOT NULL,
     `Spezifikation` TINYTEXT,
+    `Menge` TINYINT NOT NULL DEFAULT 0,
     `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
     `Admin` VARCHAR(35) DEFAULT 'Kein Ersteller',
     PRIMARY KEY(`id`),
