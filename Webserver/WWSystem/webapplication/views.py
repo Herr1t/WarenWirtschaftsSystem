@@ -9,7 +9,7 @@ from django.db.models import Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll
 
 # View Function if nothing of the below is loaded
 def index(request):
@@ -594,4 +594,20 @@ def detail_invest(request, klinik_ou):
     return render(request, "webapplication/detail_invest.html", {
         "detail_invest": detail_invest,
         "klinik_ou": ou
+    })
+
+def invest_soll(request):
+    investmittelplan_soll = Investmittelplan_Soll.objects.all().order_by('ou')
+    # Values for the pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(investmittelplan_soll, 50)
+    # Pagination failsaves
+    try:
+        invest_soll = paginator.page(page)
+    except PageNotAnInteger:
+        invest_soll = paginator.page(1)
+    except EmptyPage:
+        invest_soll = paginator.page(paginator.num_pages)
+    return render(request, "webapplication/invest_soll.html", {
+        "investmittelplan_soll": invest_soll
     })

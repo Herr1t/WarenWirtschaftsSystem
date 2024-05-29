@@ -4,10 +4,10 @@
     <h1 class="header" style="text-align: center;">Investmittelplan 2025</h1>
     <h2 style="text-align: left;">Seitenauswahl</h2>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
-    {% if investmittelplan.has_other_pages %}
+    {% if investmittelplan_soll.has_other_pages %}
         <ul style="float: left; margin-top: 14px; margin-left: 12px;" class="pagination">
-        {% for i in investmittelplan.paginator.page_range %}
-            {% if investmittelplan.number == i %}
+        {% for i in investmittelplan_soll.paginator.page_range %}
+            {% if investmittelplan_soll.number == i %}
                 <li class="active"><span class="current">{{ i }} <span class="sr-only">(current)</span> 
                    </span></li>
             {% else %}
@@ -19,21 +19,19 @@
     <table id="myTable" class="sortable" style="width: 99.5%;">
         <thead>
             <tr>
-                <th>Klinik/OU</th>
-                <th>Investmittel Jahresanfang</th>
-                <th>Investmittel übrig</th>
+                <th>OU</th>
+                <th>Investmittel Gesamt</th>
             </tr>
         </thead>
         <tbody>
-        {% for item in investmittelplan %}
+        {% for item in investmittelplan_soll %}
             <tr class="custom_row">
                 <td>
-                    <a class="link" href="{% url 'detail_investmittel' item.klinik_ou %}">
-                        {{ item.klinik_ou }}
+                    <a class="link" href="{% url 'detail_investmittel_soll' item.ou %}">
+                        {{ item.ou }}
                     </a>
                 </td>
-                <td>{{ item.investmittel_jahresanfang_in_euro }}</td>
-                <td>{{ item.investmittel_übrig_in_euro }}</td>
+                <td>{{ item.investmittel_gesamt }}</td>
             </tr>
         {% endfor %}
         </tbody>
