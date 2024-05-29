@@ -43,11 +43,11 @@ CREATE TABLE `Investmittelplan` (
 CREATE TABLE `Investmittelplan_Soll` (
     `OU` TINYINT NOT NULL,
     `Investmittel_Gesamt` DECIMAL(8, 2) NOT NULL DEFAULT 0,
-    `Typ` VARCHAR(50) NOT NULL,
-    `Modell` VARCHAR(50) NOT NULL,
-    `Menge` TINYINT NOT NULL,
+    `Typ` VARCHAR(50) NOT NULL DEFAULT ' ',
+    `Modell` VARCHAR(50) NOT NULL DEFAULT ' ',
+    `Menge` TINYINT NOT NULL DEFAULT 0,
     `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
-    `Admin` VARCHAR(35) NOT NULL,
+    `Admin` VARCHAR(35) NOT NULL DEFAULT 'Kein Ersteller',
     `Spezifikation` TINYTEXT,
     PRIMARY KEY(`OU`),
     FOREIGN KEY(`Admin`) REFERENCES `webapplication_user`(`username`)
