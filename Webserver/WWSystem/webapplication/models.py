@@ -81,3 +81,31 @@ class Lagerliste_ohne_Invest(models.Model):
 
     def __str__(self):
         return str(self.bestell_nr_field)
+    
+class Investmittelplan_Soll(models.Model):
+    ou = models.IntegerField(db_column='OU', primary_key=True)  # Field name made lowercase.
+    investmittel_gesamt = models.DecimalField(db_column='Investmittel_gesamt', max_digits=9, decimal_places=2)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Investmittelplan_Soll'
+
+    def __str__(self):
+        return str(self.ou)
+    
+class Detail_Investmittelplan_Soll(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True)
+    ou_invsoll = models.ForeignKey(Investmittelplan_Soll, models.DO_NOTHING, db_column='OU_InvSoll')
+    typ = models.CharField(db_column='Typ', max_length=50)
+    modell = models.CharField(db_column='Modell', max_length=50)
+    menge = models.IntegerField(db_column='Menge')
+    preis_pro_stück = models.DecimalField(db_column='Preis_pro_Stück', max_digits=6, decimal_places=2)
+    admin = models.ForeignKey(User, models.DO_NOTHING, db_column='Admin', to_field='username', blank=True, null=True)
+    spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Detail_Investmittelplan_Soll'
+
+    def __str__(self):
+        return str(self.ou_invsoll)

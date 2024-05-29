@@ -1,0 +1,266 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Investmittelplanung der OU {{ ou }}</h1>
+    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'detail_investmittel_soll' ou %}'"></input>
+
+    <h2>Investmittel Eintrag</h2>
+
+    <form action="{% url 'create_investmittel_soll' ou %}" method="post" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <div class="form-group">
+            <select class="form-control" id="selectOption">
+                <option>Standardbestellungen</option>
+                <option value="option1">Monitor 24"</option>
+                <option value="option2">Monitor 27"</option>
+                <option value="option3">Notebook 17"</option>
+                <option value="option4">Notebook 15"</option>
+                <option value="option5">Notebook 14"</option>
+                <option value="option6">Tower-PC</option>
+                <option value="option7">SFF-PC</option>
+                <option value="option8">Micro-PC</option>
+                <option value="option9">Rezeptdrucker</option>
+                <option value="option10">Laboretikettendrucker</option>
+                <option value="option11">Etikettendrucker</option>
+                <option value="option12">Dokumentenscanner</option>
+                <option value="option13">Handscanner</option>
+                <option value="option14">Dockingstation</option>
+                <option value="option15">Diktiergerät</option>
+                <option value="option16">Fußschalter</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="text" name="modell" id="modell" required placeholder="Modell">
+            <span style="color: red;" id="modellError" class="error"></span>
+        </div>
+        <div class="form-group">
+            <select required name="typ" id="typ" class="form-control"
+                onchange="if(this.options[this.selectedIndex].value=='customOption'){
+                    toggleField(this,this.nextSibling);
+                    this.selectedIndex='0';
+                }">
+                <option value="">Bitte Typ auswählen</option>
+                <option value="customOption">[Eigenen Typ eintragen]</option>
+                <option value="Monitor">Monitor</option>
+                <option value="Notebook">Notebook</option>
+                <option value="Desktop-PC">Desktop-PC</option>
+                <option value="Drucker">Drucker</option>
+                <option value="Scanner">Scanner</option>
+                <option value="Dockingstation">Dockingstation</option>
+                <option value="Diktiergerät">Diktiergerät</option>
+                <option value="Transkription">Transkription</option>
+            </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
+            <span style="color: red;" id="typeError" class="error"></span>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="number" name="menge" id="menge" required placeholder="Menge">
+            <span style="color: red;" id="mengeError" class="error"></span>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="float" name="preis_pro_stück" id="preis_pro_stück" required placeholder="Preis pro Stück">
+            <span style="color: red;" id="preisError" class="error"></span>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Optional: Spezifikation">
+            <span style="color: red;" id="spezifikationError" class="error"></span>
+        </div>
+        <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Eintragen">
+        {% if message %}
+            <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endif %}
+        {% if alert %}
+            <div class="alert alert-danger" role="alert">{{ alert }}</div>
+        {% endif %}
+    </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const preisInput = document.getElementById('preis_pro_stück');
+            
+            preisInput.addEventListener('input', function() {
+                // Replace any characters that are not numbers, periods, or commas with an empty string
+                preisInput.value = preisInput.value.replace(/[^0-9.,]/g, '');
+            });
+        });
+
+        function validateForm() {
+            var modell = document.getElementById('modell').value;
+            var typ = document.getElementById('type').value;
+            var menge = document.getElementById('menge').value;
+            var spezifikation = document.getElementById('spezifikation').value;
+            var preis = document.getElementById('preis_pro_stück');
+        
+            var modellError = document.getElementById('modellError');
+            var typError = document.getElementById('typeError');
+            var mengeError = document.getElementById('mengeError');
+            var spezifikationError = document.getElementById('spezifikationError');
+            var preisError = document.getElementById('preisError');
+        
+            var isValid = true;
+
+            if (modell.length > 50) {
+                modellError.textContent = "Modell darf nicht länger als 50 Zeichen sein";
+                isValid = false;
+            } else {
+                modellError.textContent = "";
+            }
+        
+            if (typ.length > 50) {
+                typError.textContent = "Typ darf nicht länger als 50 Zeichen sein";
+                isValid = false;
+            } else {
+                typError.textContent = "";
+            }
+        
+            if (menge > 255) {
+                mengeError.textContent = "Menge darf nicht größer als 255 sein";
+                isValid = false;
+            } else {
+                mengeError.textContent = "";
+            }
+        
+            if (spezifikation.length > 255) {
+                spezifikationError.textContent = "Spezifikation darf nicht länger als 255 Zeichen sein";
+                isValid = false;
+            } else {
+                spezifikationError.textContent = "";
+            }
+        
+            return isValid;
+        }
+        /**
+         * Toggles visibility and enables/disables input fields based on selection.
+         * This function is typically used to switch between input fields based on user interaction.
+         * @param {HTMLElement} hideObj - The input field to hide and disable.
+         * @param {HTMLElement} showObj - The input field to show and enable.
+         */
+        function toggleField(hideObj, showObj) {
+            // Disable and hide the input field to be hidden
+            hideObj.disabled = true;
+            hideObj.style.display = 'none';
+            
+            // Enable and show the input field to be shown
+            showObj.disabled = false;
+            showObj.style.display = 'inline';
+            
+            // Set focus to the shown input field
+            showObj.focus();
+        }
+
+        // Event listener for change event on select element with id 'selectOption'
+        document.getElementById('selectOption').addEventListener('change', function() {
+            // Get the value of the selected option
+            var selectedOption = this.value;
+
+            // Get input fields by id
+            var modellInput = document.getElementById('modell');
+            var typInput = document.getElementById('typ');
+            var spezifikationInput = document.getElementById('spezifikation');
+            var preisprostück = document.getElementById('preis_pro_stück');
+
+            // Populate input fields based on selected option
+            switch (selectedOption) {
+                case 'option1':
+                    modellInput.value = 'DELL P2400';
+                    typInput.value = 'Monitor';
+                    spezifikationInput.value = '24 Zoll';
+                    preisprostück.value = '180';
+                    break;
+                    case 'option2':
+                    modellInput.value = 'DELL P2700';
+                    typInput.value = 'Monitor';
+                    spezifikationInput.value = '27 Zoll';
+                    preisprostück.value = '280';
+                    break;
+                    case 'option3':
+                    modellInput.value = 'HP 470';
+                    typInput.value = 'Notebook';
+                    spezifikationInput.value = '17 Zoll';
+                    preisprostück.value = '890';
+                    break;
+                    case 'option4':
+                    modellInput.value = 'Latitude 5500';
+                    typInput.value = 'Notebook';
+                    spezifikationInput.value = '15 Zoll';
+                    preisprostück.value = '1080';
+                    break;
+                    case 'option5':
+                    modellInput.value = 'Latitude 5400';
+                    typInput.value = 'Notebook';
+                    spezifikationInput.value = '14 Zoll';
+                    preisprostück.value = '1080';
+                    break;
+                    case 'option6':
+                    modellInput.value = 'OptiPlex 7010 Tower';
+                    typInput.value = 'Desktop-PC';
+                    spezifikationInput.value = 'Tower-Desktop-PC';
+                    preisprostück.value = '840';
+                    break;
+                    case 'option7':
+                    modellInput.value = 'OptiPlex 7010 SFF';
+                    typInput.value = 'Desktop-PC';
+                    spezifikationInput.value = 'Small Form Factor';
+                    preisprostück.value = '840';
+                    break;
+                    case 'option8':
+                    modellInput.value = 'OptiPlex 7010 Micro';
+                    typInput.value = 'Desktop-PC';
+                    spezifikationInput.value = 'Micro-Desktop-PC';
+                    preisprostück.value = '800';
+                    break;
+                    case 'option9':
+                    modellInput.value = 'Epson Drucker';
+                    typInput.value = 'Drucker';
+                    spezifikationInput.value = 'Rezeptdrucker';
+                    preisprostück.value = '630';
+                    break;
+                    case 'option10':
+                    modellInput.value = 'Zebra ZD411';
+                    typInput.value = 'Drucker';
+                    spezifikationInput.value = 'Laboretikettendrucker';
+                    preisprostück.value = '420';
+                    break;
+                    case 'option11':
+                    modellInput.value = 'Zebra ZD421t';
+                    typInput.value = 'Drucker';
+                    spezifikationInput.value = 'Etikettendrucker';
+                    preisprostück.value = '360';
+                    break;
+                    case 'option12':
+                    modellInput.value = 'Ricoh FI-8150';
+                    typInput.value = 'Scanner';
+                    spezifikationInput.value = 'Dokumentenscanner';
+                    preisprostück.value = '500';
+                    break;
+                    case 'option13':
+                    modellInput.value = 'Datalogic';
+                    typInput.value = 'Scanner';
+                    spezifikationInput.value = 'Handscanner';
+                    preisprostück.value = '250';
+                    break;
+                    case 'option14':
+                    modellInput.value = 'DELL WD19S';
+                    typInput.value = 'Dockingstation';
+                    spezifikationInput.value = 'Dockingstation';
+                    preisprostück.value = '250';
+                    break;
+                    case 'option15':
+                    modellInput.value = 'SpeechMike';
+                    typInput.value = 'Diktiergerät';
+                    spezifikationInput.value = 'Diktiergerät';
+                    preisprostück.value = '280';
+                    break;
+                    case 'option16':
+                    modellInput.value = 'SpeechExec';
+                    typInput.value = 'Transkription';
+                    spezifikationInput.value = 'ergonomischer Fußschalter';
+                    preisprostück.value = '500';
+                    break;
+                    default:
+                    // Clear input fields if no option is selected
+                    modellInput.value = '';
+                    typInput.value = '';
+                    spezifikationInput.value = '';
+                }
+            });
+    </script>
+{% endblock %}

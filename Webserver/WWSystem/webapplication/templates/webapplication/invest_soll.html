@@ -1,0 +1,38 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Investmittelplan 2025</h1>
+    <table style="width: 15%; margin-left: auto; margin-right: auto;">
+        <thead>
+            <tr>
+                <th style="text-align: center;">Summe aller geplanten Investmittel</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center;">{{ alle }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <table id="myTable" class="sortable" style="width: 99.5%;">
+        <thead>
+            <tr>
+                <th>OU</th>
+                <th>Investmittel Gesamt</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in investmittelplan_soll %}
+            <tr class="custom_row">
+                <td>
+                    <a class="link" href="{% url 'detail_investmittel_soll' item.ou %}">
+                        {{ item.ou }}
+                    </a>
+                </td>
+                <td>{{ item.investmittel_gesamt }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
