@@ -43,7 +43,7 @@ CREATE TABLE `Investmittelplan` (
 CREATE TABLE `Investmittelplan_Soll` (
     `OU` TINYINT NOT NULL,
     `Investmittel_Gesamt` DECIMAL(8, 2) NOT NULL DEFAULT 0,
-    `Bereich` VARCHAR(20),
+    `Bereich` VARCHAR(40),
     `Team` VARCHAR(20),
     PRIMARY KEY(`OU`)
 );
