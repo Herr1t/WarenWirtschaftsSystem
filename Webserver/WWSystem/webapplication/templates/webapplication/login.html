@@ -15,9 +15,9 @@
         <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Login">
     </form>
     {% if message %}
-        <div class="alert alert-success" role="alert">{{ message }}</div>
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
     {% endif %}
 
-    <text style="margin-left: 7px;">Don't have an account?</text><a style="color: #104abc;" href="{% url 'register' %}"> Register here.</a>
+    <text style="margin-left: 7px;">Noch nicht Registriert?</text><a style="color: #104abc;" href="{% url 'register' %}"> Hier Registrieren.</a>
 
 {% endblock %}

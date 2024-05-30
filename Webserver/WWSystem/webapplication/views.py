@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.db.models import Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import Group
 
 from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll
 
@@ -23,15 +24,24 @@ def login_view(request):
         username = request.POST["username"]
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
+        group = Group.objects.get(name='Servicedesk')
+
+        if user.groups.filter(name='Klinik-Admin').exists() or user.groups.filter(name='Admin').exists():
+            pass
+        else:
+            group.user_set.add(user)
 
         # Check if authentication successful
         if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse("lagerliste"))
+            if user.groups.filter(name='Klinik-Admin').exists():
+                login(request, user)
+                return HttpResponseRedirect(reverse("investmittel_soll"))
+            else:
+                login(request, user)
+                return HttpResponseRedirect(reverse("lagerliste"))
         else:
             return render(request, "webapplication/login.html", {
-                "message": "Invalid username and/or password.",
-                "test": user
+                "message": "Ungültiger Nutzername und/oder Passwort."
             })
     else:
         return render(request, "webapplication/login.html")
@@ -45,13 +55,14 @@ def logout_view(request):
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
+        group = Group.objects.get(name='Klinik-Admin')
 
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(request, "webapplication/register.html", {
-                "message": "Passwords must match."
+                "message": "Passwörter müssen sich gleichen."
             })
 
         # Attempt to create new user
@@ -59,9 +70,10 @@ def register(request):
             user = User.objects.create_user(username, password)
             user.set_password(password)
             user.save()
+            group.user_set.add(user)
         except IntegrityError:
             return render(request, "webapplication/register.html", {
-                "message": "Username already taken."
+                "message": "Nutzername bereits vergeben."
             })
         login(request, user)
         return HttpResponseRedirect(reverse("lagerliste"))
@@ -461,7 +473,14 @@ def update(request, bestell_nr):
         link = request.POST["link"] or ' '
         
         # Updating the entry in BestellListe
-        bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, zuweisung = zuweisung, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now(), link=link)
+        try:
+            bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, zuweisung = zuweisung, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now(), link=link)
+        except IntegrityError:
+            return render(request, "webapplication/update_bestell.html", {
+                "alert": "Bestellnummer konnte nicht bearbeitet werden, da dieser Bestellung bereits Lagereinträge zugewiesen wurden.",
+                "bestell_nr": bestell_nr,
+                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
+        })
         bnr = BestellListe.objects.get(pk=sap_bestell_nr_field)
         # If the column "geliefert_anzahl" was updated
         if geliefert_anzahl:

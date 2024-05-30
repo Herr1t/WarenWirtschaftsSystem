@@ -25,27 +25,41 @@
         </div>
         <ul style="background-color: rgb(8, 71, 166); padding: 3px; border-top: solid 1px black; border-bottom: solid 1px black;" class="nav">
             {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lagerliste' %}">Lagerliste</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'lager_ohne' %}">Lagerliste ohne Investmittel</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'bestell_liste' %}">BestellListe</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'investmittel' %}">Investmittelplan</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'investmittel_soll' %}">Investmittelplan 2025</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'profile' user.id %}">Profil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                </li>
+                {% for group in request.user.groups.all %}
+                    {% if group.name == 'Klinik-Admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'investmittel' %}">Investmittelplan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'investmittel_soll' %}">Investmittelplan 2025</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'lagerliste' %}">Lagerliste</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'lager_ohne' %}">Lagerliste ohne Investmittel</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'bestell_liste' %}">BestellListe</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'investmittel' %}">Investmittelplan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'investmittel_soll' %}">Investmittelplan 2025</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' user.id %}">Profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Log In</a>
