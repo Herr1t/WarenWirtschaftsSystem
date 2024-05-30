@@ -64,7 +64,8 @@ CREATE TABLE `Detail_Investmittelplan_Soll` (
     
 CREATE TABLE `Test` ( 
     `Klinik_OU` TINYINT NOT NULL, 
-    `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
+    `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL DEFAULT 0,
+    `Investmittel_übrig_in_Euro` DECIMAL(9, 2),
     PRIMARY KEY(`Klinik_OU`) 
 );
 
