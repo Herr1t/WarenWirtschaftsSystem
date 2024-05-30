@@ -20,6 +20,8 @@
             <tr>
                 <th>OU</th>
                 <th>Investmittel Gesamt</th>
+                <th>Bereich</th>
+                <th>Team</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +33,8 @@
                     </a>
                 </td>
                 <td>{{ item.investmittel_gesamt }}€</td>
+                <td>{{ item.bereich }}</td>
+                <td>{{ item.team }}</td>
             </tr>
         {% endfor %}
         </tbody>
