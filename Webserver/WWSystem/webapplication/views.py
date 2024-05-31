@@ -26,13 +26,12 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         group = Group.objects.get(name='Servicedesk')
 
-        if user.groups.filter(name='Klinik-Admin').exists() or user.groups.filter(name='Admin').exists() or user.groups.filter(name='Servicedesk').exists():
-            pass
-        else:
-            group.user_set.add(user)
-
         # Check if authentication successful
         if user is not None:
+            if user.groups.filter(name='Klinik-Admin').exists() or user.groups.filter(name='Admin').exists() or user.groups.filter(name='Servicedesk').exists():
+                pass
+            else:
+                group.user_set.add(user)
             if user.groups.filter(name='Klinik-Admin').exists():
                 login(request, user)
                 return HttpResponseRedirect(reverse("investmittel_soll"))
