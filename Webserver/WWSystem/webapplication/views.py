@@ -26,7 +26,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         group = Group.objects.get(name='Servicedesk')
 
-        if user.groups.filter(name='Klinik-Admin').exists() or user.groups.filter(name='Admin').exists():
+        if user.groups.filter(name='Klinik-Admin').exists() or user.groups.filter(name='Admin').exists() or user.groups.filter(name='Servicedesk').exists():
             pass
         else:
             group.user_set.add(user)
@@ -546,7 +546,7 @@ def löschen_bestell(request, bestell_nr):
 # View Function that represents the content of Lagerliste and BestellListe that is related to the logged in user
 def profile(request, user_id):
     user_name = User.objects.values_list('username').get(pk=user_id)
-    user = User.objects.values('username').exclude(pk=user_id)
+    user = User.objects.values('username').exclude(pk=user_id).exclude()
     username = user_name[0]
     return render(request, "webapplication/profile.html", {
         "user_id": user_id,
