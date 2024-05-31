@@ -18,7 +18,7 @@ CREATE TABLE `Bestell_Liste` (
     `SAP_Bestell_Nr.` VARCHAR(20) NOT NULL,
     `Modell` VARCHAR(50) NOT NULL,
     `Typ` VARCHAR(50) NOT NULL,
-    `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
+    `Preis_pro_Stück` DECIMAL(8, 2) NOT NULL DEFAULT 0,
     `Menge` TINYINT NOT NULL CHECK(`Menge` >= 0),
     `Spezifikation` TINYTEXT,
     `Zuweisung` TINYTEXT,
@@ -35,14 +35,14 @@ CREATE TABLE `Bestell_Liste` (
 
 CREATE TABLE `Investmittelplan` (
     `Klinik_OU` TINYINT NOT NULL,
-    `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL CHECK(`Investmittel_Jahresanfang_in_Euro` >= 0) DEFAULT 0,
-    `Investmittel_übrig_in_Euro` DECIMAL(9, 2),
+    `Investmittel_Jahresanfang_in_Euro` DECIMAL(10, 2) NOT NULL CHECK(`Investmittel_Jahresanfang_in_Euro` >= 0) DEFAULT 0,
+    `Investmittel_übrig_in_Euro` DECIMAL(10, 2),
     PRIMARY KEY(`Klinik_OU`)
 );
 
 CREATE TABLE `Investmittelplan_Soll` (
     `OU` TINYINT NOT NULL,
-    `Investmittel_Gesamt` DECIMAL(8, 2) NOT NULL DEFAULT 0,
+    `Investmittel_Gesamt` DECIMAL(10, 2) NOT NULL DEFAULT 0,
     `Bereich` VARCHAR(40),
     `Team` VARCHAR(20),
     PRIMARY KEY(`OU`)
@@ -55,7 +55,7 @@ CREATE TABLE `Detail_Investmittelplan_Soll` (
     `Modell` VARCHAR(50) NOT NULL,
     `Spezifikation` TINYTEXT,
     `Menge` TINYINT NOT NULL DEFAULT 0,
-    `Preis_pro_Stück` DECIMAL(6, 2) NOT NULL DEFAULT 0,
+    `Preis_pro_Stück` DECIMAL(8, 2) NOT NULL DEFAULT 0,
     `Admin` VARCHAR(35) DEFAULT 'Kein Ersteller',
     PRIMARY KEY(`id`),
     FOREIGN KEY(`Admin`) REFERENCES `webapplication_user`(`username`),
@@ -64,8 +64,8 @@ CREATE TABLE `Detail_Investmittelplan_Soll` (
     
 CREATE TABLE `Test` ( 
     `Klinik_OU` TINYINT NOT NULL, 
-    `Investmittel_Jahresanfang_in_Euro` DECIMAL(8, 2) NOT NULL DEFAULT 0,
-    `Investmittel_übrig_in_Euro` DECIMAL(9, 2),
+    `Investmittel_Jahresanfang_in_Euro` DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    `Investmittel_übrig_in_Euro` DECIMAL(10, 2),
     PRIMARY KEY(`Klinik_OU`) 
 );
 
