@@ -77,7 +77,7 @@ def register(request):
                 "message": "Nutzername bereits vergeben."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("lagerliste"))
+        return HttpResponseRedirect(reverse("investmittel_soll"))
     else:
         return render(request, "webapplication/register.html")
 
