@@ -22,6 +22,8 @@
                 <th>Klinik/OU</th>
                 <th>Investmittel Jahresanfang</th>
                 <th>Investmittel übrig</th>
+                <th>Bereich</th>
+                <th>Team</th>
             </tr>
         </thead>
         <tbody>
@@ -34,6 +36,8 @@
                 </td>
                 <td>{{ item.investmittel_jahresanfang_in_euro }}€</td>
                 <td>{{ item.investmittel_übrig_in_euro }}€</td>
+                <td>{{ item.bereich }}</td>
+                <td>{{ item.team }}</td>
             </tr>
         {% endfor %}
         </tbody>
