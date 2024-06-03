@@ -20,10 +20,10 @@
         <thead>
             <tr>
                 <th>Klinik/OU</th>
-                <th>Investmittel Jahresanfang</th>
-                <th>Investmittel übrig</th>
                 <th>Bereich</th>
                 <th>Team</th>
+                <th>Investmittel Jahresanfang</th>
+                <th>Investmittel übrig</th>
             </tr>
         </thead>
         <tbody>
@@ -34,10 +34,10 @@
                         {{ item.klinik_ou }}
                     </a>
                 </td>
-                <td>{{ item.investmittel_jahresanfang_in_euro }}€</td>
-                <td>{{ item.investmittel_übrig_in_euro }}€</td>
                 <td>{{ item.bereich }}</td>
                 <td>{{ item.team }}</td>
+                <td>{{ item.investmittel_jahresanfang_in_euro }}€</td>
+                <td>{{ item.investmittel_übrig_in_euro }}€</td>
             </tr>
         {% endfor %}
         </tbody>
