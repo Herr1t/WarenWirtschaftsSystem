@@ -625,6 +625,7 @@ def invest_soll(request):
     while i < l:
         c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
         i = i + 1
+    gesamt = Investmittelplan_Soll.objects.values_list("investmittel_gesamt")
     return render(request, "webapplication/invest_soll.html", {
         "investmittelplan_soll": investmittelplan_soll,
         "alle": c
@@ -661,3 +662,6 @@ def create_invest_soll(request, ou):
     return render(request, "webapplication/create_invest_soll.html", {
         "ou": ou
     })
+
+def update_detail_invest_soll(request, ou):
+    pass
