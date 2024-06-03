@@ -663,5 +663,40 @@ def create_invest_soll(request, ou):
         "ou": ou
     })
 
-def update_detail_invest_soll(request, ou):
-    pass
+def update_detail_invest_soll(request, ou, id):
+    if request.method == "POST":
+        items = Detail_Investmittelplan_Soll.objects.values_list("modell", "typ", "menge", "preis_pro_stück", "spezifikation").get(pk=id)
+        modell = request.POST["modell"] or items[0]
+        typ = request.POST["typ"] or items[1]
+        menge = request.POST["menge"] or items[2]
+        preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(",", ".") or items[3]
+        spezifikation = request.POST["spezifikation"] or items[4]
+
+        preis_alt = Detail_Investmittelplan_Soll.objects.values_list("preis_pro_stück").filter(id=id)
+        menge_alt = Detail_Investmittelplan_Soll.objects.values_list("menge").filter(id=id)
+        length_alt = len(preis_alt) - 1
+        gesamt_alt = float(str(preis_alt[length_alt]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(menge_alt[length_alt]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
+        jetzt_alt = Investmittelplan_Soll.objects.values_list('investmittel_gesamt').get(ou=ou)
+        neu_alt = float(jetzt_alt[0]) - gesamt_alt
+        Investmittelplan_Soll.objects.update_or_create(ou = ou, defaults={'investmittel_gesamt': neu_alt})
+        update = Detail_Investmittelplan_Soll.objects.filter(id=id).update(modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezifikation)
+        preis_neu = Detail_Investmittelplan_Soll.objects.values_list("preis_pro_stück").filter(id=id)
+        menge_neu = Detail_Investmittelplan_Soll.objects.values_list("menge").filter(id=id)
+        length_neu = len(preis_neu) - 1
+        gesamt_neu = float(str(preis_neu[length_neu]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(menge_neu[length_neu]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
+        jetzt_neu = Investmittelplan_Soll.objects.values_list('investmittel_gesamt').get(ou=ou)
+        neu_neu = float(jetzt_neu[0]) + gesamt_neu
+        Investmittelplan_Soll.objects.update_or_create(ou = ou, defaults={'investmittel_gesamt': neu_neu})
+
+        return render(request, "webapplication/update_detail_invest_soll.html", {
+            "invest_soll": Detail_Investmittelplan_Soll.objects.all().filter(id=id),
+            "ou": ou,
+            "id": id    ,
+            "message": "Eintrag erflogreich aktualisiert"
+        })
+
+    return render(request, "webapplication/update_detail_invest_soll.html", {
+        "invest_soll": Detail_Investmittelplan_Soll.objects.all().filter(id=id),
+        "ou": ou,
+        "id": id
+    })

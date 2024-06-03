@@ -8,6 +8,11 @@
     <table id="myTable" class="sortable" style="width: 99.5%;">
         <thead>
             <tr>
+                {% for group in request.user.groups.all %}
+                    {% if group.name == 'Admin' %}
+                        <th>Bearbeitungslink</th>
+                    {% endif %}
+                {% endfor %}
                 <th>Typ</th>
                 <th>Modell</th>
                 <th>Preis pro Stück</th>
@@ -19,6 +24,15 @@
         <tbody>
         {% for item in detail_investmittelplan_soll %}
             <tr class="custom_row">
+                {% for group in request.user.groups.all %}
+                    {% if group.name == 'Admin' %}
+                        <td>
+                            <a class="link" href="{% url 'update_detail_invest_soll' item.ou_invsoll item.id %}">
+                                Bearbeiten
+                            </a>
+                        </td>
+                    {% endif %}
+                {% endfor %}
                 <td>{{ item.typ }}</td>
                 <td>{{ item.modell }}</td>
                 <td>{{ item.preis_pro_stück }}€</td>

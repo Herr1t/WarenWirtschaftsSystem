@@ -16,6 +16,7 @@ urlpatterns = [
     path("invest_soll", views.invest_soll, name="investmittel_soll"),
     path("invest_soll/<int:ou>", views.detail_invest_soll, name="detail_investmittel_soll"),
     path("invest_soll/<int:ou>/create_invest_soll", views.create_invest_soll, name="create_investmittel_soll"),
+    path("invest_soll/<int:ou>/<int:id>/update_detail_invest_soll", views.update_detail_invest_soll, name="update_detail_invest_soll"),
     path("create_bestell", views.create_bestell, name="create_bestell"),
     path("create_lager", views.create_lager, name="create_lager"),
     path("handout_lager", views.handout_lager, name="handout_lager"),

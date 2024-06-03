@@ -42,6 +42,7 @@
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="preis_pro_stück" placeholder="Preis pro Stück: {{ item.preis_pro_stück }}">
+            <span style="color: red;" id="preisError" class="error"></span>
         </div>
         <div class="form-group">
             <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Spezifikation: {{ item.spezifikation }}">
@@ -96,11 +97,13 @@
             var typ = document.getElementById('typ').value;
             var menge = document.getElementById('menge').value;
             var spezifikation = document.getElementById('spezifikation').value;
+            var preis = parseFloat(document.getElementById('preis_pro_stück').value).toFixed(2);
         
             var modellError = document.getElementById('modellError');
             var typError = document.getElementById('typError');
             var mengeError = document.getElementById('mengeError');
             var spezifikationError = document.getElementById('spezifikationError');
+            var preisError = document.getElementById('preisError');
         
             var isValid = true;
         
@@ -130,6 +133,13 @@
                 isValid = false;
             } else {
                 spezifikationError.textContent = "";
+            }
+
+            if (preis >= 999999.99) {
+                preisError.textContent = "Preis muss kleiner als 1 Mio sein";
+                isValid = false;
+            } else {
+                preisError.textContent = "";
             }
         
             return isValid;
