@@ -1,7 +1,17 @@
 from django.contrib import admin
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll
 # Register your models here.
+
+class Investmittelplan_SollAdmin(admin.ModelAdmin):
+    list_display = ("ou", "investmittel_gesamt", "bereich", "team")
+    list_filter = ("team", "bereich")
+    search_fields = ("ou", )
+
+class Detail_Investmittelplan_SollAdmin(admin.ModelAdmin):
+    list_display = ("ou_invsoll", "typ", "modell", "menge", "preis_pro_stück", "admin", "spezifikation")
+    list_filter = ("typ", "modell")
+    search_fields = ("ouinvsoll", )
 
 class Bestell_ListeAdmin(admin.ModelAdmin):
     list_display = ("sap_bestell_nr_field", "modell", "typ", "menge", "preis_pro_stück", "spezifikation", "zuweisung", "link", "investmittel", "bearbeitet", "ersteller", "geliefert", "geliefert_anzahl")
@@ -29,4 +39,6 @@ admin.site.register(Lagerliste, LagerlisteAdmin)
 admin.site.register(Lagerliste_ohne_Invest, Lagerliste_ohne_InvestAdmin)
 admin.site.register(BestellListe, Bestell_ListeAdmin)
 admin.site.register(Investmittelplan, InvestmittelpanAdmin)
+admin.site.register(Investmittelplan_Soll, Investmittelplan_SollAdmin)
+admin.site.register(Detail_Investmittelplan_Soll, Detail_Investmittelplan_SollAdmin)
 admin.site.register(User, UserAdmin)
