@@ -5,8 +5,8 @@ from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste
 
 class Investmittelplan_SollAdmin(admin.ModelAdmin):
     list_display = ("ou", "investmittel_gesamt", "bereich", "team")
-    list_filter = ("team", "bereich")
-    search_fields = ("ou", )
+    list_filter = ("team", )
+    search_fields = ("ou", "bereich")
 
 class Detail_Investmittelplan_SollAdmin(admin.ModelAdmin):
     list_display = ("ou_invsoll", "typ", "modell", "menge", "preis_pro_stück", "admin", "spezifikation")
