@@ -75,7 +75,7 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(username, password)
+            user = User.objects.create_user(username, password=password)
             user.set_password(password)
             user.save()
             group.user_set.add(user)
