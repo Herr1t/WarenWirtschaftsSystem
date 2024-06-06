@@ -79,12 +79,14 @@ def register(request):
             user.set_password(password)
             user.save()
             group.user_set.add(user)
+            confirm = User.objects.update_or_create(username=username, defaults={'is_active': "0"})
         except IntegrityError:
             return render(request, "webapplication/register.html", {
                 "message": "Nutzername bereits vergeben."
             })
-        login(request, user)
-        return HttpResponseRedirect(reverse("investmittel_soll"))
+        return render(request, "webapplication/register.html", {
+            "confirm": "1"
+        }) 
     else:
         return render(request, "webapplication/register.html")
 
