@@ -1,4 +1,5 @@
 {% extends "webapplication/layout.html" %}
+{% load humanize %}
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittel der Klinik {{ klinik_ou }}</h1>
@@ -25,7 +26,7 @@
                 <td>{{ item.modell }}</td>
                 <td>{{ item.typ }}</td>
                 <td>{{ item.spezifikation }}</td>
-                <td>{{ item.bestell_nr_field__preis_pro_stück }}</td>
+                <td>{{ item.bestell_nr_field__preis_pro_stück|intcomma }}</td>
                 <td>{{ item.Menge }}</td>
             </tr>
         {% endfor %}

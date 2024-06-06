@@ -1,4 +1,5 @@
 {% extends "webapplication/layout.html" %}
+{% load humanize %}
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplan</h1>
@@ -36,8 +37,8 @@
                 </td>
                 <td>{{ item.bereich }}</td>
                 <td>{{ item.team }}</td>
-                <td>{{ item.investmittel_jahresanfang_in_euro }}€</td>
-                <td>{{ item.investmittel_übrig_in_euro }}€</td>
+                <td>{{ item.investmittel_jahresanfang_in_euro|intcomma }}€</td>
+                <td>{{ item.investmittel_übrig_in_euro|intcomma }}€</td>
             </tr>
         {% endfor %}
         </tbody>

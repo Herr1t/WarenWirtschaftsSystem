@@ -1,4 +1,5 @@
 {% extends "webapplication/layout.html" %}
+{% load humanize %}
 
 {% block body %}
     <h1 class="header" style="text-align: center;">BestellListe</h1>
@@ -51,7 +52,7 @@
                     <td>{{ item.ersteller }}</td>
                     <td>{{ item.bearbeitet|date:"d. E Y - H:i" }}</td>
                     <td>{{ item.investmittel }}</td>
-                    <td>{{ item.preis_pro_stück }}€</td>
+                    <td>{{ item.preis_pro_stück|intcomma }}€</td>
                     <td>{{ item.menge }}</td>
                     <td>{{ item.geliefert_anzahl }}</td>
                 </tr>

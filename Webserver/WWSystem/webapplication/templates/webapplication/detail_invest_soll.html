@@ -1,4 +1,5 @@
 {% extends "webapplication/layout.html" %}
+{% load humanize %}
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplanung der OU {{ ou }}</h1>
@@ -35,7 +36,7 @@
                 {% endfor %}
                 <td>{{ item.typ }}</td>
                 <td>{{ item.modell }}</td>
-                <td>{{ item.preis_pro_stück }}€</td>
+                <td>{{ item.preis_pro_stück|intcomma }}€</td>
                 <td>{{ item.spezifikation }}</td>
                 <td>{{ item.admin }}</td>
                 <td>{{ item.menge }}</td>
