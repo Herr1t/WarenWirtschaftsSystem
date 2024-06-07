@@ -10,6 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="{% static 'webapplication/styles.css' %}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
@@ -279,7 +280,7 @@
                 // Set placeholder text
                 newInputField.placeholder = "Inventarnummer/Servicenummer";
                 // Set input field style
-                newInputField.style = "max-width: 96%; margin-left: 4%; margin-top: 1%;";
+                newInputField.style = "width: 95.1%; margin-top: 1%; margin-left: 5%;";
                 // Set input field as required
                 newInputField.setAttribute("required", "");
 
@@ -290,16 +291,21 @@
                 var newDeleteButton = document.createElement("button");
                 // Set button type (assuming it's empty)
                 newDeleteButton.type = '';
+                newDeleteButton.classList.add("btn");
                 // Set button value (assuming it's not really used)
                 newDeleteButton.value = "Delete";
                 // Set button name (using 'c' variable, assuming it's declared elsewhere)
                 newDeleteButton.name = c;
                 // Set button style
-                newDeleteButton.style = "float: left; padding-left: 40px; padding-top: 4px; padding-bottom: 4px; background-color: black; border: solid 1px black; margin-top: 15px; margin-left: 13px; border-radius: 2px;";
+                newDeleteButton.style = "float: left; font-size: 20px; margin-top: 2px; padding: 0 8px 5px 8px;";
                 // Add event listener for click event to handle deletion
                 newDeleteButton.addEventListener("click", deleteHandler);
 
+                var newtest = document.createElement("i");
+                newtest.classList.add("fa", "fa-trash");
+
                 // Insert elements into divs
+                newDeleteButton.appendChild(newtest);
                 div.appendChild(newDeleteButton);
                 div2.appendChild(newInputField);
                 div.appendChild(div2);

@@ -2,92 +2,96 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">BestellListe</h1>
-    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
+        <div class="create">
 
-    <h2>BestellListen Eintrag</h2>
+            <h2>BestellListen Eintrag</h2>
 
-    <form action="{% url 'create_bestell' %}" method="post" onsubmit="return validateForm()">
-        {% csrf_token %}
-        <div class="form-group">
-            <select class="form-control" id="selectOption">
-                <option>Standardbestellungen</option>
-                <option value="option1">Monitor 24"</option>
-                <option value="option2">Monitor 27"</option>
-                <option value="option3">Notebook 17"</option>
-                <option value="option4">Notebook 15"</option>
-                <option value="option5">Notebook 14"</option>
-                <option value="option6">Tower-PC</option>
-                <option value="option7">SFF-PC</option>
-                <option value="option8">Micro-PC</option>
-                <option value="option9">Rezeptdrucker</option>
-                <option value="option10">Laboretikettendrucker</option>
-                <option value="option11">Etikettendrucker</option>
-                <option value="option12">Dokumentenscanner</option>
-                <option value="option13">Handscanner</option>
-                <option value="option14">Dockingstation</option>
-                <option value="option15">Diktiergerät</option>
-                <option value="option16">Fußschalter</option>
-            </select>
+            <form action="{% url 'create_bestell' %}" method="post" onsubmit="return validateForm()">
+                {% csrf_token %}
+                <div class="form-group">
+                    <select class="form-control" id="selectOption">
+                        <option>Standardbestellungen</option>
+                        <option value="option1">Monitor 24"</option>
+                        <option value="option2">Monitor 27"</option>
+                        <option value="option3">Notebook 17"</option>
+                        <option value="option4">Notebook 15"</option>
+                        <option value="option5">Notebook 14"</option>
+                        <option value="option6">Tower-PC</option>
+                        <option value="option7">SFF-PC</option>
+                        <option value="option8">Micro-PC</option>
+                        <option value="option9">Rezeptdrucker</option>
+                        <option value="option10">Laboretikettendrucker</option>
+                        <option value="option11">Etikettendrucker</option>
+                        <option value="option12">Dokumentenscanner</option>
+                        <option value="option13">Handscanner</option>
+                        <option value="option14">Dockingstation</option>
+                        <option value="option15">Diktiergerät</option>
+                        <option value="option16">Fußschalter</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input autofocus class="form-control" type="text" name="sap_bestell_nr" required placeholder="SAP Bestell-Nr.">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="modell" id="modell" required placeholder="Modell">
+                    <span style="color: red;" id="modellError" class="error"></span>
+                </div>
+                <div class="form-group">
+                    <select required name="typ" id="typ" class="form-control"
+                        onchange="if(this.options[this.selectedIndex].value=='customOption'){
+                            toggleField(this,this.nextSibling);
+                            this.selectedIndex='0';
+                        }">
+                        <option value="">Bitte Typ auswählen</option>
+                        <option value="customOption">[Eigenen Typ eintragen]</option>
+                        <option value="Monitor">Monitor</option>
+                        <option value="Notebook">Notebook</option>
+                        <option value="Desktop-PC">Desktop-PC</option>
+                        <option value="Drucker">Drucker</option>
+                        <option value="Scanner">Scanner</option>
+                        <option value="Dockingstation">Dockingstation</option>
+                        <option value="Diktiergerät">Diktiergerät</option>
+                        <option value="Transkription">Transkription</option>
+                    </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
+                    <span style="color: red;" id="typeError" class="error"></span>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="number" name="menge" id="menge" required placeholder="Menge">
+                    <span style="color: red;" id="mengeError" class="error"></span>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="float" name="preis_pro_stück" id="preis_pro_stück" required placeholder="Preis pro Stück">
+                    <span style="color: red;" id="preisError" class="error"></span>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="zuweisung" required placeholder="Zuweisung">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Optional: Spezifikation">
+                    <span style="color: red;" id="spezifikationError" class="error"></span>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="link" placeholder="Optional: Link">
+                </div>
+                <div class="form-group">
+                    <select class="form-control" name="investmittel">
+                    <option value="">Bitte Investmittelzuweisung auswählen</option>
+                    <option value="Ja">Ja</option>
+                    <option value="Nein">Nein</option>
+                    </select>
+                </div>
+                {% if message %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% endif %}
+                {% if alert %}
+                    <div class="alert alert-danger" role="alert">{{ alert }}</div>
+                {% endif %}
+                <div style="text-align: right;">
+                    <input class="btn btn-primary" type="submit" value="Eintragen">
+                    <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            <input autofocus class="form-control" type="text" name="sap_bestell_nr" required placeholder="SAP Bestell-Nr.">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="modell" id="modell" required placeholder="Modell">
-            <span style="color: red;" id="modellError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <select required name="typ" id="typ" class="form-control"
-                onchange="if(this.options[this.selectedIndex].value=='customOption'){
-                    toggleField(this,this.nextSibling);
-                    this.selectedIndex='0';
-                }">
-                <option value="">Bitte Typ auswählen</option>
-                <option value="customOption">[Eigenen Typ eintragen]</option>
-                <option value="Monitor">Monitor</option>
-                <option value="Notebook">Notebook</option>
-                <option value="Desktop-PC">Desktop-PC</option>
-                <option value="Drucker">Drucker</option>
-                <option value="Scanner">Scanner</option>
-                <option value="Dockingstation">Dockingstation</option>
-                <option value="Diktiergerät">Diktiergerät</option>
-                <option value="Transkription">Transkription</option>
-            </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
-            <span style="color: red;" id="typeError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="number" name="menge" id="menge" required placeholder="Menge">
-            <span style="color: red;" id="mengeError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="float" name="preis_pro_stück" id="preis_pro_stück" required placeholder="Preis pro Stück">
-            <span style="color: red;" id="preisError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="zuweisung" required placeholder="Zuweisung">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Optional: Spezifikation">
-            <span style="color: red;" id="spezifikationError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="link" placeholder="Optional: Link">
-        </div>
-        <div class="form-group">
-            <select class="form-control" name="investmittel">
-              <option value="">Bitte Investmittelzuweisung auswählen</option>
-              <option value="Ja">Ja</option>
-              <option value="Nein">Nein</option>
-            </select>
-        </div>
-        <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Eintragen">
-        {% if message %}
-            <div class="alert alert-success" role="alert">{{ message }}</div>
-        {% endif %}
-        {% if alert %}
-            <div class="alert alert-danger" role="alert">{{ alert }}</div>
-        {% endif %}
-    </form>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

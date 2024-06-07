@@ -2,39 +2,43 @@
 
 {% block body %}
   <h1 class="header" style="text-align: center;">Lagerliste</h1>
-  <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
-
-  <h2>Lagerlisten Eintrag</h2>
-  <form id="form" action="{% url 'create_lager' %}" method="POST">
-    {% csrf_token %}
-    <div style="display: none;" class="form-group">
-      <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
-    </div>
-    <div id="inputs" class="form-group">
-      <div>
-        <input autofocus class="form-control" type="text" name="0" required placeholder="Inventarnummer/Servicenummer"/>
+  <div class="create">
+  
+    <h2>Lagerlisten Eintrag</h2>
+    <form id="form" action="{% url 'create_lager' %}" method="POST">
+      {% csrf_token %}
+      <div style="display: none;" class="form-group">
+        <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
       </div>
-    </div>
-    <div class="form-group">
-      <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
-    </div>
-    <div class="form-group">
-      <select class="form-control" required name="bestell_nr">
-        <option value="">Bitte Bestell-Nr. auswählen</option>
-        {% for nr in bestell_nr %}
-          <option value="{{ nr.sap_bestell_nr_field }}">{{ nr }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Eintragen">
-  </form>
-  {% if message %}
-    <div class="alert alert-success" role="alert">{{ message }}</div>
-  {% endif %}
-  {% if dupe %}
-    <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ dupe }}</b> konnten nicht eingetragen werden. Grund: Die Inventarnummern exisitieren bereits in der Lagerliste</div>
-  {% endif %}
-  {% if fail %}
-    <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ fail }}</b> wurden nicht angelegt. Grund: Fehler beim anlegen.</div>
-  {% endif %}
+      <div id="inputs" class="form-group">
+        <div>
+          <input autofocus class="form-control" type="text" name="0" required placeholder="Inventarnummer/Servicenummer"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
+      </div>
+      <div class="form-group">
+        <select class="form-control" required name="bestell_nr">
+          <option value="">Bitte Bestell-Nr. auswählen</option>
+          {% for nr in bestell_nr %}
+            <option value="{{ nr.sap_bestell_nr_field }}">{{ nr }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% if message %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+      {% endif %}
+      {% if dupe %}
+        <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ dupe }}</b> konnten nicht eingetragen werden. Grund: Die Inventarnummern exisitieren bereits in der Lagerliste</div>
+      {% endif %}
+      {% if fail %}
+        <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ fail }}</b> wurden nicht angelegt. Grund: Fehler beim anlegen.</div>
+      {% endif %}
+      <div style="text-align: right;">
+        <input class="btn btn-primary" type="submit", value="Eintragen">
+        <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
+      </div>
+    </form>
+  </div>
 {% endblock %}

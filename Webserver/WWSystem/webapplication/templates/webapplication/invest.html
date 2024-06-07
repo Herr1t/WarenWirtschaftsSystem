@@ -3,10 +3,10 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplan</h1>
-    <h2 style="text-align: left;">Seitenauswahl</h2>
+    <h2 style="text-align: left; margin-left: 1.2%;">Seitenauswahl</h2>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
     {% if investmittelplan.has_other_pages %}
-        <ul style="float: left; margin-top: 14px; margin-left: 12px;" class="pagination">
+        <ul style="float: left; margin-top: 14px; margin-left: 1.5%;" class="pagination">
         {% for i in investmittelplan.paginator.page_range %}
             {% if investmittelplan.number == i %}
                 <li class="active"><span class="current">{{ i }} <span class="sr-only">(current)</span> 
@@ -17,7 +17,7 @@
         {% endfor %}
         </ul>
     {% endif %}
-    <table id="myTable" class="sortable" style="width: 99.5%;">
+    <table id="myTable" class="sortable tables">
         <thead>
             <tr>
                 <th>Klinik/OU</th>

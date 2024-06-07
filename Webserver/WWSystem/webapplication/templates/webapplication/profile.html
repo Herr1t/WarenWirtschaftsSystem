@@ -1,11 +1,11 @@
 {% extends "webapplication/layout.html" %}
 {% block body %}
     <h1 class="header" style="text-align: center;">Profil Verlauf</h1>
-    <input class="button" value="Lagerliste ohne Invest" type="button" onclick="window.location.href='{% url 'profile_lager_ohne' user_id %}'"></input>
+    <input style="margin-left: 1.2%;" class="button" value="Lagerliste ohne Invest" type="button" onclick="window.location.href='{% url 'profile_lager_ohne' user_id %}'"></input>
     <div>
-        <h2 style="float: left;">Erstellte Bestellungen</h2>
-        <input style="float: left; margin-left: 27%;" class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
-        <input style="float: left; margin-left: 1.25%;" class="searchbar" type="text" id="myInput2" onkeyup="myFunction2()" placeholder="Suchen...">
+        <h2 style="float: left; margin-left: 1%;">Erstellte Bestellungen</h2>
+        <input style="float: left; margin-left: 26%;" class="searchbar1" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+        <input style="float: left; margin-left: 1.25%;" class="searchbar1" type="text" id="myInput2" onkeyup="myFunction2()" placeholder="Suchen...">
         <input style="float: left;" class="button" value="Heute" type="button" id="today" onclick="today2()">
         <input style="float: left;" class="button" value="Alle" type="button" id="today" onclick="undo()">
         <select style="width: 7%; float: left; margin-top: 0.14cm; margin-left: 7px;" class="form-control" name="herausgeber" id="usernameSelect">
@@ -14,10 +14,10 @@
                 <option value="{{ item.username }}">{{ item.username }}</option>
             {% endfor %}
         </select>
-        <h2 style="float: right; padding-right: 7px;">Aus Lagerliste ausgetragen</h2>
+        <h2 style="float: right; padding-right: 7px; margin-right: 1%;">Aus Lagerliste ausgetragen</h2>
     </div>
     <div>
-        <table id="myTable" class="sortable" style="width: 49%; float: left;">
+        <table id="myTable" class="sortable" style="width: 48%; float: left; margin-left: 1.2%;">
             <thead>
                 <tr>
                     <th>SAP Bestell-Nr.</th>
@@ -49,7 +49,7 @@
         </table>
     </div>
     <div>
-        <table id="myTable2" class="sortable" style="width: 49%; float: right; margin-right: 7px;">
+        <table id="myTable2" class="sortable" style="width: 48%; float: right; margin-right: 1.2%;">
             <thead>
                 <tr>
                     <th>Bestell-Nr.</th>

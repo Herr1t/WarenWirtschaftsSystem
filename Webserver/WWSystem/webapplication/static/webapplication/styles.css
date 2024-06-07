@@ -19,6 +19,7 @@ th {
     border-top: none;
     border-bottom: solid 1px black;
     font-size: 17px;
+    background-color: paleturquoise;
 }
 
 td:first-child, th:first-child {
@@ -117,7 +118,7 @@ h2 {
 
 .searchbar {
     width: 10%; /* Full-width */
-    margin-right: 7px;
+    margin-right: 1.5%;
     font-size: 16px; /* Increase font-size */
     padding: 12px 20px 12px; /* Add some padding */
     border: 1px solid rgb(191, 193, 195); /* Add a grey border */
@@ -126,6 +127,16 @@ h2 {
     border-radius: 8px;
 }
 
+.searchbar1 {
+    width: 10%; /* Full-width */
+    margin-right: 7px;
+    font-size: 16px; /* Increase font-size */
+    padding: 12px 20px 12px; /* Add some padding */
+    border: 1px solid rgb(191, 193, 195); /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+    float: right;
+    border-radius: 8px;
+}
 
 .page {
     margin-left: 5px; 
@@ -165,4 +176,34 @@ h2 {
     margin-top: 10px;
     margin-left: 7px;
     margin-right: 7px;
+}
+
+.tables {
+    width: 97%;
+    margin-left: 1.5%;
+}
+
+.zurück {
+    padding: 7px;
+    padding-left: 22.5px;
+    padding-right: 22.5px;
+}
+
+.löschen {
+    padding: 7px;
+    padding-right: 17.5px;
+    padding-left: 17.5px;
+    color: red;
+}
+
+.create {
+    background-color: white;
+    border:transparent 1px; 
+    border-radius: 6px; 
+    padding: 10px; 
+    width: 40%; 
+    margin-left: 30%; 
+    margin-right: 30%; 
+    margin-top: 1%;
+    box-shadow: 2px 2px 2px 2px rgb(191, 193, 195);
 }

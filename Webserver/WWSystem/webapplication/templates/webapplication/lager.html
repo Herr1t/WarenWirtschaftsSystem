@@ -2,14 +2,14 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Lagerliste</h1>
-    <input class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
+    <input style="margin-left: 1.5%;" class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
     <input class="button" value="Rückgabe" type="button" onclick="window.location.href='{% url 'rückgabe' %}'"></input>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
-    <table id="myTable" class="sortable" style="width: 99.5%;">
+    <table id="myTable" class="sortable tables">
         <thead>
             <tr>
                 <th>Bestell-Nr.</th>

@@ -3,10 +3,10 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittel der Klinik {{ klinik_ou }}</h1>
-    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+    <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
 
-    <table id="myTable" class="sortable" style="width: 99.5%;">
+    <table id="myTable" class="sortable tables">
         <thead>
             <tr>
                 <th>Klinik/OU</th>

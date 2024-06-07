@@ -2,75 +2,81 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Bestellung {{ bestell_nr }}</h1>
-    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
-    <input class="button" value="Bestellung Löschen" type="button" style="color: red;" onclick="window.location.href='{% url 'löschen_bestell' bestell_nr %}'"></input>
+    <div class="create">
+        <div style="text-align: right;">
+            <input class="button löschen" value="Löschen" type="button" style="color: red;" onclick="window.location.href='{% url 'löschen_bestell' bestell_nr %}'"></input>
+        </div>
 
-    <h2>BestellListen Eintrag Aktualisieren</h2>
+        <h2>BestellListen Eintrag Aktualisieren</h2>
 
-    {% for item in bestell_liste %}
-    <form action="{% url 'update_bestell' bestell_nr %}" method="post" onsubmit="return validateForm()">
-        {% csrf_token %}
-        <div class="form-group">
-            <input class="form-control" type="text" name="sap_bestell_nr_field" id="sap_bestell_nr_field" placeholder="SAP Bestell-Nr: {{ item.sap_bestell_nr_field }}">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="modell" id="modell" placeholder="Modell: {{ item.modell }}">
-            <span style="color: red;" id="modellError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <select name="typ" id="typ" class="form-control"
-                onchange="if(this.options[this.selectedIndex].value=='customOption'){
-                    toggleField(this,this.nextSibling);
-                    this.selectedIndex='0';
-                }">
-                <option value="">Typ: {{ item.typ }}</option>
-                <option value="customOption">[Eigenen Typ eintragen]</option>
-                <option value="Monitor">Monitor</option>
-                <option value="Notebook">Notebook</option>
-                <option value="Desktop-PC">Desktop-PC</option>
-                <option value="Drucker">Drucker</option>
-                <option value="Scanner">Scanner</option>
-                <option value="Dockingstation">Dockingstation</option>
-                <option value="Diktiergerät">Diktiergerät</option>
-                <option value="Transkription">Transkription</option>
-            </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
-            <span style="color: red;" id="typError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="number" name="menge" id="menge" placeholder="Menge: {{ item.menge }}">
-            <span style="color: red;" id="mengeError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="preis_pro_stück" placeholder="Preis pro Stück: {{ item.preis_pro_stück }}">
-            <span style="color: red;" id="preisError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Spezifikation: {{ item.spezifikation }}">
-            <span style="color: red;" id="spezifikationError" class="error"></span>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="zuweisung" placeholder="Zuweisung: {{ item.zuweisung }}">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" name="link" placeholder="Hier Link einfügen">
-        </div>
-        {% if item.investmittel == 'Nein' %}
+        {% for item in bestell_liste %}
+        <form action="{% url 'update_bestell' bestell_nr %}" method="post" onsubmit="return validateForm()">
+            {% csrf_token %}
             <div class="form-group">
-                <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
+                <input class="form-control" type="text" name="sap_bestell_nr_field" id="sap_bestell_nr_field" placeholder="SAP Bestell-Nr: {{ item.sap_bestell_nr_field }}">
             </div>
-        {% else %}
-            <div style="display: none;" class="form-group">
-                <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
+            <div class="form-group">
+                <input class="form-control" type="text" name="modell" id="modell" placeholder="Modell: {{ item.modell }}">
+                <span style="color: red;" id="modellError" class="error"></span>
             </div>
-        {% endif %}
-        <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Aktualisieren">
-        {% if message %}
-            <div class="alert alert-success" role="alert">{{ message }}</div>
-        {% endif %}
-        {% if alert %}
-            <div class="alert alert-danger" role="alert">{{ alert }}</div>
-        {% endif %}
-    </form>
+            <div class="form-group">
+                <select name="typ" id="typ" class="form-control"
+                    onchange="if(this.options[this.selectedIndex].value=='customOption'){
+                        toggleField(this,this.nextSibling);
+                        this.selectedIndex='0';
+                    }">
+                    <option value="">Typ: {{ item.typ }}</option>
+                    <option value="customOption">[Eigenen Typ eintragen]</option>
+                    <option value="Monitor">Monitor</option>
+                    <option value="Notebook">Notebook</option>
+                    <option value="Desktop-PC">Desktop-PC</option>
+                    <option value="Drucker">Drucker</option>
+                    <option value="Scanner">Scanner</option>
+                    <option value="Dockingstation">Dockingstation</option>
+                    <option value="Diktiergerät">Diktiergerät</option>
+                    <option value="Transkription">Transkription</option>
+                </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
+                <span style="color: red;" id="typError" class="error"></span>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="number" name="menge" id="menge" placeholder="Menge: {{ item.menge }}">
+                <span style="color: red;" id="mengeError" class="error"></span>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="preis_pro_stück" placeholder="Preis pro Stück: {{ item.preis_pro_stück }}">
+                <span style="color: red;" id="preisError" class="error"></span>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="spezifikation" id="spezifikation" placeholder="Spezifikation: {{ item.spezifikation }}">
+                <span style="color: red;" id="spezifikationError" class="error"></span>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="zuweisung" placeholder="Zuweisung: {{ item.zuweisung }}">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="link" placeholder="Hier Link einfügen">
+            </div>
+            {% if item.investmittel == 'Nein' %}
+                <div class="form-group">
+                    <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
+                </div>
+            {% else %}
+                <div style="display: none;" class="form-group">
+                    <input class="form-control" type="text" name="geliefert_anzahl" placeholder="Anzahl Geliefert: {{ item.geliefert_anzahl }}">
+                </div>
+            {% endif %}
+            {% if message %}
+                <div class="alert alert-success" role="alert">{{ message }}</div>
+            {% endif %}
+            {% if alert %}
+                <div class="alert alert-danger" role="alert">{{ alert }}</div>
+            {% endif %}
+            <div style="text-align: right;">
+                <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Aktualisieren">
+                <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
+            </div>
+        </form>
+    </div>
     
     <script>
         /**

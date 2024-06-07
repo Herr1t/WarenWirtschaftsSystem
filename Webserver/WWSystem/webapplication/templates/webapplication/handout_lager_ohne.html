@@ -2,24 +2,30 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Bestellung Nr. {{ bestell_nr }}</h1>
-    <input class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'lager_ohne' %}'"></input>
-    <input class="button" value="Liste Löschen" type="button" style="color: red;" onclick="window.location.href='{% url 'löschen_lager_ohne' bestell_nr %}'"></input>
+    <div class="create">
+        <div style="text-align: right;">
+            <input class="button btn löschen" value="Löschen" type="button" onclick="window.location.href='{% url 'löschen_lager_ohne' bestell_nr %}'"></input>
+        </div>
 
-    <h2>Austragen aus Lagerliste ohne Invest</h2>
+        <h2>Austragen aus Lagerliste ohne Invest</h2>
 
-    {% for item in lagerliste %}
-        <form action="{% url 'handout_lager_ohne' bestell_nr %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <input class="form-control" type="number" name="menge" required placeholder="Momentane Menge: {{ item.Menge }}">
-            </div>
-            <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Austragen">
-            {% if alert %}
-                <div class="alert alert-danger" role="alert">{{ alert }}</div>
-            {% endif %}
-            {% if message %}
-                <div class="alert alert-success" role="alert">{{ message }}</div>
-            {% endif %}
-        </form>
-    {% endfor %}
+        {% for item in lagerliste %}
+            <form action="{% url 'handout_lager_ohne' bestell_nr %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="number" name="menge" required placeholder="Momentane Menge: {{ item.Menge }}">
+                </div>
+                <div style="text-align: right;">
+                    <input class="btn btn-primary" type="submit" value="Austragen">
+                    <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'lager_ohne' %}'"></input>
+                </div>
+                {% if alert %}
+                    <div class="alert alert-danger" role="alert">{{ alert }}</div>
+                {% endif %}
+                {% if message %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% endif %}
+            </form>
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -2,18 +2,22 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Löschung Bestellung {{ sap_bestell_nr }}</h1>
-    <h2 style="float: left;">Bist du dir Sicher?</h2>
+    <div class="create">
+        <h2 style="float: left;">Bist du dir Sicher?</h2>
 
-    <form id="form" action="{% url 'löschen_bestell' sap_bestell_nr %}" method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-            <select autofocus class="form-control" name="confirm">
-                <option value="">Ja oder Nein auswählen</option>
-                <option value="yes">Ja</option>
-                <option value="no">Nein</option>
-            </select>
-        </div>
+        <form id="form" action="{% url 'löschen_bestell' sap_bestell_nr %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <select autofocus class="form-control" name="confirm">
+                    <option value="">Ja oder Nein auswählen</option>
+                    <option value="yes">Ja</option>
+                    <option value="no">Nein</option>
+                </select>
+            </div>
 
-        <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Bestätigen">
-    </form>   
+            <div style="text-align: right;">
+                <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Bestätigen">
+            </div>
+        </form>   
+    </div>
 {% endblock %}
