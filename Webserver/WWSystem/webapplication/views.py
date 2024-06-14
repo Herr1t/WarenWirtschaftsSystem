@@ -728,7 +728,7 @@ def update_detail_invest_soll(request, ou, id):
         items = Detail_Investmittelplan_Soll.objects.values_list("modell", "typ", "menge", "preis_pro_stück", "spezifikation").get(pk=id)
         modell = request.POST["modell"] or items[0]
         typ = request.POST["typ"] or items[1]
-        menge = request.POST["menge"] or items[2]
+        menge = str(request.POST["menge"]).replace("-", "") or items[2]
         preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(",", ".") or items[3]
         spezifikation = request.POST["spezifikation"] or items[4]
 
@@ -747,6 +747,13 @@ def update_detail_invest_soll(request, ou, id):
         jetzt_neu = Investmittelplan_Soll.objects.values_list('investmittel_gesamt').get(ou=ou)
         neu_neu = float(jetzt_neu[0]) + gesamt_neu
         Investmittelplan_Soll.objects.update_or_create(ou = ou, defaults={'investmittel_gesamt': neu_neu})
+
+        if menge == "0":
+            Detail_Investmittelplan_Soll.objects.filter(id=id).delete()
+            return render(request, "webapplication/detail_invest_soll.html", {
+                "ou": ou,
+                "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_invsoll=ou)
+            })
 
         return render(request, "webapplication/update_detail_invest_soll.html", {
             "invest_soll": Detail_Investmittelplan_Soll.objects.all().filter(id=id),
