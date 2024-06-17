@@ -3,7 +3,8 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Löschung der Lagerliste zur Bestellung {{ bestell_nr }}</h1>
     <div class="create">
-        <h2 style="float: left;">Bist du dir Sicher?</h2>
+        <h2>Bist du dir Sicher?</h2>
+        <hr>
 
         <form id="form" action="{% url 'löschen_lager_ohne' bestell_nr %}" method="POST">
             {% csrf_token %}

@@ -5,6 +5,7 @@
         <div class="create">
 
             <h2>BestellListen Eintrag</h2>
+            <hr>
 
             <form action="{% url 'create_bestell' %}" method="post" onsubmit="return validateForm()">
                 {% csrf_token %}

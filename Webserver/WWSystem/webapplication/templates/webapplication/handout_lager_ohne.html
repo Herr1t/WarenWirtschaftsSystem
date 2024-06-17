@@ -8,6 +8,7 @@
         </div>
 
         <h2>Austragen aus Lagerliste ohne Invest</h2>
+        <hr>
 
         {% for item in lagerliste %}
             <form action="{% url 'handout_lager_ohne' bestell_nr %}" method="post">

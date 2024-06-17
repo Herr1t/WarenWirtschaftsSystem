@@ -4,6 +4,7 @@
     <h1 class="header" style="text-align: center;">Investmittelplanung der OU {{ ou }}</h1>
     <div class="create">
         <h2>Aktualisieren der Einträge für die OU{{ ou }}</h2>
+        <hr>
 
         {% for item in invest_soll %}
             <form action="{% url 'update_detail_invest_soll' item.ou_invsoll item.id %}" method="post" onsubmit="return validateForm()">

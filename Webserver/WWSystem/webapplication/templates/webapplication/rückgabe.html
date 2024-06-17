@@ -4,6 +4,7 @@
     <h1 class="header" style="text-align: center;">Lagerliste</h1>
     <div class="create">
         <h2>Rückgabe eintragen</h2>
+        <hr>
         <form id="form" action="{% url 'rückgabe' %}" method="POST">
             {% csrf_token %}
             <div style="display: none;" class="form-group">

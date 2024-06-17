@@ -5,6 +5,7 @@
   <div class="create">
   
     <h2>Lagerlisten Eintrag</h2>
+    <hr>
     <form id="form" action="{% url 'create_lager' %}" method="POST">
       {% csrf_token %}
       <div style="display: none;" class="form-group">

@@ -8,6 +8,7 @@
         </div>
 
         <h2>BestellListen Eintrag Aktualisieren</h2>
+        <hr>
 
         {% for item in bestell_liste %}
         <form action="{% url 'update_bestell' bestell_nr %}" method="post" onsubmit="return validateForm()">

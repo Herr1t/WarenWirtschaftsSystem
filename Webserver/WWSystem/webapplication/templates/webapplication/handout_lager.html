@@ -4,6 +4,7 @@
   <h1 class="header" style="text-align: center;">Lagerliste</h1>
   <div class="create">
     <h2>Aus Lagerliste austragen</h2>
+    <hr>
     <form id="form" action="{% url 'handout_lager' %}" method="POST">
       {% csrf_token %}
       <div style="display: none;" class="form-group">
