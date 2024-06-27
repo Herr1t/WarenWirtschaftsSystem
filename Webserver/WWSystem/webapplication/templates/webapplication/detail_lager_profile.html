@@ -2,7 +2,7 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Ausgetragene Einträge zur Bestellung {{ bestellung }}</h1>
     <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'profile' user.id %}'"></input>
-    <input class="searchbar" type="text" id="searchbar" onkeyup="myFunction()" placeholder="Suchen...">
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
     <table id="myTable" class="sortable tables">
         <thead>
             <tr>
