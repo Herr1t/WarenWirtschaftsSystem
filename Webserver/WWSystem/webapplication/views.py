@@ -706,19 +706,24 @@ def create_invest_soll(request, ou):
         preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(",", ".")
         admin = request.user
         spezifikation = request.POST["spezifikation"]
-
-        invest_planung = Detail_Investmittelplan_Soll.objects.create(ou_invsoll=ou_invsoll, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis_pro_stück, admin=admin, spezifikation=spezifikation)
-        preis = Detail_Investmittelplan_Soll.objects.values_list('preis_pro_stück').filter(ou_invsoll=ou_invsoll)
-        meng = Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_invsoll=ou_invsoll)
-        length = len(preis) - 1
-        gesamt = float(str(preis[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(meng[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
-        jetzt = Investmittelplan_Soll.objects.values_list('investmittel_gesamt').get(ou=ou)
-        neu = float(jetzt[0]) + gesamt
-        Investmittelplan_Soll.objects.update_or_create(ou = ou, defaults={'investmittel_gesamt': neu})
-        return render(request, "webapplication/create_invest_soll.html", {
-            "message": "Eintrag erfolgreich geplant",
-            "ou": ou
-        })
+        try:
+            invest_planung = Detail_Investmittelplan_Soll.objects.create(ou_invsoll=ou_invsoll, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis_pro_stück, admin=admin, spezifikation=spezifikation)
+            preis = Detail_Investmittelplan_Soll.objects.values_list('preis_pro_stück').filter(ou_invsoll=ou_invsoll)
+            meng = Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_invsoll=ou_invsoll)
+            length = len(preis) - 1
+            gesamt = float(str(preis[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(meng[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
+            jetzt = Investmittelplan_Soll.objects.values_list('investmittel_gesamt').get(ou=ou)
+            neu = float(jetzt[0]) + gesamt
+            Investmittelplan_Soll.objects.update_or_create(ou = ou, defaults={'investmittel_gesamt': neu})
+            return render(request, "webapplication/create_invest_soll.html", {
+                "message": "Eintrag erfolgreich geplant",
+                "ou": ou
+            })
+        except ValueError:
+            return render(request, "webapplication/create_invest_soll.html", {
+                "alert": "Sie müssen angemeldet sein, damit Sie einen Eintrag erstellen können!",
+                "ou": ou
+            })
     return render(request, "webapplication/create_invest_soll.html", {
         "ou": ou
     })
