@@ -275,6 +275,76 @@ def handout_lager(request):
                 })
         return render(request, "webapplication/handout_lager.html")
 
+def handout_lager_all(request, bestell_nr):
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel_soll"))
+    else:
+        if request.method == 'POST':
+            x = 0
+            c = 0
+            klinik = request.POST["klinik"]
+            bestellung = Lagerliste.objects.values_list('inventarnummer').filter(bestell_nr_field=bestell_nr)
+            ausgegeben = 1
+            ausgabe = timezone.now
+            herausgeber = request.user
+            dne = ""
+            fail = ""
+
+            for _ in bestellung:
+                inventarnummer = str(_).replace("('", "").replace("',)", "")
+                try:
+                    ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
+                    # Checks if entry isnt already "ausgegeben"
+                    if ausgabe_check in "('0',)":
+                        ___ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
+                        temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=___[0])
+                        __ = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(pk=klinik)
+                        # Subtracting the "preis_pro_stück" of the entries in "list" from the column "investmittel_übrig_in_euro" of the selected "ou" in Investmittelplan
+                        abzug = __[0] - temp[0]
+                        abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik, defaults={'investmittel_übrig_in_euro': abzug})
+                        # "Austragung" of the entries in Lagerliste
+                        ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
+                    # Output if entry is already "ausgetragen"
+                    else:
+                        fail = fail + inventarnummer + ", "
+                        continue 
+                # If entry does not exist in Lagerliste then it gets appended to the variable "dne"
+                except ObjectDoesNotExist:
+                    dne = dne + inventarnummer + ", "
+                    continue
+            # If there is at least one entry in "fail" then is uses this output
+            if fail:
+                fail = fail[:-2]
+                return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "dne": dne,
+                    "fail": fail
+                })
+            # If there is at least one entry in "dne" then it uses this output
+            if dne:
+                dne = dne[:-2]
+                return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "dne": dne
+                })
+            # Checks if column "investmittel_übrig_in_euro" from Investmittelplan is below 0
+            check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(klinik_ou=klinik)
+            if float(check[0]) < 0:
+                    return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "message": "Einträge erfolgreich ausgetragen",
+                    "alarm": klinik,
+                    "geld": float(check[0])
+                })
+            else:    
+                return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "message": "Einträge erfolgreich ausgetragen"
+                })
+        return render(request, "webapplication/handout_lager_all.html", {
+            "bestell_nr": bestell_nr
+        })
+
 # View Function that handles the "Rückgabe" of already "ausgegebenen" entries in Lagerliste
 def rückgabe(request):
     if group_check(request.user) == '1':

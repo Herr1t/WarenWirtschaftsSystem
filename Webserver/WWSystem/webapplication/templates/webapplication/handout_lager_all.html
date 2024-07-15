@@ -1,0 +1,34 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Lagerliste</h1>
+    <div class="create">
+        <h2>Aus Lagerliste austragen</h2>
+        <hr>
+        <form id="form" action="{% url 'handout_lager_all' bestell_nr %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <input autofocus class="form-control" type="text" name="klinik" required placeholder="OU">
+            </div>
+            {% if alarm %}
+                <div class="alert alert-danger" role="alert">Die Investmittel der OU <b>{{ alarm }}</b> sind im Minusbereich: {{ geld }}€ momentan</div>
+            {% endif %}
+            {% if message %}
+                <div class="alert alert-success" role="alert">{{ message }}</div>
+            {% endif %}
+            {% if alert %}
+                <div class="alert alert-danger" role="alert">{{ alert }}</div>
+            {% endif %}
+            {% if fail %}
+                <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ fail }}</b> konnten nicht ausgegeben werden. Grund: Geräte waren bereits ausgegeben.</div>
+            {% endif %}
+            {% if dne %}
+                <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ dne }}</b> konnten nicht ausgetragen werden. Grund: Inventarnummern nicht in der Lagerliste hinterlegt.</div>
+            {% endif %}
+            <div style="text-align: right;">
+                <input class="btn btn-primary" type="submit", value="Austragen">
+                <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'detail_lager' bestell_nr %}'"></input>
+            </div>
+        </form>
+    </div>
+{% endblock %}

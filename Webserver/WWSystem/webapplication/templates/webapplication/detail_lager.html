@@ -5,6 +5,7 @@
     <input style="margin-left: 1.5%;" class="button" value="Zurück zur Lagerliste" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
     <input class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
+    <input class="button" value="Bestellung austragen" type="button" onclick="window.location.href='{% url 'handout_lager_all' bestell_nr %}'"></input>
     <input class="button" value="Liste Löschen" type="button" style="color: red;" onclick="window.location.href='{% url 'löschen_lager' bestell_nr %}'"></input>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
     <table id="myTable" class="sortable tables">
