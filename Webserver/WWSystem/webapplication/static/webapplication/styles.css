@@ -19,7 +19,7 @@ th {
     border-top: none;
     border-bottom: solid 1px black;
     font-size: 17px;
-    background-color: paleturquoise;
+    background-color: rgb(202, 230, 244);
 }
 
 td:first-child, th:first-child {
