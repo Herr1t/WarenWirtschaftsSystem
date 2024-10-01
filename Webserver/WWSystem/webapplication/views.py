@@ -176,6 +176,10 @@ def create_lager(request):
                 except IntegrityError:
                     dupe = dupe + inventarnummer + ", "
                     continue
+                except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
             # Output if creation of at least one entry failed
             if fail:
                 fail = fail[:-2]
@@ -248,6 +252,10 @@ def handout_lager(request):
                 except ObjectDoesNotExist:
                     dne = dne + inventarnummer + ", "
                     continue
+                except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
             # If there is at least one entry in "fail" then is uses this output
             if fail:
                 fail = fail[:-2]
@@ -312,6 +320,10 @@ def handout_lager_all(request, bestell_nr):
                 except ObjectDoesNotExist:
                     dne = dne + inventarnummer + ", "
                     continue
+                except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
             # If there is at least one entry in "fail" then is uses this output
             if fail:
                 fail = fail[:-2]
@@ -395,6 +407,10 @@ def rückgabe(request):
                 except ObjectDoesNotExist:
                     dne = dne + inventarnummer + ", "
                     continue
+                except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
             # Output if there is at least one entry in fail then it uses this output
             if fail:
                 fail = fail[:-2]
@@ -482,9 +498,14 @@ def handout_lager_ohne(request, bestell_nr):
                     "bestell_nr": nr
                 })
             # "Austragung" of entries in "list"
-            while i < int(ausgabe_menge):
-                Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).update_or_create(id=int(str((id)[0]).replace(',', ''). replace("(", "").replace(")", "")), defaults={'ausgegeben': ausgegeben, 'herausgeber': herausgeber, 'ausgabe': ausgabe})
-                i = i + 1
+            try:
+                while i < int(ausgabe_menge):
+                    Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).update_or_create(id=int(str((id)[0]).replace(',', ''). replace("(", "").replace(")", "")), defaults={'ausgegeben': ausgegeben, 'herausgeber': herausgeber, 'ausgabe': ausgabe})
+                    i = i + 1
+            except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
             # If there are still entries remaining for the selected item in Lagerliste_ohne_Invest then it uses this output
             if Lagerliste_ohne_Invest.objects.filter(bestell_nr_field=bestell_nr).exclude(ausgegeben="1"):
                 return render(request, "webapplication/handout_lager_ohne.html", {
@@ -561,11 +582,16 @@ def create_bestell(request):
             bearbeitet = timezone.now()
             link = request.POST["link"] or ' '
             
-            # Creation of the new entry for BestellListe
-            bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet, link=link)
-            return render(request, "webapplication/create_bestell.html", {
-                "message": "Einträge erfolgreich angelegt"
-            })
+            try:
+                # Creation of the new entry for BestellListe
+                bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet, link=link)
+                return render(request, "webapplication/create_bestell.html", {
+                    "message": "Einträge erfolgreich angelegt"
+                })
+            except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
         return render(request, "webapplication/create_bestell.html")
 
 # View Function that handles the updating of existing entries in BestellListe
@@ -597,6 +623,10 @@ def update(request, bestell_nr):
                     "bestell_nr": bestell_nr,
                     "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
             })
+            except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
             bnr = BestellListe.objects.get(pk=sap_bestell_nr_field)
             # If the column "geliefert_anzahl" was updated
             if geliefert_anzahl:
