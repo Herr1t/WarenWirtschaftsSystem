@@ -82,3 +82,14 @@ CREATE TABLE `Lagerliste_ohne_Invest` (
     FOREIGN KEY(`Herausgeber`) REFERENCES `webapplication_user`(`username`),
     FOREIGN KEY(`Bestell_Nr.`) REFERENCES `Bestell_Liste`(`SAP_Bestell_Nr.`)
 );
+
+CREATE TABLE `Achievements` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `User` VARCHAR(35) NOT NULL,
+    `Bestell_Count` INT DEFAULT 0,
+    `Bestell_Achievement` TINYINT DEFAULT 0,
+    `Lager_Count` INT DEFAULT 0,
+    `Lager_Achievement` TINYINT DEFAULT 0,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`User`) REFERENCES `webapplication_user`(`username`)
+);
