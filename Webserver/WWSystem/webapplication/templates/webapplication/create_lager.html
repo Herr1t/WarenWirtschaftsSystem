@@ -36,6 +36,17 @@
       {% if fail %}
         <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ fail }}</b> wurden nicht angelegt. Grund: Fehler beim anlegen.</div>
       {% endif %}
+      {% if unlock %}
+        <script>
+          function unlock() {
+            alert("Glückwunsch!\nDu hast ein Achievement freigeschaltet!\n+----------------------+\n(        Lager Stufe 1        )\n+----------------------+");
+          }
+
+          window.onload = function() {
+            unlock();
+          };
+        </script>
+      {% endif %}
       <div style="text-align: right;">
         <input class="btn btn-primary" type="submit", value="Eintragen">
         <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'lagerliste' %}'"></input>
