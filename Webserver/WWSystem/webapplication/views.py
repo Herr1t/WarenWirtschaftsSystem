@@ -174,6 +174,7 @@ def create_lager(request):
                     # Checking if creation of entry was succesfull
                     if obj is None:
                         fail = fail + inventarnummer + ", "
+                    # Achievement check
                     if lager_count:
                         temp = str(lager_count[0]).replace('(', '').replace(',)', '')
                         if temp == "None":
@@ -185,6 +186,7 @@ def create_lager(request):
                     else:
                         new = 0
                         achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0})
+                    # If count 100 for Lagereinträge then Achievement unlock
                     if new == 100:
                         a = 1
                 # Checking if entry already exists
@@ -623,6 +625,7 @@ def create_bestell(request):
             try:
                 # Creation of the new entry for BestellListe
                 bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet, link=link)
+                # Achievement check
                 if bestell_count:
                     temp = str(bestell_count[0]).replace('(', '').replace(',)', '')
                     if temp == "None":
@@ -634,6 +637,7 @@ def create_bestell(request):
                 else:
                     new = 0
                     achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement': 0})
+                # If count for Bestelleinträge 10 then Achievement unlock
                 if new == 10:
                     achievement_unlock = Achievements.objects.filter(user=ersteller).update(bestell_achievement=1)
                     return render(request, "webapplication/create_bestell.html", {
