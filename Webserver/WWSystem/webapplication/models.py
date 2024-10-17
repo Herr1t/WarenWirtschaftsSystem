@@ -129,6 +129,10 @@ class Achievements(models.Model):
     rueckgabe_achievement_1 = models.IntegerField(db_column='Rueckgabe_Achievement_1')
     rueckgabe_achievement_2 = models.IntegerField(db_column='Rueckgabe_Achievement_2')
     rueckgabe_achievement_3 = models.IntegerField(db_column='Rueckgabe_Achievement_3')
+    handout_count = models.IntegerField(db_column="Handout_Count")
+    handout_achievement_1 = models.IntegerField(db_column='Handout_Achievement_1')
+    handout_achievement_2 = models.IntegerField(db_column='Handout_Achievement_2')
+    handout_achievement_3 = models.IntegerField(db_column='Handout_Achievement_3')
 
     class Meta:
         managed = False

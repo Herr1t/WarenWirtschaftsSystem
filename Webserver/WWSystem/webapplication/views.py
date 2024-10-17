@@ -129,7 +129,7 @@ def create_lager(request):
             x = int(0)
             y = int(0)
             c = 0
-            a = 0
+            ach = 0
             list = []
             dupe = ""
             fail = ""
@@ -187,8 +187,12 @@ def create_lager(request):
                         new = 0
                         achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement_1': 0, 'lager_achievement_2': 0, 'lager_achievement_3': 0})
                     # If count 100 for Lagereinträge then Achievement unlock
-                    if new == 100:
-                        a = 1
+                    if new == 50:
+                        ach = 1
+                    if new == 200:
+                        ach = 2
+                    if new == 500:
+                        ach = 3
                 # Checking if entry already exists
                 except IntegrityError:
                     dupe = dupe + inventarnummer + ", "
@@ -197,46 +201,33 @@ def create_lager(request):
                     return render(request, "webapplication/login.html", {
                         "message": "Sie sind nicht angemeldet!"
                     })
+            # Check if achievement unlocked
+            if ach == 1:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(lager_achievement_1=1)
+            if ach == 2:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(lager_achievement_2=1)
+            if ach == 3:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(lager_achievement_3=1)
             # Output if creation of at least one entry failed
-            if a == 1:
-                achievement_unlock = Achievements.objects.filter(user=request.user).update(lager_achievement=1)
-                if fail:
-                    fail = fail[:-2]
-                    return render(request, "webapplication/create_lager.html", {
-                        "dupe": dupe,
-                        "fail": fail,
-                        "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
-                        "unlock": 1
-                    })
-                # Output if at least one of the entries already existed
-                if dupe:
-                    dupe = dupe[:-2]
-                    return render(request, "webapplication/create_lager.html", {
-                        "dupe": dupe,
-                        "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
-                        "unlock": 1
-                    })
-                return render(request, "webapplication/create_lager.html", {
-                    "message": "Einträge erfolgreich angelegt",
-                    "unlock": 1
-                })
             if fail:
                 fail = fail[:-2]
                 return render(request, "webapplication/create_lager.html", {
                     "dupe": dupe,
                     "fail": fail,
-                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
+                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
+                    "unlock": ach
                 })
             # Output if at least one of the entries already existed
             if dupe:
                 dupe = dupe[:-2]
                 return render(request, "webapplication/create_lager.html", {
                     "dupe": dupe,
-                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
+                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
+                    "unlock": ach
                 })
             return render(request, "webapplication/create_lager.html", {
-                "message": "Eintrag/Einträge erfolgreich angelegt",
-                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
+                "message": "Einträge erfolgreich angelegt",
+                "unlock": ach
             })
         return render(request, "webapplication/create_lager.html", {
             "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
@@ -250,6 +241,7 @@ def handout_lager(request):
         if request.method == "POST":
             x = 0
             c = 0
+            ach = 0
             list = []
             ausgegeben = 1
             ausgabe = timezone.now
@@ -272,6 +264,7 @@ def handout_lager(request):
             for _ in list:
                 inventarnummer = str(_)
                 try:
+                    handout_count = Achievements.objects.filter(user=request.user).values_list('handout_count')
                     ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
                     # Checks if entry isnt already "ausgegeben"
                     if ausgabe_check in "('0',)":
@@ -283,6 +276,23 @@ def handout_lager(request):
                         abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=klinik, defaults={'investmittel_übrig_in_euro': abzug})
                         # "Austragung" of the entries in Lagerliste
                         ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
+                        if handout_count:
+                            temp = str(handout_count[0]).replace('(', '').replace(',)', '')
+                            if temp == "None":
+                                new = 0
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement_1': 0})
+                            else:
+                                new = int(str(handout_count[0]).replace('(', '').replace(',)', '')) + 1
+                                achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
+                        else:
+                            new = 0
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement_1': 0, 'handout_achievement_2': 0, 'handout_achievement_3': 0})
+                        if new == 50:
+                            ach = 1
+                        if new == 200:
+                            ach = 2
+                        if new == 500:
+                            ach = 3
                     # Output if entry is already "ausgetragen"
                     else:
                         fail = fail + inventarnummer + ", "
@@ -295,18 +305,26 @@ def handout_lager(request):
                     return render(request, "webapplication/login.html", {
                         "message": "Sie sind nicht angemeldet!"
                     })
+            if ach == 1:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(handout_achievement_1=1)
+            if ach == 2:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(handout_achievement_2=1)
+            if ach == 3:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(handout_achievement_3=1)
             # If there is at least one entry in "fail" then is uses this output
             if fail:
                 fail = fail[:-2]
                 return render(request, "webapplication/handout_lager.html", {
                     "dne": dne,
-                    "fail": fail
+                    "fail": fail,
+                    "unlock": ach
                 })
             # If there is at least one entry in "dne" then it uses this output
             if dne:
                 dne = dne[:-2]
                 return render(request, "webapplication/handout_lager.html", {
-                    "dne": dne
+                    "dne": dne,
+                    "unlock": ach
                 })
             # Checks if column "investmittel_übrig_in_euro" from Investmittelplan is below 0
             check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(klinik_ou=klinik)
@@ -314,11 +332,13 @@ def handout_lager(request):
                     return render(request, "webapplication/handout_lager.html", {
                     "message": "Einträge erfolgreich ausgetragen",
                     "alarm": klinik,
-                    "geld": float(check[0])
+                    "geld": float(check[0]),
+                    "unlock": ach
                 })
             else:
                 return render(request, "webapplication/handout_lager.html", {
                     "message": "Einträge erfolgreich ausgetragen",
+                    "unlock": ach
                 })
         return render(request, "webapplication/handout_lager.html")
 
@@ -404,6 +424,7 @@ def rückgabe(request):
         if request.method == 'POST':
             x = 0
             c = 0
+            ach = 0
             list = []
             ausgegeben = 0
             ausgabe = ""
@@ -425,6 +446,7 @@ def rückgabe(request):
             for _ in list:
                 inventarnummer = str(_)
                 try:
+                    rueckgabe_count = Achievements.objects.filter(user=request.user).values_list('rueckgabe_count')
                     klinik_ou = Lagerliste.objects.values_list('klinik').get(pk=inventarnummer)[0]
                     ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
                     # Checks if entry isnt already "zurückgegeben"
@@ -438,6 +460,23 @@ def rückgabe(request):
                         # Updating the information of the "zurückgegebenen" entries in Lagerliste
                         ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben})
                         ausgeben2 = Lagerliste.objects.filter(inventarnummer=inventarnummer).update(herausgeber=None, klinik=None, ausgabe=None)
+                        if rueckgabe_count:
+                            temp = str(handout_count[0]).replace('(', '').replace(',)', '')
+                            if temp == "None":
+                                new = 0
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement_1': 0})
+                            else:
+                                new = int(str(handout_count[0]).replace('(', '').replace(',)', '')) + 1
+                                achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
+                        else:
+                            new = 0
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement_1': 0, 'handout_achievement_2': 0, 'handout_achievement_3': 0})
+                        if new == 10:
+                            ach = 1
+                        if new == 50:
+                            ach = 2
+                        if new == 150:
+                            ach = 3
                     # Output if entry is already "zurückgegeben"
                     else:
                         fail = fail + inventarnummer + ", "
@@ -450,21 +489,30 @@ def rückgabe(request):
                     return render(request, "webapplication/login.html", {
                         "message": "Sie sind nicht angemeldet!"
                     })
+            if ach == 1:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement_1=1)
+            if ach == 2:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement_2=1)
+            if ach == 3:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement_3=1)
             # Output if there is at least one entry in fail then it uses this output
             if fail:
                 fail = fail[:-2]
                 return render(request, "webapplication/rückgabe.html", {
                     "fail": fail,
-                    "dne": dne
+                    "dne": dne,
+                    "unlock": ach
                 })
             # If there is at least one entry in "dne" then it uses this output
             if dne:
                 dne = dne[:-2]
                 return render(request, "webapplication/rückgabe.html", {
-                    "dne": dne
+                    "dne": dne,
+                    "unlock": ach
                 })
             return render(request, "webapplication/rückgabe.html", {
-                "message": "Geräte erfolgreich zurückgegeben"
+                "message": "Geräte erfolgreich zurückgegeben",
+                "unlock": ach
             }) 
         return render(request, "webapplication/rückgabe.html")
 
@@ -621,6 +669,7 @@ def create_bestell(request):
             bearbeitet = timezone.now()
             link = request.POST["link"] or ' '
             bestell_count = Achievements.objects.filter(user=ersteller).values_list('bestell_count')
+            ach = 0
             
             try:
                 # Creation of the new entry for BestellListe
@@ -637,16 +686,13 @@ def create_bestell(request):
                 else:
                     new = 0
                     achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement_1': 0, 'bestell_achievement_2': 0, 'bestell_achievement_3': 0})
-                # If count for Bestelleinträge 10 then Achievement unlock
+                # If count equals threshold achievement
                 if new == 10:
-                    achievement_unlock = Achievements.objects.filter(user=ersteller).update(bestell_achievement=1)
-                    return render(request, "webapplication/create_bestell.html", {
-                        "message": "Einträge erfolgreich angelegt",
-                        "unlock": 1
-                    })
-                return render(request, "webapplication/create_bestell.html", {
-                    "message": "Einträge erfolgreich angelegt" 
-                })
+                    ach = 1
+                if new == 50:
+                    ach = 2
+                if new == 150:
+                    ach = 3
             except ValueError:
                     return render(request, "webapplication/login.html", {
                         "alert": "Sie sind nicht angemeldet!"
@@ -655,6 +701,16 @@ def create_bestell(request):
                     return render(request, "webapplication/create_bestell.html", {
                         "alert": "Bestellnummer bereits vergeben!"
                     })
+            if ach == 1:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(bestell_achievement_1=1)
+            if ach == 2:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(bestell_achievement_2=1)
+            if ach == 3:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(bestell_achievement_3=1)
+            return render(request, "webapplication/create_bestell.html", {
+                "message": "Einträge erfolgreich angelegt",
+                "unlock": ach
+            })
         return render(request, "webapplication/create_bestell.html")
 
 # View Function that handles the updating of existing entries in BestellListe
