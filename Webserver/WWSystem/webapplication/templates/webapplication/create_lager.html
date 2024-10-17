@@ -9,7 +9,7 @@
     <form id="form" action="{% url 'create_lager' %}" method="POST">
       {% csrf_token %}
       <div style="display: none;" class="form-group">
-        <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
+        <button class="btn btn-primary" onclick="addInputField(), count_live()" type="">Weiterer Eintrag</button>
       </div>
       <div id="inputs" class="form-group">
         <div>
@@ -17,7 +17,8 @@
         </div>
       </div>
       <div class="form-group">
-        <button class="btn btn-primary" onclick="addInputField()" type="">Weiterer Eintrag</button>
+        <button class="btn btn-primary" onclick="addInputField(), count_live()" type="">Weiterer Eintrag</button>
+        <li style="float: right;" class="page btn" id="count"></li>
       </div>
       <div class="form-group">
         <select class="form-control" required name="bestell_nr">
@@ -53,4 +54,12 @@
       </div>
     </form>
   </div>
+  <script>
+    function count() {
+      var inputFormDiv = document.getElementById('inputs');
+      return (inputFormDiv.getElementsByTagName('input').length);
+    }
+
+    document.getElementById("count").innerHTML = count()
+  </script>
 {% endblock %}

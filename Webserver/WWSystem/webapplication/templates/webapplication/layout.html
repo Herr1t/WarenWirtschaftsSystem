@@ -261,6 +261,11 @@
                 }
             });
 
+            function count_live() {
+                var inputFormDiv = document.getElementById('inputs');
+                document.getElementById("count").innerHTML = (inputFormDiv.getElementsByTagName('input').length);
+            }
+
             c = 1;
             /**
              * Adds a new input field with a delete button.
@@ -300,6 +305,11 @@
                 newDeleteButton.style = "float: left; font-size: 20px; margin-top: 2px; padding: 0 8px 5px 8px;";
                 // Add event listener for click event to handle deletion
                 newDeleteButton.addEventListener("click", deleteHandler);
+                // Add event listener for lcick to update input count
+                newDeleteButton.onclick = function() {
+                    var inputFormDiv = document.getElementById('inputs');
+                    document.getElementById("count").innerHTML = (inputFormDiv.getElementsByTagName('input').length);
+                }
 
                 var newtest = document.createElement("i");
                 newtest.classList.add("fa", "fa-trash");
