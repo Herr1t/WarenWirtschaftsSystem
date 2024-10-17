@@ -113,3 +113,18 @@ class Detail_Investmittelplan_Soll(models.Model):
 
     def __str__(self):
         return str(self.ou_invsoll)
+    
+class Achievements(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True)
+    user = models.ForeignKey(User, models.DO_NOTHING, db_column='User', to_field='username', blank=True, null=False)
+    bestell_count = models.IntegerField(db_column='Bestell_Count')
+    bestell_achievement = models.IntegerField(db_column='Bestell_Achievement')
+    lager_count = models.IntegerField(db_column='Lager_Count')
+    lager_achievement = models.IntegerField(db_column='Lager_Achievement')
+
+    class Meta:
+        managed = False
+        db_table = 'Achievements'
+
+    def __str__(self) -> str:
+        return str(self.user)

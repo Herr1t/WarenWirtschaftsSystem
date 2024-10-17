@@ -87,6 +87,13 @@
                 {% if alert %}
                     <div class="alert alert-danger" role="alert">{{ alert }}</div>
                 {% endif %}
+                {% if unlock %}
+                    <script>
+                        window.onload = function() {
+                            unlock();
+                        };
+                    </script>
+                {% endif %}
                 <div style="text-align: right;">
                     <input class="btn btn-primary" type="submit" value="Eintragen">
                     <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'bestell_liste' %}'"></input>
@@ -95,6 +102,10 @@
         </div>
 
     <script>
+        function unlock() {
+            alert("Glückwunsch!\nDu hast ein Achievement freigeschaltet!\n+----------------------+\n(  Bestellungen Stufe 1  )\n+----------------------+");
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const preisInput = document.getElementById('preis_pro_stück');
             

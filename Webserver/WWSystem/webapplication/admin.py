@@ -1,7 +1,12 @@
 from django.contrib import admin
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements
 # Register your models here.
+
+class Achievements_SollAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "bestell_count", "bestell_achievement", "lager_count", "lager_achievement")
+    list_filter = ("user", )
+    search_fields = ("user", "id")
 
 class Investmittelplan_SollAdmin(admin.ModelAdmin):
     list_display = ("ou", "investmittel_gesamt", "bereich", "team")
@@ -41,4 +46,5 @@ admin.site.register(BestellListe, Bestell_ListeAdmin)
 admin.site.register(Investmittelplan, InvestmittelpanAdmin)
 admin.site.register(Investmittelplan_Soll, Investmittelplan_SollAdmin)
 admin.site.register(Detail_Investmittelplan_Soll, Detail_Investmittelplan_SollAdmin)
+admin.site.register(Achievements, Achievements_SollAdmin)
 admin.site.register(User, UserAdmin)

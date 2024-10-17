@@ -10,7 +10,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll, Achievements
 
 def group_check(user):
     username = user
@@ -129,6 +129,7 @@ def create_lager(request):
             x = int(0)
             y = int(0)
             c = 0
+            a = 0
             list = []
             dupe = ""
             fail = ""
@@ -167,11 +168,27 @@ def create_lager(request):
             for _ in list:
                 inventarnummer = _
                 try:
+                    lager_count = Achievements.objects.filter(user=request.user).values_list('lager_count')
                     Lagerliste.objects.create(inventarnummer=inventarnummer, typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bnr, ausgegeben=ausgegeben)
                     obj = Lagerliste.objects.get(pk=inventarnummer)
                     # Checking if creation of entry was succesfull
                     if obj is None:
                         fail = fail + inventarnummer + ", "
+                    # Achievement check
+                    if lager_count:
+                        temp = str(lager_count[0]).replace('(', '').replace(',)', '')
+                        if temp == "None":
+                            new = 0
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0})                        
+                        else:
+                            new = int(str(lager_count[0]).replace('(', '').replace(',)', '')) + 1
+                            achievement_count = Achievements.objects.filter(user=request.user).update(lager_count=new)
+                    else:
+                        new = 0
+                        achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0})
+                    # If count 100 for Lagereinträge then Achievement unlock
+                    if new == 100:
+                        a = 1
                 # Checking if entry already exists
                 except IntegrityError:
                     dupe = dupe + inventarnummer + ", "
@@ -181,6 +198,28 @@ def create_lager(request):
                         "message": "Sie sind nicht angemeldet!"
                     })
             # Output if creation of at least one entry failed
+            if a == 1:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(lager_achievement=1)
+                if fail:
+                    fail = fail[:-2]
+                    return render(request, "webapplication/create_lager.html", {
+                        "dupe": dupe,
+                        "fail": fail,
+                        "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
+                        "unlock": 1
+                    })
+                # Output if at least one of the entries already existed
+                if dupe:
+                    dupe = dupe[:-2]
+                    return render(request, "webapplication/create_lager.html", {
+                        "dupe": dupe,
+                        "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
+                        "unlock": 1
+                    })
+                return render(request, "webapplication/create_lager.html", {
+                    "message": "Einträge erfolgreich angelegt",
+                    "unlock": 1
+                })
             if fail:
                 fail = fail[:-2]
                 return render(request, "webapplication/create_lager.html", {
@@ -581,16 +620,40 @@ def create_bestell(request):
             ersteller = request.user
             bearbeitet = timezone.now()
             link = request.POST["link"] or ' '
+            bestell_count = Achievements.objects.filter(user=ersteller).values_list('bestell_count')
             
             try:
                 # Creation of the new entry for BestellListe
                 bestellung = BestellListe.objects.create(sap_bestell_nr_field=bestell_nr, modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezi, zuweisung=zuweisung, inventarnummern_von_bis=invnr_von_bis, geliefert=geliefert, geliefert_anzahl=geliefert_anzahl, ersteller=ersteller, investmittel=investmittel, bearbeitet=bearbeitet, link=link)
+                # Achievement check
+                if bestell_count:
+                    temp = str(bestell_count[0]).replace('(', '').replace(',)', '')
+                    if temp == "None":
+                        new = 0
+                        achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement': 0})
+                    else:
+                        new = int(str(bestell_count[0]).replace('(', '').replace(',)', '')) + 1
+                        achievement_count = Achievements.objects.filter(user=ersteller).update(bestell_count=new)
+                else:
+                    new = 0
+                    achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement': 0})
+                # If count for Bestelleinträge 10 then Achievement unlock
+                if new == 10:
+                    achievement_unlock = Achievements.objects.filter(user=ersteller).update(bestell_achievement=1)
+                    return render(request, "webapplication/create_bestell.html", {
+                        "message": "Einträge erfolgreich angelegt",
+                        "unlock": 1
+                    })
                 return render(request, "webapplication/create_bestell.html", {
-                    "message": "Einträge erfolgreich angelegt"
+                    "message": "Einträge erfolgreich angelegt" 
                 })
             except ValueError:
                     return render(request, "webapplication/login.html", {
-                        "message": "Sie sind nicht angemeldet!"
+                        "alert": "Sie sind nicht angemeldet!"
+                    })
+            except IntegrityError:
+                    return render(request, "webapplication/create_bestell.html", {
+                        "alert": "Bestellnummer bereits vergeben!"
                     })
         return render(request, "webapplication/create_bestell.html")
 
