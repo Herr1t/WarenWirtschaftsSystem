@@ -179,13 +179,13 @@ def create_lager(request):
                         temp = str(lager_count[0]).replace('(', '').replace(',)', '')
                         if temp == "None":
                             new = 0
-                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0})                        
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement_1': 0})                        
                         else:
                             new = int(str(lager_count[0]).replace('(', '').replace(',)', '')) + 1
                             achievement_count = Achievements.objects.filter(user=request.user).update(lager_count=new)
                     else:
                         new = 0
-                        achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0})
+                        achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement_1': 0, 'lager_achievement_2': 0, 'lager_achievement_3': 0})
                     # If count 100 for Lagereinträge then Achievement unlock
                     if new == 100:
                         a = 1
@@ -630,13 +630,13 @@ def create_bestell(request):
                     temp = str(bestell_count[0]).replace('(', '').replace(',)', '')
                     if temp == "None":
                         new = 0
-                        achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement': 0})
+                        achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement_1': 0})
                     else:
                         new = int(str(bestell_count[0]).replace('(', '').replace(',)', '')) + 1
                         achievement_count = Achievements.objects.filter(user=ersteller).update(bestell_count=new)
                 else:
                     new = 0
-                    achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement': 0})
+                    achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement_1': 0, 'bestell_achievement_2': 0, 'bestell_achievement_3': 0})
                 # If count for Bestelleinträge 10 then Achievement unlock
                 if new == 10:
                     achievement_unlock = Achievements.objects.filter(user=ersteller).update(bestell_achievement=1)
