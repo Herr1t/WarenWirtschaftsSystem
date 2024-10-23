@@ -179,13 +179,13 @@ def create_lager(request):
                         temp = str(lager_count[0]).replace('(', '').replace(',)', '')
                         if temp == "None":
                             new = 0
-                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0})
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                         else:
                             new = int(str(lager_count[0]).replace('(', '').replace(',)', '')) + 1
                             achievement_count = Achievements.objects.filter(user=request.user).update(lager_count=new)
                     else:
                         new = 0
-                        achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0})
+                        achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 1, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                     # If count 100 for Lagereinträge then Achievement unlock
                     if new == 50:
                         ach = 1
@@ -281,13 +281,13 @@ def handout_lager(request):
                             temp = str(handout_count[0]).replace('(', '').replace(',)', '')
                             if temp == "None":
                                 new = 0
-                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement': 0})
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                             else:
                                 new = int(str(handout_count[0]).replace('(', '').replace(',)', '')) + 1
                                 achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
                         else:
                             new = 0
-                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement': 0})
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                         if new == 50:
                             ach = 1
                         if new == 200:
@@ -378,13 +378,13 @@ def handout_lager_all(request, bestell_nr):
                             temp = str(handout_count[0]).replace('(', '').replace(',)', '')
                             if temp == "None":
                                 new = 0
-                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement': 0})
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                             else:
                                 new = int(str(handout_count[0]).replace('(', '').replace(',)', '')) + 1
                                 achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
                         else:
                             new = 0
-                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement': 0})
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                         if new == 50:
                             ach = 1
                         if new == 200:
@@ -485,16 +485,16 @@ def rückgabe(request):
                         ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben})
                         ausgeben2 = Lagerliste.objects.filter(inventarnummer=inventarnummer).update(herausgeber=None, klinik=None, ausgabe=None)
                         if rueckgabe_count:
-                            temp = str(handout_count[0]).replace('(', '').replace(',)', '')
+                            temp = str(rueckgabe_count[0]).replace('(', '').replace(',)', '')
                             if temp == "None":
                                 new = 0
-                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement': 0})
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 1, 'rueckgabe_achievement': 0})
                             else:
-                                new = int(str(handout_count[0]).replace('(', '').replace(',)', '')) + 1
+                                new = int(str(rueckgabe_count[0]).replace('(', '').replace(',)', '')) + 1
                                 achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
                         else:
                             new = 0
-                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'handout_count': 1, 'handout_achievement': 0})
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 1, 'rueckgabe_achievement': 0})
                         if new == 10:
                             ach = 1
                         if new == 50:
@@ -703,13 +703,13 @@ def create_bestell(request):
                     temp = str(bestell_count[0]).replace('(', '').replace(',)', '')
                     if temp == "None":
                         new = 0
-                        achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement': 0})
+                        achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 1, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                     else:
                         new = int(str(bestell_count[0]).replace('(', '').replace(',)', '')) + 1
                         achievement_count = Achievements.objects.filter(user=ersteller).update(bestell_count=new)
                 else:
                     new = 0
-                    achievement_count = Achievements.objects.update_or_create(user=ersteller, defaults={'bestell_count': 1, 'bestell_achievement': 0})
+                    achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 1, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
                 # If count equals threshold achievement
                 if new == 10:
                     ach = 1
