@@ -5,6 +5,13 @@
     <div class="create">
         <h2>Rückgabe eintragen</h2>
         <hr>
+        <div class="ach">
+            <div class="icon"><i class="fa fa-flag" aria-hidden="true"></i></div>
+            <div class="text_wrap">
+            <p class="title">Button Clicker!</p>
+            <span class="detail">you clicked a button</span>
+            </div>
+        </div>
         <form id="form" action="{% url 'rückgabe' %}" method="POST">
             {% csrf_token %}
             <div style="display: none;" class="form-group">
@@ -30,6 +37,13 @@
             {% endif %}
             {% if dne %}
                 <div class="alert alert-danger" role="alert">Die Inventarnummern <b>{{ dne }}</b> konnten nicht ausgetragen werden. Grund: Inventarnummern nicht in der Lagerliste hinterlegt.</div>
+            {% endif %}
+            {% if unlock %}
+                <script>
+                    window.onload = function() {
+                        achievementUnlocked("Rückgabe Stufe {{ unlock }}");
+                    };
+                </script>
             {% endif %}
             <div style="text-align: right;">
                 <input class="btn btn-primary" type="submit", value="Rückgabe">

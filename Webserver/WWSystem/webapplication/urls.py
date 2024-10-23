@@ -26,11 +26,13 @@ urlpatterns = [
     path("lager/<str:bestell_nr>/löschen", views.löschen_lager, name="löschen_lager"),
     path("bestell/<str:bestell_nr>/löschen", views.löschen_bestell, name="löschen_bestell"),
     path("<int:user_id>", views.profile, name="profile"),
+    path("<int:user_id>/achievements", views.achievements, name="achievements"),
     path("<int:user_id>/<str:bestell_nr>", views.detail_lager_profile, name="detail_lager_profile"),
     path("bestell/<str:bestell_nr>", views.update, name="update_bestell"),
     path("lager_ohne", views.lager_ohne_invest, name="lager_ohne"),
     path("profile/<int:user_id>", views.profile_lager_ohne, name="profile_lager_ohne"),
     path("lager_ohne/<str:bestell_nr>", views.handout_lager_ohne, name="handout_lager_ohne"),
     path("<int:user_id>/detail_profile_lager_ohne/<str:bestell_nr>", views.detail_profile_lager_ohne, name="detail_profile_lager_ohne"),
-    path("lager_ohne/<str:bestell_nr>/löschen_lager_ohne", views.löschen_lager_ohne, name="löschen_lager_ohne")
+    path("lager_ohne/<str:bestell_nr>/löschen_lager_ohne", views.löschen_lager_ohne, name="löschen_lager_ohne"),
+    path("test", views.test, name="test")
 ]

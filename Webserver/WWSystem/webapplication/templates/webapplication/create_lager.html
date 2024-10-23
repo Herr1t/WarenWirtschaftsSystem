@@ -6,6 +6,13 @@
   
     <h2>Lagerlisten Eintrag</h2>
     <hr>
+    <div class="ach">
+      <div class="icon"><i class="fa fa-flag" aria-hidden="true"></i></div>
+      <div class="text_wrap">
+      <p class="title">Button Clicker!</p>
+      <span class="detail">you clicked a button</span>
+      </div>
+    </div>
     <form id="form" action="{% url 'create_lager' %}" method="POST">
       {% csrf_token %}
       <div style="display: none;" class="form-group">
@@ -39,12 +46,8 @@
       {% endif %}
       {% if unlock %}
         <script>
-          function unlock() {
-            alert("Glückwunsch!\nDu hast ein Achievement freigeschaltet!\n+----------------------+\n(        Lager Stufe 1        )\n+----------------------+");
-          }
-
           window.onload = function() {
-            unlock();
+            achievementUnlocked("Lager Stufe {{ unlock }}");
           };
         </script>
       {% endif %}

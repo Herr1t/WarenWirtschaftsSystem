@@ -1,0 +1,28 @@
+{% extends 'webapplication/layout.html' %}
+
+{% block body %}
+    <div class="ach">
+        <div class="icon"><i class="fa fa-flag" aria-hidden="true"></i></div>
+        <div class="text_wrap">
+        <p class="title">Button Clicker!</p>
+        <span class="detail">you clicked a button</span>
+        </div>
+    </div>
+    
+    <button onclick='achievementUnlocked("You have done something!");'>Get achievement!</button>
+    <script>
+        function achievementUnlocked(text){
+            var hasClass = $('.ach').hasClass('achieved');
+            if (hasClass) return;
+            $('.title').html("Achievement unlocked!");
+            $('.detail').html(text);
+            $('.ach').addClass("achieved");
+            setTimeout(function(){
+                $('.ach').removeClass("achieved");
+            },5000)
+        }
+        if (plants.grown >= 500){
+            achievementUnlocked("You have done something!");
+        }
+    </script>
+{% endblock %}

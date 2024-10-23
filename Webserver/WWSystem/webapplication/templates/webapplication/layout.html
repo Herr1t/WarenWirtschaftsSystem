@@ -336,6 +336,20 @@
                 var parent = this.parentElement;
                 parent.parentElement.removeChild(parent);
             }
+
+            function achievementUnlocked(text){
+                var hasClass = $('.ach').hasClass('achieved');
+                if (hasClass) return;
+                $('.title').html("Achievement unlocked!");
+                $('.detail').html(text);
+                $('.ach').addClass("achieved");
+                setTimeout(function(){
+                    $('.ach').removeClass("achieved");
+                },5000)
+            }
+            if (plants.grown >= 500){
+                achievementUnlocked("You have done something!");
+            }
         </script>
     </body>
 </html>

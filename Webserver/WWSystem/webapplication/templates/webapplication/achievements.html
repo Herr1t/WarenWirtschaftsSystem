@@ -1,0 +1,306 @@
+{% extends 'webapplication/layout.html' %}
+{% load static %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Achievements</h1>
+    <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'profile' user.id %}'"></input>
+    <table style="text-align: center;" class="tables">
+        {% for item in achievements %}
+            {% if item.bestell_achievement == 1 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_bestell.png' %}" alt="ach1_bestell">
+                    </td>
+                    <td style="text-align: center;"> Bestellung Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.bestell_count }}" max="50" data-label="{{ item.bestell_count }}/50"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.bestell_count }}" max="150" data-label="{{ item.bestell_count }}/150"></progress>
+                    </td>
+                </tr>
+            {% elif item.bestell_achievement == 2 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_bestell.png' %}" alt="ach1_bestell">
+                    </td>
+                    <td style="text-align: center;"> Bestellung Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach2_bestell.png' %}" alt="ach2_bestell">
+                    </td>
+                    <td style="text-align: center;"> Bestellung Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.bestell_count }}" max="150" data-label="{{ item.bestell_count }}/150"></progress>
+                    </td>
+                </tr>
+            {% elif item.bestell_achievement == 3 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_bestell.png' %}" alt="ach1_bestell">
+                    </td>
+                    <td style="text-align: center;"> Bestellung Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach2_bestell.png' %}" alt="ach2_bestell">
+                    </td>
+                    <td style="text-align: center;"> Bestellung Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/ach3_bestell.png' %}" alt="ach3_bestell">
+                    </td>
+                    <td style="text-align: center;"> Bestellung Stufe 3 </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.bestell_count }}" max="10" data-label="{{ item.bestell_count }}/10"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.bestell_count }}" max="50" data-label="{{ item.bestell_count }}/50"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.bestell_count }}" max="150" data-label="{{ item.bestell_count }}/150"></progress>
+                    </td>
+                </tr>
+            {% endif %}
+
+            {% if item.lager_achievement == 1 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="height: auto;" src="{% static 'webapplication/ach1_lager.png' %}" alt="ach1_lager">
+                    </td>
+                    <td style="text-align: center;"> Lager Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.lager_count }}" max="200" data-label="{{ item.lager_count }}/200"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.lager_count }}" max="500" data-label="{{ item.lager_count }}/500"></progress>
+                    </td>
+                </tr>
+            {% elif item.lager_achievement == 2 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="height: auto;" src="{% static 'webapplication/ach1_lager.png' %}" alt="ach1_lager">
+                    </td>
+                    <td style="text-align: center;"> Lager Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="height: auto;" src="{% static 'webapplication/ach2_lager.png' %}" alt="ach2_lager">
+                    </td>
+                    <td style="text-align: center;"> Lager Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.lager_count }}" max="500" data-label="{{ item.lager_count }}/500"></progress>
+                    </td>
+                </tr>
+            {% elif item.lager_achievement == 3 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="height: auto;" src="{% static 'webapplication/ach1_lager.png' %}" alt="ach1_lager">
+                    </td>
+                    <td style="text-align: center;"> Lager Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="height: auto;" src="{% static 'webapplication/ach2_lager.png' %}" alt="ach2_lager">
+                    </td>
+                    <td style="text-align: center;"> Lager Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="height: auto;" src="{% static 'webapplication/ach3_lager.png' %}" alt="ach3_lager">
+                    </td>
+                    <td style="text-align: center;"> Lager Stufe 3 </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.lager_count }}" max="50" data-label="{{ item.lager_count }}/50"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.lager_count }}" max="200" data-label="{{ item.lager_count }}/200"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.lager_count }}" max="500" data-label="{{ item.lager_count }}/500"></progress>
+                    </td>
+                </tr>
+            {% endif %}
+
+            {% if item.handout_achievement == 1 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_handout.png' %}" alt="ach1_handout">
+                    </td>
+                    <td style="text-align: center;"> Ausgabe Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.handout_count }}" max="200" data-label="{{ item.handout_count }}/200"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.handout_count }}" max="500" data-label="{{ item.handout_count }}/500"></progress>
+                    </td>
+                </tr>
+            {% elif item.handout_achievement == 2 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_handout.png' %}" alt="ach1_handout">
+                    </td>
+                    <td style="text-align: center;"> Ausgabe Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach2_handout.png' %}" alt="ach2_handout">
+                    </td>
+                    <td style="text-align: center;"> Ausgabe Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.handout_count }}" max="500" data-label="{{ item.handout_count }}/500"></progress>
+                    </td>
+                </tr>
+            {% elif item.handout_achievement == 3 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_handout.png' %}" alt="ach1_handout">
+                    </td>
+                    <td style="text-align: center;"> Ausgabe Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach2_handout.png' %}" alt="ach2_handout">
+                    </td>
+                    <td style="text-align: center;"> Ausgabe Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/ach3_handout.png' %}" alt="ach3_handout">
+                    </td>
+                    <td style="text-align: center;"> Ausgabe Stufe 3 </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress"> 
+                        <progress value="{{ item.handout_count }}" max="50" data-label="{{ item.handout_count }}/50"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.handout_count }}" max="200" data-label="{{ item.handout_count }}/200"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.handout_count }}" max="500" data-label="{{ item.handout_count }}/500"></progress>
+                    </td>
+                </tr>
+            {% endif %}
+
+            {% if item.rueckgabe_achievement == 1 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_rueckgabe.png' %}" alt="ach1_rueckgabe">
+                    </td>
+                    <td style="text-align: center;"> Rückgabe Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.rueckgabe_count }}" max="50" data-label="{{ item.rueckgabe_count }}/50"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.rueckgabe_count }}" max="150" data-label="{{ item.rueckgabe_count }}/150"></progress>
+                    </td>
+                </tr>
+            {% elif item.rueckgabe_achievement == 2 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_rueckgabe.png' %}" alt="ach1_rueckgabe">
+                    </td>
+                    <td style="text-align: center;"> Rückgabe Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach2_rueckgabe.png' %}" alt="ach2_rueckgabe">
+                    </td>
+                    <td style="text-align: center;"> Rückgabe Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.rueckgabe_count }}" max="150" data-label="{{ item.rueckgabe_count }}/150"></progress>
+                    </td>
+                </tr>
+            {% elif item.rueckgabe_achievement == 3 %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach1_rueckgabe.png' %}" alt="ach1_rueckgabe">
+                    </td>
+                    <td style="text-align: center;"> Rückgabe Stufe 1 </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/ach2_rueckgabe.png' %}" alt="ach2_rueckgabe">
+                    </td>
+                    <td style="text-align: center;"> Rückgabe Stufe 2 </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/ach3_rueckgabe.png' %}" alt="ach3_rueckgabe">
+                    </td>
+                    <td style="text-align: center;"> Rückgabe Stufe 3 </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.rueckgabe_count }}" max="10" data-label="{{ item.rueckgabe_count }}/10"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 45px; height: 45;" src="{% static 'webapplication/locked_n.png' %}" alt="locked_n">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.rueckgabe_count }}" max="50" data-label="{{ item.rueckgabe_count }}/50"></progress>
+                    </td>
+                    <td class="ach_img">
+                        <img style="width: 47px; height: 47;" src="{% static 'webapplication/locked_r.png' %}" alt="locked_r">
+                    </td>
+                    <td class="ach_progress">
+                        <progress value="{{ item.rueckgabe_count }}" max="150" data-label="{{ item.rueckgabe_count }}/150"></progress>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+{% endblock %}

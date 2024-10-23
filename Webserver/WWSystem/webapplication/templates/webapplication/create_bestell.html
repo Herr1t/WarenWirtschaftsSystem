@@ -6,7 +6,13 @@
 
             <h2>BestellListen Eintrag</h2>
             <hr>
-
+            <div class="ach">
+                <div class="icon"><i class="fa fa-flag" aria-hidden="true"></i></div>
+                <div class="text_wrap">
+                <p class="title">Button Clicker!</p>
+                <span class="detail">you clicked a button</span>
+                </div>
+            </div>
             <form action="{% url 'create_bestell' %}" method="post" onsubmit="return validateForm()">
                 {% csrf_token %}
                 <div class="form-group">
@@ -90,7 +96,7 @@
                 {% if unlock %}
                     <script>
                         window.onload = function() {
-                            unlock();
+                            achievementUnlocked("Bestellung Stufe {{ unlock }}");
                         };
                     </script>
                 {% endif %}
@@ -102,10 +108,6 @@
         </div>
 
     <script>
-        function unlock() {
-            alert("Glückwunsch!\nDu hast ein Achievement freigeschaltet!\n+----------------------+\n(  Bestellungen Stufe 1  )\n+----------------------+");
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             const preisInput = document.getElementById('preis_pro_stück');
             
