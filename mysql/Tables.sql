@@ -94,6 +94,7 @@ CREATE TABLE `Achievements` (
     `Rueckgabe_Achievement` TINYINT DEFAULT 0,
     `Handout_Count` INT DEFAULT 0,
     `Handout_Achievement` TINYINT DEFAULT 0,
+    `Update_Achievement` TINYINT DEFAULT 0,
     PRIMARY KEY(`id`),
     FOREIGN KEY(`User`) REFERENCES `webapplication_user`(`username`)
 );
