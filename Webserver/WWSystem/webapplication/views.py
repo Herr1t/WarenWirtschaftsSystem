@@ -491,7 +491,7 @@ def rückgabe(request):
                                 achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 1, 'rueckgabe_achievement': 0})
                             else:
                                 new = int(str(rueckgabe_count[0]).replace('(', '').replace(',)', '')) + 1
-                                achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
+                                achievement_count = Achievements.objects.filter(user=request.user).update(rueckgabe_count=new)
                         else:
                             new = 0
                             achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 1, 'rueckgabe_achievement': 0})
