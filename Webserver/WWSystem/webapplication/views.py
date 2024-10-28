@@ -756,15 +756,26 @@ def update(request, bestell_nr):
             geliefert = 1
             anzahl = int(BestellListe.objects.values_list('geliefert_anzahl').get(pk=bestell_nr)[0])
             link = request.POST["link"] or ' '
+            update_ach = Achievements.objects.filter(user=request.user).values_list('update_achievement')
+            ach = 0
             
             # Updating the entry in BestellListe
             try:
                 bestellung = BestellListe.objects.filter(sap_bestell_nr_field=bestell_nr).update(sap_bestell_nr_field = sap_bestell_nr_field, modell = modell, typ = typ, menge = menge, preis_pro_stück = preis_pro_stück, spezifikation = spezi, zuweisung = zuweisung, geliefert_anzahl = geliefert_anzahl, bearbeitet = timezone.now(), link=link)
+                if update_ach:
+                    temp = str(update_ach[0]).replace('(', '').replace(',)', '')
+                    if temp == "0":
+                        ach = 1
+                        achievement_unlock = Achievements.objects.update_or_create(user=request.user, defaults={'update_achievement': 1})
+                else:
+                    ach = 1
+                    achievement_unlock = Achievements.objects.update_or_create(user=request.user, defaults={'update_achievement': 1})
             except IntegrityError:
                 return render(request, "webapplication/update_bestell.html", {
                     "alert": "Bestellnummer konnte nicht bearbeitet werden, da dieser Bestellung bereits Lagereinträge zugewiesen wurden.",
                     "bestell_nr": bestell_nr,
-                    "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
+                    "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr),
+                    "unlock": ach
             })
             except ValueError:
                     return render(request, "webapplication/login.html", {
@@ -789,19 +800,22 @@ def update(request, bestell_nr):
             if int(geliefert_anzahl) == int(menge):
                 return render(request, "webapplication/bestell.html", {
                     "bestell_nr": bestell_nr,
-                    "bestell_liste": BestellListe.objects.all()
+                    "bestell_liste": BestellListe.objects.all(),
+                    "unlock": ach
                 })
             # If the column "sap_bestell_nr_field" was changed it uses this output
             if str(bnr) != str(nr):
                 return render(request, "webapplication/update_bestell.html", {
                     "message": "Einträge erflogreich aktualisiert",
                     "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=bnr),
-                    "bestell_nr": str(bnr)
+                    "bestell_nr": str(bnr),
+                    "unlock": ach
                 })
             return render(request, "webapplication/update_bestell.html", {
                 "message": "Einträge erflogreich aktualisiert",
                 "bestell_nr": bestell_nr,
-                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr)
+                "bestell_liste": BestellListe.objects.all().filter(sap_bestell_nr_field=nr),
+                "unlock": ach
             })
         return render(request, "webapplication/update_bestell.html", {
             "bestell_nr": bestell_nr,
@@ -1029,6 +1043,8 @@ def update_detail_invest_soll(request, ou, id):
 def test(request):
     username = request.user
     if username.groups.filter(name='Admin').exists():
-        return render(request, "webapplication/test.html")
+        return render(request, "webapplication/test.html",{
+            "unlock": 3
+        })
     else:
         return HttpResponseRedirect(reverse("lagerliste"))

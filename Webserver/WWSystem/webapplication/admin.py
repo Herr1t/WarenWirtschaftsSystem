@@ -4,7 +4,7 @@ from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste
 # Register your models here.
 
 class Achievements_SollAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "bestell_count", "bestell_achievement", "lager_count", "lager_achievement", "rueckgabe_count", "rueckgabe_achievement", "handout_count", "handout_achievement")
+    list_display = ("id", "user", "bestell_count", "bestell_achievement", "lager_count", "lager_achievement", "rueckgabe_count", "rueckgabe_achievement", "handout_count", "handout_achievement", "update_achievement")
     list_filter = ("user", )
     search_fields = ("user", "id")
 

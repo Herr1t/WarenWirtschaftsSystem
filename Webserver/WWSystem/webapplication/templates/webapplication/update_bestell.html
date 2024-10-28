@@ -9,7 +9,13 @@
 
         <h2>BestellListen Eintrag Aktualisieren</h2>
         <hr>
-
+        <div class="ach">
+            <div class="icon" style="color: #b1660b;"><i class="fa fa-flag" aria-hidden="true"></i></div>
+            <div class="text_wrap">
+            <p class="title">Button Clicker!</p>
+            <span class="detail">you clicked a button</span>
+            </div>
+        </div>
         {% for item in bestell_liste %}
         <form action="{% url 'update_bestell' bestell_nr %}" method="post" onsubmit="return validateForm()">
             {% csrf_token %}
@@ -71,6 +77,13 @@
             {% endif %}
             {% if alert %}
                 <div class="alert alert-danger" role="alert">{{ alert }}</div>
+            {% endif %}
+            {% if unlock == 1 %}
+                <script>
+                    window.onload = function() {
+                        achievementUnlocked("Bearbeite deine erste Bestellung");
+                    };
+                </script>
             {% endif %}
             <div style="text-align: right;">
                 <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Aktualisieren">

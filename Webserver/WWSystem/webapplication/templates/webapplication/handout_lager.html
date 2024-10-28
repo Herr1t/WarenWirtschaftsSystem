@@ -6,7 +6,13 @@
     <h2>Aus Lagerliste austragen</h2>
     <hr>
     <div class="ach">
-      <div class="icon"><i class="fa fa-flag" aria-hidden="true"></i></div>
+      {% if unlock == 1 %}
+        <div class="icon" style="color: #b1660b;"><i class="fa fa-flag" aria-hidden="true"></i></div>
+      {% elif unlock == 2 %}
+        <div class="icon" style="color: #dcd8d4;"><i class="fa fa-flag" aria-hidden="true"></i></div>
+      {% elif unlock == 3 %}
+        <div class="icon" style="color: #d5b30c;"><i class="fa fa-flag" aria-hidden="true"></i></div>
+      {% endif %}
       <div class="text_wrap">
       <p class="title">Button Clicker!</p>
       <span class="detail">you clicked a button</span>
