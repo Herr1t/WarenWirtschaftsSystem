@@ -2,6 +2,32 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Lagerliste</h1>
+    <table class="tables" style="width: 38%; text-align: center; margin-left: auto; margin-right: auto;">
+        <thead>
+            <tr>
+                <th>Monitor</th>
+                <th>Notebook</th>
+                <th>Desktop-PC</th>
+                <th>Drucker</th>
+                <th>Scanner</th>
+                <th>Dockingstation</th>
+                <th>Diktiergerät</th>
+                <th>Transkription</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ monitor }}</td>
+                <td>{{ notebook }}</td>
+                <td>{{ pc }}</td>
+                <td>{{ drucker }}</td>
+                <td>{{ scanner }}</td>
+                <td>{{ dock }}</td>
+                <td>{{ dik }}</td>
+                <td>{{ trans }}</td>
+            </tr>
+        </tbody>
+    </table>
     <input style="margin-left: 1.5%;" class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
     <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
     <input class="button" value="Rückgabe" type="button" onclick="window.location.href='{% url 'rückgabe' %}'"></input>

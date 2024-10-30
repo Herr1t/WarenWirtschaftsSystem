@@ -97,6 +97,15 @@ def lager(request):
     else:
         Menge =  Lagerliste.objects.values_list('zuweisung', 'inventarnummer')
         y = 0
+        x = 0
+        monitor = 0
+        notebook = 0
+        pc = 0
+        drucker = 0
+        scanner = 0
+        dock = 0
+        dik = 0
+        trans = 0
         # Set Column "Zuweisung" to "Keine Zuweisung" if Column is "None"
         for _ in Menge:
             if str(Menge[y][0]) == "None":
@@ -104,8 +113,44 @@ def lager(request):
                 y = y + 1
             else:
                 y = y + 1
+        mengen = Lagerliste.objects.values_list('bestell_nr_field', 'typ').annotate(Menge=Count("bestell_nr_field")).exclude(ausgegeben="1")
+        for __ in mengen:
+            if __[1] == "Monitor":
+                monitor = monitor + __[2]
+                x = x + 1
+            elif __[1] == "Notebook":
+                notebook = notebook + __[2]
+                x = x + 1
+            elif __[1]== "Desktop-PC":
+                pc = pc + __[2]
+                x = x + 1
+            elif __[1] == "Drucker":
+                drucker = drucker + __[2]
+                x = x + 1
+            elif __[1] == "Scanner":
+                scanner = scanner + __[2]
+                x = x + 1
+            elif __[1] == "Dockingstation":
+                dock = dock + __[2]
+                x = x + 1
+            elif __[1] == "Diktiergerät":
+                dik = dik + __[2]
+                x = x + 1
+            elif __[1] == "Transkription":
+                trans = trans + __[2]
+                x = x + 1
+            else:
+                x = x + 1
         return render(request, "webapplication/lager.html", {
-            "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
+            "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+            "monitor": monitor,
+            "notebook": notebook,
+            "pc": pc,
+            "drucker": drucker,
+            "scanner": scanner,
+            "dock": dock,
+            "dik": dik,
+            "trans": trans
         })
 
 # View Function that represents the detailed list of items for a specific Bestell_Nr. inside the Lagerliste
