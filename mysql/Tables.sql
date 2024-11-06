@@ -28,7 +28,7 @@ CREATE TABLE `Bestell_Liste` (
     `Ersteller` VARCHAR(35) DEFAULT 'Kein Ersteller',
     `Bearbeitet` DATETIME,
     `Geliefert` ENUM('1', '0') NOT NULL DEFAULT '0',
-    `Geliefert_Anzahl` TINYINT DEFAULT 0,
+    `Geliefert_Anzahl` SMALLINT DEFAULT 0,
     PRIMARY KEY(`SAP_Bestell_Nr.`),
     FOREIGN KEY(`Ersteller`) REFERENCES `webapplication_user`(`username`)
 );
