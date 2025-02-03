@@ -90,6 +90,25 @@ def register(request):
     else:
         return render(request, "webapplication/register.html")
 
+def pw_reset(request):
+    if request.method == "POST":
+        uname = request.POST["username"]
+        new_pw = request.POST["new_password"]
+        confirm_pw = request.POST["confirm_password"]
+        if new_pw != confirm_pw:
+            return render(request, "webapplication/pw_reset.html", {
+                "message": "Passwörter müssen sich gleichen."
+            })
+        else:
+            u = User.objects.get(username=uname)
+            u.set_password(new_pw)
+            u.save()
+            return render(request, "webapplication/pw_reset.html", {
+                "confirm": "1"
+            })
+    else:
+        return render(request, "webapplication/pw_reset.html")
+
 # View Function that represents the content of the Lagerliste
 def lager(request):
     if group_check(request.user) == '1':
