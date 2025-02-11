@@ -11,7 +11,7 @@
         <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Datei erstellen">
         {% if confirm %}
             {% for file in files %}
-                {% if file.titel == "detail_investmittelplan_planung" %}
+                {% if file.titel == "OU{{ ou }}_investmittelplanung" %}
                     <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
                 {% endif %}
             {% endfor %}
