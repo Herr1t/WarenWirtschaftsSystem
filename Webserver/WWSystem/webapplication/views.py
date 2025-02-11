@@ -1186,15 +1186,17 @@ def detail_invest(request, klinik_ou):
                 conf = 1
                 x = x + 1
         if conf != 1:
-            Download.objects.create(titel=f"OU{ou}_detail_investmittelplan", dateipfad=f"OU{ou}_detail_investmittelplan.csv")
+            Download.objects.create(titel=f"OU{ou}_detail_investmittelplan", dateipfad=f"Download/OU{ou}_detail_investmittelplan.csv")
             Download.save
 
+        expf = f"OU{ou}_detail_investmittelplan"
 
         return render(request, "webapplication/detail_invest.html", {
             "detail_invest": detail_invest,
             "klinik_ou": ou,
             "files": files,
-            "confirm": "1"
+            "confirm": "1",
+            "expected_file": expf
         })
     else:
         ou = klinik_ou
@@ -1273,7 +1275,7 @@ def detail_invest_soll(request, ou):
                 conf = 1
                 x = x + 1
         if conf != 1:
-            Download.objects.create(titel=f"OU{ou}_investmittelplanung", dateipfad=f"OU{ou}_investmittelplanung.csv")
+            Download.objects.create(titel=f"OU{ou}_investmittelplanung", dateipfad=f"Download/OU{ou}_investmittelplanung.csv")
             Download.save
 
         return render(request, "webapplication/detail_invest_soll.html", {
