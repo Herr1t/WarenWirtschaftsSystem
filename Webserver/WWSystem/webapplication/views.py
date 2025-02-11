@@ -9,6 +9,7 @@ from django.db.models import Count, Q
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
+from django.core.files import File
 import csv
 
 from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll, Achievements, Download
@@ -1162,6 +1163,7 @@ def invest(request):
 def detail_invest(request, klinik_ou):
     x = 0
     files = Download.objects.all()
+    conf = 0
 
     if request.method == "POST":
         ou = klinik_ou
@@ -1170,13 +1172,24 @@ def detail_invest(request, klinik_ou):
         
         Liste = Lagerliste.objects.values_list('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(Q(klinik__icontains=request.POST["input"]) | Q(bestell_nr_field__sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(bestell_nr_field__preis_pro_stück__icontains=request.POST["input"])).filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
         
-        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/detail_investmitteplan.csv", "w"))
+        f = csv.writer(open(f"/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/OU{klinik_ou}detail_investmitteplan.csv", "w"))
         f.writerow(["Klinik", "Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Preis pro Stück", "Menge"])
 
         for _ in Liste:
             f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5], Liste[x][6]])
             x = x + 1
         
+        er = Download.objects.values_list('titel')
+        x = 0
+        for _ in er:
+            if str(f"OU{ou}_detail_investmittelplan") in str(_[x]).replace("'", "").replace("(", "").replace(")", "").replace(",", ""):
+                conf = 1
+                x = x + 1
+        if conf != 1:
+            Download.objects.create(titel=f"OU{ou}_detail_investmittelplan", dateipfad=f"OU{ou}_detail_investmittelplan.csv")
+            Download.save
+
+
         return render(request, "webapplication/detail_invest.html", {
             "detail_invest": detail_invest,
             "klinik_ou": ou,
@@ -1241,16 +1254,27 @@ def invest_soll(request):
 def detail_invest_soll(request, ou):
     x = 0
     files = Download.objects.all()
+    conf = 0
 
     if request.method == "POST":
         Liste = Detail_Investmittelplan_Soll.objects.values_list('typ', 'modell', 'menge', 'preis_pro_stück', 'admin', 'spezifikation').filter(Q(typ__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(menge__icontains=request.POST["input"]) | Q(preis_pro_stück__icontains=request.POST["input"]) | Q(admin__username__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"])).filter(ou_invsoll=ou)
-        
-        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/detail_investmittelplan_planung.csv", "w"))
+
+        f = csv.writer(open(f"/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/OU{ou}_investmittelplanung.csv", "w"))
         f.writerow(["Typ", "Modell", "Menge", "Preis pro Stück", "Ersteller", "Spezifikation"])
 
         for _ in Liste:
             f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5]])
             x = x + 1
+
+        er = Download.objects.values_list('titel')
+        x = 0
+        for _ in er:
+            if str(f"OU{ou}_investmittelplanung") in str(_[x]).replace("'", "").replace("(", "").replace(")", "").replace(",", ""):
+                conf = 1
+                x = x + 1
+        if conf != 1:
+            Download.objects.create(titel=f"OU{ou}_investmittelplanung", dateipfad=f"OU{ou}_investmittelplanung.csv")
+            Download.save
 
         return render(request, "webapplication/detail_invest_soll.html", {
             "ou": ou,
