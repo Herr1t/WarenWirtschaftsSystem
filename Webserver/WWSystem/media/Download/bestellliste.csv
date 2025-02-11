@@ -1,11 +1,35 @@
 SAP Bestell-Nr.,Modell,Typ,Spezifikation,Zuweisung,Ersteller,Invest,Preis pro Stück,Menge,Anzahl Geliefert
-1003,OptiPlex Micro,Micro-PC,mit WLAN,Lager,Gärtner,Ja,800.00,69,10
-213rwag5r6u7ti8t8,OptiPlex 7010 Tower,Desktop-PC,Tower-Desktop-PC,1,test,Ja,840.00,127,0
-2342145632421,OptiPlex 7020 Micro,Desktop-PC,Micro-Desktop-PC,1,adminukd,Ja,800.00,1,0
-234567543567,OptiPlex 7020 Tower,Desktop-PC,Tower-Desktop-PC,1,adminukd,Ja,840.00,1,0
-236456323,OptiPlex 7020 Tower,Desktop-PC,Tower-Desktop-PC,1,adminukd,Ja,840.00,1,0
-32512313,OptiPlex 7020 Micro,Desktop-PC,Micro-Desktop-PC,1,adminukd,Ja,800.00,1,0
-325123131,OptiPlex 7020 Micro,Desktop-PC,Micro-Desktop-PC,1,adminukd,Ja,800.00,1,0
-4te5a4t5et,OptiPlex 7010 Micro,Desktop-PC,Micro-Desktop-PC,rrgvbfd,adminukd,Nein,800.00,2,0
-5646dtuzzhd,OptiPlex 7010 Micro,Desktop-PC,Micro-Desktop-PC,5zedgt,adminukd,Ja,800.00,7,0
-hj06j50h9jh009h6,OptiPlex 7010 Micro,Desktop-PC,Micro-Desktop-PC,1,adminukd,Ja,800000.00,2,0
+ 2544373,Makita 2-Gang-Akku-Schlagbohrschrauber ,Schlagbohrer,,Lager / Field service,Lehmannph,Ja,299.00,1,0
+0300050467,DELL P2400,Monitor,24 Zoll,Lager,Köhler,Ja,177.73,140,136
+0300051086,Lenovo ThinkPad,Notebook,,IT-297268 DEK,Eckermann,Ja,835.00,30,5
+0300051120,Precision 7680 Workstation,Notebook,Mittel aus Klinik,IT-313211 ,Eckermann,Ja,0.00,2,0
+0300051146,Wandhalterung,Ergotron LX Steh-Sitz ,,https://jira.med.tu-dresden.de/browse/IT-309960#,Eckermann,Ja,213.99,9,0
+0300051266,MacBook Pro 14,Notebook,14 Zoll,IT-319041,eulitzm,Ja,1974.00,1,0
+0300051269-1,Lifebook U7310 Akku,Akku,,IT-306163,Köhler,Ja,242.76,1,0
+0300051269-2,Lifebook E5412 Akku,Akku,,IT-301518,Köhler,Ja,267.75,1,0
+0300051286,Kartenterminal,Cherry,inkl gSMC-KT-2.1,TI / Lager,Eckermann,Ja,700.00,30,0
+0300051294,SpeechMike,Diktiergerät,Diktiergerät,Lager,Köhler,Ja,280.00,20,0
+0300051304,Dell XPS 13-Laptop,Notebook,,IT-320319,Gärtner,Ja,1642.00,1,0
+1879282,Akku Stylistic Q7312,Akku,,Lager,Köhler,Nein,147.00,10,0
+1885552 ,SanDisk iXpand Go 256GB USB 3.0 & Lightning Stick,USB Stick,,IT-300468,Lehmannph,Nein,50.90,2,0
+1894118,CSL Video Grabber,USB-Stick,,IT-306060,Köhler,Nein,16.76,1,0
+1897180 ,Jebra Evolve 65 MS,Headset,,IT-303065,Lehmannph,Nein,139.00,2,0
+1901632 ,"Steckdosenleiste SMART, 6-fach",Steckdosenleiste,,Lager + Elias,Lehmannph,Nein,11.70,20,0
+1905759 ,Sony WH-CH720N,Headset wireless,,Lager,Lehmannph,Nein,79.00,15,0
+1921155-2,HDMI-Kabel normal,Kabel,,Lager,Köhler,Nein,5.00,50,0
+1922502,VPN-Folien,Folie,,Lager,Köhler,Nein,0.27,200,0
+1923110-1,Externe Festplatte,Festplatte,,Lager,Köhler,Nein,50.00,10,0
+1923110-2,USB-Stick 64 GB,USB-Stick,,Lager,Köhler,Nein,5.00,20,0
+1923146,GRIFFIN GC16034,Notebookständer,,Lager,Köhler,Nein,44.95,20,0
+1924885-1,Mauspad 90x40cm,Mauspad,,Lager,Köhler,Nein,20.00,20,0
+1924885-2,Mauspad Handballenauflage,Mauspad,,Lager,Köhler,Nein,10.00,20,0
+1927346,Akku Fujitsu Lifebook U748,Akku,Angebot K&B,"Klemann, Nico DSAK014351",Lehmannph,Ja,216.58,1,0
+1929414 ,patchkabel,netzwerkkabel,35x 2m 3x 10m 10x 3m,IT-324452,Lehmannph,Nein,2.59,48,0
+1934384 ,Jabra LINK 280 USB Adapter QD auf USB,kabel,,IT-325676,Lehmannph,Nein,69.00,4,0
+300051085-2,Surface,Tablet,,IT-297268 DEK,Eckermann,Ja,1499.00,1,0
+300051270-3,Rico Tischscanner,Drucker,Scanner,Lager,Köhler,Ja,420.00,10,0
+A_13.01.25_A1,Epson Drucker,Drucker,Rezeptdrucker,Lager,Gärtner,Ja,630.00,3,0
+A_17.01.2025,"Apple iPad Pro 13 Zoll"" 2024 mit Magic Keyboard",Tablet,Nachfrage Einsatz,IT-320460,Gärtner,Ja,500.00,1,0
+aDUOINVESTDRINGEND,Jabra Headset Pro 920 Duo,Headset,ZCH-ITS Budget,IT-304026,Köhler,Nein,175.88,5,0
+aIPADPRO303044,iPad Pro 13 2024 256,iPad,Nachfrage Einsatz,IT-303044,Köhler,Ja,0.00,2,0
+aMAGIC303044,Magic Keyboard M4 schwarz,Keyboard,Nachfrage Einsatz,IT-303044,Köhler,Ja,0.00,2,0
