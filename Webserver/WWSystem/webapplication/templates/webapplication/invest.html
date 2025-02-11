@@ -4,7 +4,18 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplan</h1>
     <h2 style="text-align: left; margin-left: 1.2%;">Seitenauswahl</h2>
-    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <form action="{% url 'investmittel' %}" method="post">
+        {% csrf_token %}
+        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Datei erstellen">
+        {% if confirm %}
+            {% for file in files %}
+                {% if file.titel == "investmittelplan" %}
+                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </form>
     {% if investmittelplan.has_other_pages %}
         <ul style="float: left; margin-top: 14px; margin-left: 1.5%;" class="pagination">
         {% for i in investmittelplan.paginator.page_range %}

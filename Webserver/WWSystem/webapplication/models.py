@@ -133,3 +133,11 @@ class Achievements(models.Model):
 
     def __str__(self) -> str:
         return str(self.user)
+    
+class Download(models.Model):
+    titel = models.CharField(max_length=100)
+    dateipfad = models.FileField(upload_to='Download/')
+    hochgeladen = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.titel)

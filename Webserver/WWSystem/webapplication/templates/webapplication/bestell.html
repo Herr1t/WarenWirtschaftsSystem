@@ -3,10 +3,21 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">BestellListe</h1>
-    <input style="margin-left: 1.5%;" class="button" value="BestellListen Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_bestell' %}'"></input>
-    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
-    <input class="button" value="Heute" type="button" id="today" onclick="today()">
-    <input class="button" value="Alle" type="button" id="today" onclick="undo()">
+    <form action="{% url 'bestell_liste' %}" method="post">
+        {% csrf_token %}
+        <input style="margin-left: 1.5%;" class="button" value="BestellListen Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_bestell' %}'"></input>
+        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Datei erstellen">
+        {% if confirm %}
+            {% for file in files %}
+                {% if file.titel == "bestellliste" %}
+                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        <input class="button" value="Heute" type="button" id="today" onclick="today()">
+        <input class="button" value="Alle" type="button" id="today" onclick="undo()">
+    </form>
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}

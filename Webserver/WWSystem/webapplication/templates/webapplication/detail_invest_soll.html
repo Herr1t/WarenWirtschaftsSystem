@@ -3,9 +3,20 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplanung der OU {{ ou }}</h1>
-    <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel_soll' %}'"></input>
-    <input class="button" value="Investmittel planen" type="button" onclick="window.location.href='{% url 'create_investmittel_soll' ou %}'"></input>
-    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <form action="{% url 'detail_investmittel_soll' ou %}" method="post">
+        {% csrf_token %}
+        <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel_soll' %}'"></input>
+        <input class="button" value="Investmittel planen" type="button" onclick="window.location.href='{% url 'create_investmittel_soll' ou %}'"></input>
+        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Datei erstellen">
+        {% if confirm %}
+            {% for file in files %}
+                {% if file.titel == "detail_investmittelplan_planung" %}
+                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </form>
     <table id="myTable" class="sortable tables">
         <thead>
             <tr>

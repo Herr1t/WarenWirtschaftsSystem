@@ -1,16 +1,17 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.http import HttpResponseRedirect, FileResponse
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
+import csv
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll, Achievements
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll, Achievements, Download
 
 def group_check(user):
     username = user
@@ -114,63 +115,136 @@ def lager(request):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
     else:
-        Menge =  Lagerliste.objects.values_list('zuweisung', 'inventarnummer')
-        y = 0
         x = 0
-        monitor = 0
-        notebook = 0
-        pc = 0
-        drucker = 0
-        scanner = 0
-        dock = 0
-        dik = 0
-        trans = 0
-        # Set Column "Zuweisung" to "Keine Zuweisung" if Column is "None"
-        for _ in Menge:
-            if str(Menge[y][0]) == "None":
-                update = Lagerliste.objects.update_or_create(inventarnummer=Menge[y][1], defaults={'zuweisung': "Keine Zuweisung"})
-                y = y + 1
-            else:
-                y = y + 1
-        mengen = Lagerliste.objects.values_list('bestell_nr_field', 'typ').annotate(Menge=Count("bestell_nr_field")).exclude(ausgegeben="1")
-        for __ in mengen:
-            if __[1] == "Monitor":
-                monitor = monitor + __[2]
+        files = Download.objects.all()
+
+        if request.method == "POST":
+            Liste = Lagerliste.objects.values_list('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').filter(Q(bestell_nr_field__sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(zuweisung__icontains=request.POST["input"])).exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
+            
+            f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/lagerliste.csv", "w"))        
+            f.writerow(["Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Menge"])
+
+            for _ in Liste:
+                f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5]])
                 x = x + 1
-            elif __[1] == "Notebook":
-                notebook = notebook + __[2]
-                x = x + 1
-            elif __[1]== "Desktop-PC":
-                pc = pc + __[2]
-                x = x + 1
-            elif __[1] == "Drucker":
-                drucker = drucker + __[2]
-                x = x + 1
-            elif __[1] == "Scanner":
-                scanner = scanner + __[2]
-                x = x + 1
-            elif __[1] == "Dockingstation":
-                dock = dock + __[2]
-                x = x + 1
-            elif __[1] == "Diktiergerät":
-                dik = dik + __[2]
-                x = x + 1
-            elif __[1] == "Transkription":
-                trans = trans + __[2]
-                x = x + 1
-            else:
-                x = x + 1
-        return render(request, "webapplication/lager.html", {
-            "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
-            "monitor": monitor,
-            "notebook": notebook,
-            "pc": pc,
-            "drucker": drucker,
-            "scanner": scanner,
-            "dock": dock,
-            "dik": dik,
-            "trans": trans
-        })
+            Menge =  Lagerliste.objects.values_list('zuweisung', 'inventarnummer')
+            y = 0
+            x = 0
+            monitor = 0
+            notebook = 0
+            pc = 0
+            drucker = 0
+            scanner = 0
+            dock = 0
+            dik = 0
+            trans = 0
+            # Set Column "Zuweisung" to "Keine Zuweisung" if Column is "None"
+            for _ in Menge:
+                if str(Menge[y][0]) == "None":
+                    update = Lagerliste.objects.update_or_create(inventarnummer=Menge[y][1], defaults={'zuweisung': "Keine Zuweisung"})
+                    y = y + 1
+                else:
+                    y = y + 1
+            mengen = Lagerliste.objects.values_list('bestell_nr_field', 'typ').annotate(Menge=Count("bestell_nr_field")).exclude(ausgegeben="1")
+            for __ in mengen:
+                if __[1] == "Monitor":
+                    monitor = monitor + __[2]
+                    x = x + 1
+                elif __[1] == "Notebook":
+                    notebook = notebook + __[2]
+                    x = x + 1
+                elif __[1]== "Desktop-PC":
+                    pc = pc + __[2]
+                    x = x + 1
+                elif __[1] == "Drucker":
+                    drucker = drucker + __[2]
+                    x = x + 1
+                elif __[1] == "Scanner":
+                    scanner = scanner + __[2]
+                    x = x + 1
+                elif __[1] == "Dockingstation":
+                    dock = dock + __[2]
+                    x = x + 1
+                elif __[1] == "Diktiergerät":
+                    dik = dik + __[2]
+                    x = x + 1
+                elif __[1] == "Transkription":
+                    trans = trans + __[2]
+                    x = x + 1
+                else:
+                    x = x + 1
+            return render(request, "webapplication/lager.html", {
+                "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+                "monitor": monitor,
+                "notebook": notebook,
+                "pc": pc,
+                "drucker": drucker,
+                "scanner": scanner,
+                "dock": dock,
+                "dik": dik,
+                "trans": trans,
+                "files" : files,
+                "confirm": "1"
+            })
+        else:
+            Menge =  Lagerliste.objects.values_list('zuweisung', 'inventarnummer')
+            y = 0
+            x = 0
+            monitor = 0
+            notebook = 0
+            pc = 0
+            drucker = 0
+            scanner = 0
+            dock = 0
+            dik = 0
+            trans = 0
+            # Set Column "Zuweisung" to "Keine Zuweisung" if Column is "None"
+            for _ in Menge:
+                if str(Menge[y][0]) == "None":
+                    update = Lagerliste.objects.update_or_create(inventarnummer=Menge[y][1], defaults={'zuweisung': "Keine Zuweisung"})
+                    y = y + 1
+                else:
+                    y = y + 1
+            mengen = Lagerliste.objects.values_list('bestell_nr_field', 'typ').annotate(Menge=Count("bestell_nr_field")).exclude(ausgegeben="1")
+            for __ in mengen:
+                if __[1] == "Monitor":
+                    monitor = monitor + __[2]
+                    x = x + 1
+                elif __[1] == "Notebook":
+                    notebook = notebook + __[2]
+                    x = x + 1
+                elif __[1]== "Desktop-PC":
+                    pc = pc + __[2]
+                    x = x + 1
+                elif __[1] == "Drucker":
+                    drucker = drucker + __[2]
+                    x = x + 1
+                elif __[1] == "Scanner":
+                    scanner = scanner + __[2]
+                    x = x + 1
+                elif __[1] == "Dockingstation":
+                    dock = dock + __[2]
+                    x = x + 1
+                elif __[1] == "Diktiergerät":
+                    dik = dik + __[2]
+                    x = x + 1
+                elif __[1] == "Transkription":
+                    trans = trans + __[2]
+                    x = x + 1
+                else:
+                    x = x + 1
+            return render(request, "webapplication/lager.html", {
+                "lagerliste": Lagerliste.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field")),
+                "monitor": monitor,
+                "notebook": notebook,
+                "pc": pc,
+                "drucker": drucker,
+                "scanner": scanner,
+                "dock": dock,
+                "dik": dik,
+                "trans": trans,
+                "files": files
+            })
 
 # View Function that represents the detailed list of items for a specific Bestell_Nr. inside the Lagerliste
 def detail_lager(request, bestell_nr):
@@ -723,18 +797,74 @@ def bestell(request):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
     else:
-        Menge =  BestellListe.objects.values_list('geliefert_anzahl', 'sap_bestell_nr_field')
-        y = 0
-        # Sets column "geliefert_anzahl" to "0" if column is "None"
-        for _ in Menge:
-            if str(Menge[y][0]) == "None":
-                update = BestellListe.objects.update_or_create(sap_bestell_nr_field=Menge[y][1], defaults={'geliefert_anzahl': 0})
-                y = y + 1
-            else:
-                y = y + 1
-        return render(request, "webapplication/bestell.html", {
+        x = 0
+        files = Download.objects.all()
+
+        if request.method == "POST":
+            Liste = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'spezifikation', 'zuweisung', 'ersteller', 'investmittel', 'preis_pro_stück', 'menge', 'geliefert_anzahl').filter(Q(sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(zuweisung__icontains=request.POST["input"]) | Q(ersteller__username__icontains=request.POST["input"]) | Q(investmittel__icontains=request.POST["input"]) | Q(preis_pro_stück__icontains=request.POST["input"]) | Q(menge__icontains=request.POST["input"]) | Q(geliefert_anzahl__icontains=request.POST["input"])).exclude(geliefert="1")
+            
+            f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/bestellliste.csv", "w"))        
+            f.writerow(["SAP Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Ersteller", "Invest", "Preis pro Stück", "Menge", "Anzahl Geliefert"])
+
+            for _ in Liste:
+                f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5], Liste[x][6], Liste[x][7], Liste[x][8], Liste[x][9]])
+                #f.writerow([Test[x][0], Test[x][1], Test[x][2], Test[x][3], Test[x][4], Test[x][5], Test[x][6], Test[x][7], Test[x][8], Test[x][9], Test[x][10], Test[x][11]])
+                x = x + 1
+            
+            return render(request, "webapplication/bestell.html", {
+                "bestell_liste": BestellListe.objects.all(),
+                "files" : files,
+                "confirm": "1"
+            })
+        else:
+            Menge =  BestellListe.objects.values_list('geliefert_anzahl', 'sap_bestell_nr_field')
+            y = 0
+            # Sets column "geliefert_anzahl" to "0" if column is "None"
+            for _ in Menge:
+                if str(Menge[y][0]) == "None":
+                    update = BestellListe.objects.update_or_create(sap_bestell_nr_field=Menge[y][1], defaults={'geliefert_anzahl': 0})
+                    y = y + 1
+                else:
+                    y = y + 1
+            return render(request, "webapplication/bestell.html", {
+                "bestell_liste": BestellListe.objects.all(),
+                "files": files
+            })
+
+def some_view(request):
+    x = 0
+    files = Download.objects.all()
+
+    if request.method == "POST":
+        Test = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'spezifikation', 'zuweisung', 'link', 'ersteller', 'bearbeitet', 'investmittel', 'preis_pro_stück', 'menge', 'geliefert_anzahl').filter(Q(sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(zuweisung__icontains=request.POST["input"]) | Q(investmittel__icontains=request.POST["input"]) | Q(preis_pro_stück__icontains=request.POST["input"]) | Q(menge__icontains=request.POST["input"]) | Q(geliefert_anzahl__icontains=request.POST["input"])).exclude(geliefert="1")
+        #Test = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'spezifikation', 'zuweisung', 'link', 'ersteller', 'bearbeitet', 'investmittel', 'preis_pro_stück', 'menge', 'geliefert_anzahl').filter(bearbeitet__icontains=request.POST["input"])
+        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/bestellliste.csv", "w"))        
+        f.writerow(["SAP Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Link", "Ersteller", "Bearbeitet", "Invest", "Preis pro Stück", "Menge", "Anzahl Geliefert"])
+
+        for _ in Test:
+            #writer.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5], Liste[x][6], Liste[x][7], Liste[x][8], Liste[x][9], Liste[x][10], Liste[x][11]])
+            f.writerow([Test[x][0], Test[x][1], Test[x][2], Test[x][3], Test[x][4], Test[x][5], Test[x][6], Test[x][7], Test[x][8], Test[x][9], Test[x][10], Test[x][11]])
+            x = x + 1
+        
+        return render(request, "webapplication/csv.html", {
             "bestell_liste": BestellListe.objects.all(),
+            "files" : files,
+            "confirm": "1",
+            "message": Test
         })
+    else:
+        return render(request, "webapplication/csv.html", {
+            "bestell_liste": BestellListe.objects.all(),
+            "files": files,
+        })
+    
+def download(request, download_id):
+    datei = get_object_or_404(Download, pk=download_id)
+    dateipfad = datei.dateipfad.path
+    response = FileResponse(open(dateipfad, 'rb'))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = f'attachment; filename="{datei.titel}"'
+    return response
 
 # View Function that handles the creation of new entries in BestellListe
 def create_bestell(request):
@@ -982,51 +1112,158 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
 
 # View Function that represents the content of Investmittelplan
 def invest(request):
-    investmittelplan = Investmittelplan.objects.all().order_by('klinik_ou')
-    # Values for the pagination
-    page = request.GET.get('page', 1)
-    paginator = Paginator(investmittelplan, 50)
-    # Pagination failsaves
-    try:
-        invest = paginator.page(page)
-    except PageNotAnInteger:
-        invest = paginator.page(1)
-    except EmptyPage:
-        invest = paginator.page(paginator.num_pages)
-    return render(request, "webapplication/invest.html", {
-        "investmittelplan": invest
-    })
+    x = 0
+    files = Download.objects.all()
+
+    if request.method == "POST":
+        Liste = Investmittelplan.objects.values_list('klinik_ou', 'investmittel_jahresanfang_in_euro', 'investmittel_übrig_in_euro', 'bereich', 'team').filter(Q(klinik_ou__icontains=request.POST["input"]) | Q(investmittel_jahresanfang_in_euro__icontains=request.POST["input"]) | Q(investmittel_übrig_in_euro__icontains=request.POST["input"]) | Q(bereich__icontains=request.POST["input"]) | Q(team__icontains=request.POST["input"]))
+        
+        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w"))
+        f.writerow(["klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro", "bereich", "team"])
+
+        for _ in Liste:
+            f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4]])
+            x = x + 1
+
+        investmittelplan = Investmittelplan.objects.all().order_by('klinik_ou')
+        # Values for the pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(investmittelplan, 50)
+        # Pagination failsaves
+        try:
+            invest = paginator.page(page)
+        except PageNotAnInteger:
+            invest = paginator.page(1)
+        except EmptyPage:
+            invest = paginator.page(paginator.num_pages)
+        return render(request, "webapplication/invest.html", {
+            "investmittelplan": invest,
+            "files" : files,
+            "confirm": "1"
+        })
+    else:
+        investmittelplan = Investmittelplan.objects.all().order_by('klinik_ou')
+        # Values for the pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(investmittelplan, 50)
+        # Pagination failsaves
+        try:
+            invest = paginator.page(page)
+        except PageNotAnInteger:
+            invest = paginator.page(1)
+        except EmptyPage:
+            invest = paginator.page(paginator.num_pages)
+        return render(request, "webapplication/invest.html", {
+            "investmittelplan": invest,
+            "files": files
+        })
 
 # View Function that represents the detailed content of a selected "ou" which shows the entries that are related to said "ou" in Investmittelplan
 def detail_invest(request, klinik_ou):
-    ou = klinik_ou
-    nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
-    detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
-    return render(request, "webapplication/detail_invest.html", {
-        "detail_invest": detail_invest,
-        "klinik_ou": ou
-    })
+    x = 0
+    files = Download.objects.all()
+
+    if request.method == "POST":
+        ou = klinik_ou
+        nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
+        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
+        
+        Liste = Lagerliste.objects.values_list('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(Q(klinik__icontains=request.POST["input"]) | Q(bestell_nr_field__sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(bestell_nr_field__preis_pro_stück__icontains=request.POST["input"])).filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
+        
+        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/detail_investmitteplan.csv", "w"))
+        f.writerow(["Klinik", "Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Preis pro Stück", "Menge"])
+
+        for _ in Liste:
+            f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5], Liste[x][6]])
+            x = x + 1
+        
+        return render(request, "webapplication/detail_invest.html", {
+            "detail_invest": detail_invest,
+            "klinik_ou": ou,
+            "files": files,
+            "confirm": "1"
+        })
+    else:
+        ou = klinik_ou
+        nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
+        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
+        return render(request, "webapplication/detail_invest.html", {
+            "detail_invest": detail_invest,
+            "klinik_ou": ou,
+            "files": files
+        })
 
 def invest_soll(request):
-    investmittelplan_soll = Investmittelplan_Soll.objects.all().order_by('ou')
-    alle = Investmittelplan_Soll.objects.values_list('investmittel_gesamt')
-    l = len(alle)
-    i = 0
-    c = 0.00
-    while i < l:
-        c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
-        i = i + 1
-    gesamt = Investmittelplan_Soll.objects.values_list("investmittel_gesamt")
-    return render(request, "webapplication/invest_soll.html", {
-        "investmittelplan_soll": investmittelplan_soll,
-        "alle": c
-    })
+    x = 0
+    files = Download.objects.all()
+
+    if request.method == "POST":
+        Liste = Investmittelplan_Soll.objects.values_list('ou', 'bereich', 'team', 'investmittel_gesamt').filter(Q(ou__icontains=request.POST["input"]) | Q(investmittel_gesamt__icontains=request.POST["input"]) | Q(bereich__icontains=request.POST["input"]) | Q(team__icontains=request.POST["input"]))
+        
+        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan_planung.csv", "w"))
+        f.writerow(["OU", "Bereich", "Team", "Investmittel Gesamt"])
+
+        for _ in Liste:
+            f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3]])
+            x = x + 1
+        
+        investmittelplan_soll = Investmittelplan_Soll.objects.all().order_by('ou')
+        alle = Investmittelplan_Soll.objects.values_list('investmittel_gesamt')
+        l = len(alle)
+        i = 0
+        c = 0.00
+        while i < l:
+            c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
+            i = i + 1
+        gesamt = Investmittelplan_Soll.objects.values_list("investmittel_gesamt")
+        return render(request, "webapplication/invest_soll.html", {
+            "investmittelplan_soll": investmittelplan_soll,
+            "alle": c,
+            "files": files,
+            "confirm": "1"
+        })
+    else:
+        investmittelplan_soll = Investmittelplan_Soll.objects.all().order_by('ou')
+        alle = Investmittelplan_Soll.objects.values_list('investmittel_gesamt')
+        l = len(alle)
+        i = 0
+        c = 0.00
+        while i < l:
+            c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
+            i = i + 1
+        gesamt = Investmittelplan_Soll.objects.values_list("investmittel_gesamt")
+        return render(request, "webapplication/invest_soll.html", {
+            "investmittelplan_soll": investmittelplan_soll,
+            "alle": c,
+            "files": files
+        })
 
 def detail_invest_soll(request, ou):
-    return render(request, "webapplication/detail_invest_soll.html", {
-        "ou": ou,
-        "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_invsoll=ou)
-    })
+    x = 0
+    files = Download.objects.all()
+
+    if request.method == "POST":
+        Liste = Detail_Investmittelplan_Soll.objects.values_list('typ', 'modell', 'menge', 'preis_pro_stück', 'admin', 'spezifikation').filter(Q(typ__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(menge__icontains=request.POST["input"]) | Q(preis_pro_stück__icontains=request.POST["input"]) | Q(admin__username__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"])).filter(ou_invsoll=ou)
+        
+        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/detail_investmittelplan_planung.csv", "w"))
+        f.writerow(["Typ", "Modell", "Menge", "Preis pro Stück", "Ersteller", "Spezifikation"])
+
+        for _ in Liste:
+            f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5]])
+            x = x + 1
+
+        return render(request, "webapplication/detail_invest_soll.html", {
+            "ou": ou,
+            "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_invsoll=ou),
+            "files": files,
+            "confirm": "1"
+        })
+    else:
+        return render(request, "webapplication/detail_invest_soll.html", {
+            "ou": ou,
+            "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_invsoll=ou),
+            "files": files
+        })
 
 def create_invest_soll(request, ou):
     if request.method == "POST":

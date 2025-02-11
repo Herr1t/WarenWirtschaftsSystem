@@ -28,10 +28,21 @@
             </tr>
         </tbody>
     </table>
-    <input style="margin-left: 1.5%;" class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
-    <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
-    <input class="button" value="Rückgabe" type="button" onclick="window.location.href='{% url 'rückgabe' %}'"></input>
-    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <form action="{% url 'lagerliste' %}" method="post">
+        {% csrf_token %}
+        <input style="margin-left: 1.5%;" class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
+        <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
+        <input class="button" value="Rückgabe" type="button" onclick="window.location.href='{% url 'rückgabe' %}'"></input>
+        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Datei erstellen">
+        {% if confirm %}
+            {% for file in files %}
+                {% if file.titel == "lagerliste" %}
+                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </form>
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}

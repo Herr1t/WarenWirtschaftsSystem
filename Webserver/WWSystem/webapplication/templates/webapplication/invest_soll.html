@@ -15,7 +15,18 @@
             </tr>
         </tbody>
     </table>
-    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <form action="{% url 'investmittel_soll' %}" method="post">
+        {% csrf_token %}
+        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Datei erstellen">
+        {% if confirm %}
+            {% for file in files %}
+                {% if file.titel == "investmittelplan_planung" %}
+                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </form>
     <table id="myTable" class="sortable tables">
         <thead>
             <tr>

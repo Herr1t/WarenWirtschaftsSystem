@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements, Download
 # Register your models here.
 
 class Achievements_SollAdmin(admin.ModelAdmin):
@@ -48,3 +48,4 @@ admin.site.register(Investmittelplan_Soll, Investmittelplan_SollAdmin)
 admin.site.register(Detail_Investmittelplan_Soll, Detail_Investmittelplan_SollAdmin)
 admin.site.register(Achievements, Achievements_SollAdmin)
 admin.site.register(User, UserAdmin)
+admin.site.register(Download)
