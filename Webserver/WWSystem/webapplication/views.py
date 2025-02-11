@@ -1172,7 +1172,7 @@ def detail_invest(request, klinik_ou):
         
         Liste = Lagerliste.objects.values_list('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(Q(klinik__icontains=request.POST["input"]) | Q(bestell_nr_field__sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(bestell_nr_field__preis_pro_stück__icontains=request.POST["input"])).filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
         
-        f = csv.writer(open(f"/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/OU{klinik_ou}_detail_investmitteplan.csv", "w"))
+        f = csv.writer(open(f"/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/OU{klinik_ou}_detail_investmittelplan.csv", "w"))
         f.writerow(["Klinik", "Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Preis pro Stück", "Menge"])
 
         for _ in Liste:
