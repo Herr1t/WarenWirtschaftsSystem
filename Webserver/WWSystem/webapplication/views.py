@@ -122,7 +122,7 @@ def lager(request):
         if request.method == "POST":
             Liste = Lagerliste.objects.values_list('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').filter(Q(bestell_nr_field__sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(zuweisung__icontains=request.POST["input"])).exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
             
-            f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/lagerliste.csv", "w"))        
+            f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w"))        
             f.writerow(["Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Menge"])
 
             for _ in Liste:
@@ -804,7 +804,7 @@ def bestell(request):
         if request.method == "POST":
             Liste = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'spezifikation', 'zuweisung', 'ersteller', 'investmittel', 'preis_pro_stück', 'menge', 'geliefert_anzahl').filter(Q(sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(zuweisung__icontains=request.POST["input"]) | Q(ersteller__username__icontains=request.POST["input"]) | Q(investmittel__icontains=request.POST["input"]) | Q(preis_pro_stück__icontains=request.POST["input"]) | Q(menge__icontains=request.POST["input"]) | Q(geliefert_anzahl__icontains=request.POST["input"])).exclude(geliefert="1")
             
-            f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/bestellliste.csv", "w"))        
+            f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/bestellliste.csv", "w"))        
             f.writerow(["SAP Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Ersteller", "Invest", "Preis pro Stück", "Menge", "Anzahl Geliefert"])
 
             for _ in Liste:
@@ -1119,7 +1119,7 @@ def invest(request):
     if request.method == "POST":
         Liste = Investmittelplan.objects.values_list('klinik_ou', 'investmittel_jahresanfang_in_euro', 'investmittel_übrig_in_euro', 'bereich', 'team').filter(Q(klinik_ou__icontains=request.POST["input"]) | Q(investmittel_jahresanfang_in_euro__icontains=request.POST["input"]) | Q(investmittel_übrig_in_euro__icontains=request.POST["input"]) | Q(bereich__icontains=request.POST["input"]) | Q(team__icontains=request.POST["input"]))
         
-        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w"))
+        f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w"))
         f.writerow(["klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro", "bereich", "team"])
 
         for _ in Liste:
@@ -1215,7 +1215,7 @@ def invest_soll(request):
     if request.method == "POST":
         Liste = Investmittelplan_Soll.objects.values_list('ou', 'bereich', 'team', 'investmittel_gesamt').filter(Q(ou__icontains=request.POST["input"]) | Q(investmittel_gesamt__icontains=request.POST["input"]) | Q(bereich__icontains=request.POST["input"]) | Q(team__icontains=request.POST["input"]))
         
-        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan_planung.csv", "w"))
+        f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan_planung.csv", "w"))
         f.writerow(["OU", "Bereich", "Team", "Investmittel Gesamt"])
 
         for _ in Liste:
