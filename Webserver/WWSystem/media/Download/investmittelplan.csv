@@ -1,100 +1,43 @@
-klinik_ou,investmittel_jahresanfang_in_euro,investmittel_übrig_in_euro,bereich,team
-1,0.00,-5002.00,,
-2,0.00,-1.00,,
-3,0.00,0.00,,
-4,139021.00,139021.00,,
-5,0.00,-45600.00,,
-6,0.00,0.00,,
-7,0.00,0.00,,
-8,0.00,0.00,,
-9,0.00,0.00,,
-10,63886.00,63886.00,FLV,
-11,0.00,0.00,,
-12,0.00,0.00,,
-13,0.00,0.00,,
-14,0.00,0.00,,
-15,40556.00,40156.00,,
-16,0.00,0.00,,
-17,9042.00,9042.00,,
-18,0.00,0.00,,
-19,0.00,0.00,,
-20,0.00,0.00,,
-21,3500.00,3500.00,,
-22,18164.00,18164.00,,
-23,57000.00,27170.00,,
-24,0.00,0.00,,
-25,0.00,0.00,,
-26,5300.00,5300.00,,
-27,0.00,0.00,,
-28,0.00,0.00,,
-29,0.00,0.00,,
-30,29750.00,29750.00,,
-31,0.00,0.00,,
-32,0.00,0.00,,
-33,0.00,0.00,,
-34,0.00,0.00,,
-35,0.00,0.00,,
-36,0.00,0.00,,
-37,0.00,0.00,,
-38,0.00,0.00,,
-39,24500.00,24500.00,,
-40,20500.00,20500.00,,
-41,0.00,0.00,,
-42,68646.00,68646.00,,
-43,0.00,0.00,,
-44,22276.00,22276.00,,
-45,116140.00,116140.00,,
-46,5250.00,4650.00,,
-47,2000.00,2000.00,,
-48,0.00,0.00,,
-49,0.00,0.00,,
-50,0.00,0.00,,
-51,16500.00,16500.00,,
-52,0.00,0.00,,
-53,0.00,0.00,,
-54,0.00,0.00,,
-55,168200.00,167700.00,,
-56,13250.00,13250.00,,
-57,38850.00,38850.00,,
-58,0.00,0.00,,
-59,0.00,0.00,,
-60,0.00,0.00,,
-61,61200.00,59600.00,,
-62,0.00,0.00,,
-63,25250.00,25250.00,,
-64,12750.00,12750.00,,
-65,0.00,0.00,,
-66,0.00,0.00,,
-67,0.00,0.00,,
-68,0.00,0.00,,
-69,0.00,0.00,,
-70,0.00,0.00,,
-71,0.00,0.00,,
-72,61228.00,61228.00,,
-73,253500.00,253500.00,,
-74,0.00,0.00,,
-75,19500.00,19500.00,,
-76,0.00,0.00,,
-77,0.00,0.00,,
-78,0.00,0.00,,
-79,0.00,0.00,,
-80,78970.00,78970.00,,
-81,35000.00,35000.00,,
-82,29200.00,29200.00,,
-83,69017.00,69017.00,,
-84,75800.00,75800.00,,
-85,32600.00,32600.00,,
-86,0.00,0.00,,
-87,75330.00,75330.00,,
-88,26250.00,26250.00,,
-89,42735.00,42535.00,,
-90,0.00,0.00,,
-91,43300.00,43300.00,,
-92,53750.00,53750.00,,
-93,77500.00,77000.00,,
-94,0.00,0.00,,
-95,0.00,0.00,,
-96,0.00,0.00,,
-97,44000.00,44000.00,,
-98,0.00,0.00,,
-99,0.00,0.00,,
+Bestell-Nr.,Modell,Typ,Spezifikation,Zuweisung,Menge
+1010,Notebook,Fujitsu Convertible,13 Zoll,Keine Zuweisung,20
+0300048511-1,Olympus 9000,Mobiles Diktiergerät,mobiles Diktiergerät,IT-248945 + Lager,4
+ 0300048665,Notebook,MacBook Air M3,13 Zoll und M3 ,Lager,1
+0300048665-3,Tablet,Surface Pro 9 + Tastatur,,Lager,2
+0300049281,Desktop-PC,OptiPlex 7020 SFF,Small Form Factor,Lager,5
+0300049452,Tablet,Surface 9 Pro,,Lager,5
+0300049887,Desktop-PC,OptiPlex 7020 SFF,Small Form Factor,Lager,5
+0300050079,Desktop-PC,OptiPlex 7020 SFF,Small Form Factor,Lager,1
+0300050114,Desktop-PC,OptiPlex 7020 SFF,Small Form Factor,Lager,1
+0300050209,Desktop-PC,OptiPlex 7020 Micro,Micro-Desktop-PC,Lager,11
+0300050202,Desktop-PC,OptiPlex 7020 Micro,Micro-Desktop-PC,Lager,2
+0300050262-2,Tablet,Tablet reMarkable Paper Pro,,IT-286587,1
+0300049793-1,Notebook,HP 470,17 Zoll,Lager,1
+0300050411,Apple 14'',Mac Book Air,14 Zoll,Lager,1
+0300050465,Desktop-PC,OptiPlex 7020 SFF,Small Form Factor,Lager,16
+0300050464,Notebook,Latitude 5540,15 Zoll,Lager,7
+0300050511-3,Apple,Ipad Mini 2021,,SD - Eckermann,1
+0300050504,CHERRY,eHealth-Terminal ST-1506,,Lager,40
+0300050594,Desktop-PC,OptiPlex 7020 Micro,Micro-Desktop-PC,Lager,125
+0300050594-2,Desktop-PC,OptiPlex 7020 Micro,Micro-Desktop-PC,Lager,91
+0300050710-2,Keyboard,Magic Keyboard M4,,IT-297263,1
+0300051210,Cherry ST-1506,Kartenterminal,,IDM,31
+0300051245,Notebook,Apple MacBook Pro 14,,IT-315570,1
+0300048821,Cherry,EGK Geräte,2x eGK-Tastatur G87-1505 + 2x eHealth PIN-Pad PP-1516,helfi_back,4
+0300048268-1,Nvidia Quadro,Grafikkarte,NVIDIA Quadro P1000 V2 4GB PCIe 3.0 Workstation Grafikkarte 4x Mini-DP,Lager + IT-242304,3
+1884437 ,Grafikkarte,PNY NVIDIA T1000 8GB Workstation Grafikkarte,,Lager + 297879,4
+0300050911,Apple Tablet,Ipad 10,,IT-302086,10
+0300050468,Monitor,DELL P2700,27 Zoll,Lager,45
+0300049413,Monitor,DELL P2425E,24 Zoll USB-C® Hub,Lager,1
+1915823 ,Dockingstation,DELL UD22,Dockingstation,Lager,10
+0300050467,Monitor,DELL P2400,24 Zoll,Lager,8
+0300049882,Monitor,DELL P2723DE,27 Zoll,Lager,2
+0300048855Dock,Dockingstation,Surface Dock 2,,Lager,4
+ 0300048855-1,Dockingstation,Surface Dock 2,,1x IT-252133 + 4x Lager,3
+0300049504-3,Scanner,Ricoh FI-8150,Dokumentenscanner,Lager,3
+0300050118,Drucker,Zebra ZD421t,Etikettendrucker,Lager,2
+300051270-1,Drucker,Zebra ZD421t,Etikettendrucker,Lager,9
+1012,Drucker,Zebra,ZD411,Keine Zuweisung,1
+300051270-2,Drucker,Zebra ZD411,Laboretikettendrucker,Lager,10
+0300049504-1 ,Scanner,Datalogic,Handscanner,Lager,1
+0300050775-2,Scanner,Datalogic,Handscanner,Lager,10
+0300049793,Apple,Ipad 10	,,Lager,5
