@@ -1224,6 +1224,7 @@ def investmittelplanung(request):
         c = 0.00
         x = 0
         y = 0
+        r = [4,5,7,9,10,11,12,14,15,16,17,18,19,21,22,23,26,27,30,31,32,33,34,37,38,39,40,41,42,43,44,45,46,47,50,51,54,55,56,57,58,59,61,63,64,65,66,67,69,72,73,75,79,80,81,82,83,84,85,87,88,89,90,91,92,93,95,96,97]
         while i < l:
             c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
             i = i + 1
@@ -1233,13 +1234,13 @@ def investmittelplanung(request):
             perc = float(float(gmittel[x][1]) * 100 / c)
             percent.append([gmittel[x][0], str(perc).replace(",", ".")])
             perc = float("{:.2f}".format(float(mittel) * (float(percent[x][1]) / 100)))
-            if request.POST[f"{x+1}"]:
-                suggest.append([percent[x][0], request.POST[f"{x+1}"]])
+            if request.POST[f"{r[x]}"]:
+                suggest.append([percent[x][0], request.POST[f"{r[x]}"]])
             else:
                 suggest.append([percent[x][0], perc])
             x = x + 1
 
-        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelvorschlag.csv", "w"))
+        f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelvorschlag.csv", "w"))
         f.writerow(["OU", "Investmittel geplant"])
 
         for _ in suggest:
@@ -1278,7 +1279,7 @@ def invest_alt(request):
     if request.method == "POST":
         x = 0
         invest = Investmittelplan.objects.values_list('klinik_ou', 'investmittel_jahresanfang_in_euro', 'investmittel_übrig_in_euro')
-        invest_alt = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year) - 1))
+        invest_alt = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
         if not invest_alt:
             for _ in invest:
                 Investmittelplan_Alt.objects.create(klinik_ou=invest[x][0], investmittel_jahresanfang_in_euro=invest[x][1], investmittel_übrig_in_euro=invest[x][2], jahr=(int(datetime.date.today().year) - 1))
@@ -1296,18 +1297,22 @@ def invest_alt(request):
                 x = x + 1
         
         investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
-        jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
-        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year) - 1))
+        jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year - 1))).distinct()
+        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
+        if jahr_aktuell:
+            jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+        else:
+            jahr_aktuell = ""
         
         return render(request, "webapplication/invest_alt.html", {
             "investmittelplan_alt": investmittelplan_alt,
             "jahr": jahr,
-            "jahr_aktuell": str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+            "jahr_aktuell": jahr_aktuell
         })
     else:
         investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
         jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
-        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year) - 1))
+        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
         if jahr_aktuell:
             jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
         else:
