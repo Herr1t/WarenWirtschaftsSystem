@@ -1,0 +1,30 @@
+{% extends "webapplication/layout.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block body %}
+    <div class="create">
+        <h2>Upload</h2>
+        <hr>
+        <div class="alert alert-warning">
+            <h3>Warnung!</h3>
+            <p>Im Header der CSV Datei müssen im ersten Feld 'OU' enthalten sein und im zweiten Feld 'Investmittel' enthalten sein. Bitte auch nicht mehr als diese zwei Spalten!</p>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="button" type="file" name="upload"></input>
+            </div>
+            <div style="text-align: right;">
+                <button class="btn btn-primary" type="submit">Upload</button>
+                <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+            </div>
+        </form>
+        {% if message %}
+            <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endif %}
+        {% if alert %}
+            <div class="alert alert-danger" role="alert">{{ alert }}</div>
+        {% endif %}
+    </div>
+{% endblock %}

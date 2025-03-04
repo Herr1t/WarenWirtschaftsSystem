@@ -1,0 +1,73 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+    <h1 class="header" style="text-align: center;">Investmittelplanung</h1>
+    <form action="{% url 'investmittelplanung' %}" method="post">
+    {% csrf_token %}
+        <div class="create" style="margin-bottom: 1%;">
+            <input class="form-control" type="text" name="gelder" required placeholder="verfügbare Mittel">
+            <input class="btn btn-primary" style="margin-top: 1.5%; float: right;" type="submit" value="Export Datei erstellen">
+            {% if confirm %}
+                {% for file in files %}
+                    {% if file.titel == "investmittelvorschlag" %}
+                        <input class="btn btn-primary" style="margin-top: 1.5%; margin-right: 0.5%; float: right;" type="button" value="Export Datei Download" onclick="window.location.href='{% url 'download' file.id %}'">
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <input class="button btn zurück" style="margin-top: 1.5%;" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+        </div>
+        <table id="myTable" class="sortable tables">
+            <thead>
+                <tr>
+                    <th>OU</th>
+                    <th>Investmittel Gesamt</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in percent %}
+                <tr class="custom_row">
+                    <td>{{ item.0 }}</td>
+                    <td>
+                        <input class="form-control" type="float" id="{{ item.0 }}" name="{{ item.0 }}">
+                    </td>
+                    <td hidden id="percent">{{ item.1 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>           
+        </table>
+    </form>
+    <script>
+        window.onload = function() {
+            // Funktion, die die Platzhalter für die Eingabefelder setzt
+            function updatePlaceholders() {
+                var gelder = parseFloat(document.querySelector('input[name="gelder"]').value); // Hole den Wert des "gelder" Input-Feldes
+                if (!isNaN(gelder) && gelder > 0) {
+                    // Durchlaufe alle Zeilen der Tabelle
+                    var rows = document.querySelectorAll('#myTable tbody tr');
+                    rows.forEach(function(row) {
+                        // Hole den Prozentsatz aus dem <td id="percent"> der aktuellen Zeile
+                        var percent = parseFloat(row.querySelector('#percent').textContent);
+                        if (!isNaN(percent)) {
+                            // Berechne den entsprechenden Wert und setze den Placeholder des Input-Feldes
+                            var calculatedValue = (gelder * percent) / 100;
+    
+                            // Setze den Placeholder mit der richtigen Anzahl von Dezimalstellen
+                            var inputField = row.querySelector('input[type="float"]');
+                            inputField.placeholder = calculatedValue.toFixed(2) + " €"; // Setze den Placeholder
+                        }
+                    });
+                }
+            }
+    
+            // Eventlistener für das "gelder"-Input-Feld
+            document.querySelector('input[name="gelder"]').addEventListener('input', updatePlaceholders);
+    
+            // Initiale Placeholder-Berechnung beim Laden der Seite
+            updatePlaceholders();
+        };
+    </script>
+    
+{% endblock %}

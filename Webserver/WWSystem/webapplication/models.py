@@ -141,3 +141,17 @@ class Download(models.Model):
 
     def __str__(self):
         return str(self.titel)
+    
+class Investmittelplan_Alt(models.Model):
+    klinik_ou = models.IntegerField(blank=True)  # Field name made lowercase.
+    investmittel_jahresanfang_in_euro = models.DecimalField(max_digits=8, decimal_places=2)  # Field name made lowercase.
+    investmittel_übrig_in_euro = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    jahr = models.IntegerField(blank=True)
+
+class Upload(models.Model):
+    titel = models.CharField(max_length=50)
+    file = models.FileField(upload_to='Upload/')
+    hochgeladen = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.titel)

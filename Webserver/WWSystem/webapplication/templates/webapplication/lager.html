@@ -34,11 +34,11 @@
         <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
         <input class="button" value="Rückgabe" type="button" onclick="window.location.href='{% url 'rückgabe' %}'"></input>
         <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Datei erstellen">
+        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Export Datei erstellen">
         {% if confirm %}
             {% for file in files %}
                 {% if file.titel == "lagerliste" %}
-                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
+                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Export Datei Download" onclick="window.location.href='{% url 'download' file.id %}'">
                 {% endif %}
             {% endfor %}
         {% endif %}

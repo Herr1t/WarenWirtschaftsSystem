@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements, Download
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements, Download, Investmittelplan_Alt, Upload
 # Register your models here.
 
 class Achievements_SollAdmin(admin.ModelAdmin):
@@ -37,6 +37,10 @@ class InvestmittelpanAdmin(admin.ModelAdmin):
     list_display = ("klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro")
     search_fields = ("klinik_ou", )
 
+class Investmittelpan_AltAdmin(admin.ModelAdmin):
+    list_display = ("klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro", "jahr")
+    search_fields = ("klinik_ou", )
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ("username", "is_staff")
 
@@ -49,3 +53,5 @@ admin.site.register(Detail_Investmittelplan_Soll, Detail_Investmittelplan_SollAd
 admin.site.register(Achievements, Achievements_SollAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Download)
+admin.site.register(Upload)
+admin.site.register(Investmittelplan_Alt, Investmittelpan_AltAdmin)

@@ -7,12 +7,13 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count, Q
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.auth.models import Group
 from django.core.files import File
-import csv
+import csv, datetime
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll, Achievements, Download
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Investmittelplan_Soll, Detail_Investmittelplan_Soll, Achievements, Download, Investmittelplan_Alt, Upload
+from .forms import UploadForm
 
 def group_check(user):
     username = user
@@ -102,12 +103,17 @@ def pw_reset(request):
                 "message": "Passwörter müssen sich gleichen."
             })
         else:
-            u = User.objects.get(username=uname)
-            u.set_password(new_pw)
-            u.save()
-            return render(request, "webapplication/pw_reset.html", {
-                "confirm": "1"
-            })
+            try:
+                u = User.objects.get(username=uname)
+                u.set_password(new_pw)
+                u.save()
+                return render(request, "webapplication/pw_reset.html", {
+                    "confirm": "1"
+                })
+            except ObjectDoesNotExist:
+                return render(request, "webapplication/pw_reset.html", {
+                    "message": "Nutzername exisitert nicht!"
+                })
     else:
         return render(request, "webapplication/pw_reset.html")
 
@@ -122,7 +128,7 @@ def lager(request):
         if request.method == "POST":
             Liste = Lagerliste.objects.values_list('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').filter(Q(bestell_nr_field__sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(zuweisung__icontains=request.POST["input"])).exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
             
-            f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w"))        
+            f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/lagerliste.csv", "w"))        
             f.writerow(["Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Menge"])
 
             for _ in Liste:
@@ -832,41 +838,6 @@ def bestell(request):
                 "files": files
             })
 
-def some_view(request):
-    x = 0
-    files = Download.objects.all()
-
-    if request.method == "POST":
-        Test = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'spezifikation', 'zuweisung', 'link', 'ersteller', 'bearbeitet', 'investmittel', 'preis_pro_stück', 'menge', 'geliefert_anzahl').filter(Q(sap_bestell_nr_field__icontains=request.POST["input"]) | Q(modell__icontains=request.POST["input"]) | Q(typ__icontains=request.POST["input"]) | Q(spezifikation__icontains=request.POST["input"]) | Q(zuweisung__icontains=request.POST["input"]) | Q(investmittel__icontains=request.POST["input"]) | Q(preis_pro_stück__icontains=request.POST["input"]) | Q(menge__icontains=request.POST["input"]) | Q(geliefert_anzahl__icontains=request.POST["input"])).exclude(geliefert="1")
-        #Test = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'spezifikation', 'zuweisung', 'link', 'ersteller', 'bearbeitet', 'investmittel', 'preis_pro_stück', 'menge', 'geliefert_anzahl').filter(bearbeitet__icontains=request.POST["input"])
-        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/bestellliste.csv", "w"))        
-        f.writerow(["SAP Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Link", "Ersteller", "Bearbeitet", "Invest", "Preis pro Stück", "Menge", "Anzahl Geliefert"])
-
-        for _ in Test:
-            #writer.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4], Liste[x][5], Liste[x][6], Liste[x][7], Liste[x][8], Liste[x][9], Liste[x][10], Liste[x][11]])
-            f.writerow([Test[x][0], Test[x][1], Test[x][2], Test[x][3], Test[x][4], Test[x][5], Test[x][6], Test[x][7], Test[x][8], Test[x][9], Test[x][10], Test[x][11]])
-            x = x + 1
-        
-        return render(request, "webapplication/csv.html", {
-            "bestell_liste": BestellListe.objects.all(),
-            "files" : files,
-            "confirm": "1",
-            "message": Test
-        })
-    else:
-        return render(request, "webapplication/csv.html", {
-            "bestell_liste": BestellListe.objects.all(),
-            "files": files,
-        })
-    
-def download(request, download_id):
-    datei = get_object_or_404(Download, pk=download_id)
-    dateipfad = datei.dateipfad.path
-    response = FileResponse(open(dateipfad, 'rb'))
-    response['Content-Type'] = 'application/octet-stream'
-    response['Content-Disposition'] = f'attachment; filename="{datei.titel}"'
-    return response
-
 # View Function that handles the creation of new entries in BestellListe
 def create_bestell(request):
     if group_check(request.user) == '1':
@@ -1111,6 +1082,242 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
             "lagerliste": Lagerliste_ohne_Invest.objects.all().values('id', 'typ', 'modell', 'spezifikation', 'herausgeber', 'ausgabe', 'bestell_nr_field').exclude(ausgegeben="0").filter(bestell_nr_field=bestell_nr)
         })
 
+def some_view(request):
+    if request.method == "POST":
+        conf = 0
+        form = UploadForm(request.POST, request.FILES)
+        test = []
+        y = 0
+        z = 1
+        wrong = ""
+        if form.is_valid():
+            if ".csv" in request.FILES["upload"].name:
+                er = Upload.objects.values_list('titel')
+                x = 0
+                for _ in er:
+                    if str("investmittelupload") in str(_[x]).replace("'", "").replace("(", "").replace(")", "").replace(",", ""):
+                        conf = 1
+                        x = x + 1
+                if conf != 1:
+                    Upload.objects.create(file = request.FILES["upload"], titel = "investmittelupload")
+                else:
+                    Upload.objects.filter(titel="investmittelupload").delete()
+                    Upload.objects.create(file = request.FILES["upload"], titel = "investmittelupload")
+                up = Upload.objects.filter(titel = "investmittelupload").values_list("file")
+                loc = str(up[0]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")
+                with open(f"/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/{loc}") as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter=',')
+                    x = 0
+                    for row in csv_reader:
+                        test.append(row)
+                ous = Investmittelplan.objects.values_list("klinik_ou")
+                if "OU" in test[0][0] and "Investmittel" in test[0][1]:
+                    pass
+                else:
+                    wrong = "1"
+                for _ in ous:
+                    if str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", "") == test[z][0]:
+                        Investmittelplan.objects.filter(klinik_ou = str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")).update(investmittel_jahresanfang_in_euro=test[z][1], investmittel_übrig_in_euro=test[z][1])
+                        z = z + 1
+                        y = y + 1
+                    else:
+                        Investmittelplan.objects.filter(klinik_ou = str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")).update(investmittel_jahresanfang_in_euro="0", investmittel_übrig_in_euro="0")
+                        y = y + 1
+                if wrong:
+                    return render(request, "webapplication/csv.html", {
+                        "message": "Im Header der CSV Datei müssen im ersten Feld 'OU' enthalten sein und im zweiten Feld 'Investmittel' enthalten sein. Bitte auch nicht mehr als diese zwei Spalten!"
+                    })
+                else:
+                    return render(request, "webapplication/csv.html", {
+                        "succes": "CSV erfolgreich importiert!"
+                    })
+            else:
+                return render(request, "webapplication/csv.html", {
+                    "message": "Es muss sich um eine .csv Datei handeln"
+                })
+    else:
+        form = UploadForm()
+        return render(request, "webapplication/csv.html", {
+            "form": form
+        })
+
+def upload(request):
+    if request.method == "POST":
+        conf = 0
+        form = UploadForm(request.POST, request.FILES)
+        test = []
+        y = 0
+        z = 1
+        this_year = str(int(datetime.date.today().year))
+        wrong = ""
+        if form.is_valid():
+            if ".csv" in request.FILES["upload"].name:
+                er = Upload.objects.values_list('titel')
+                x = 0
+                for _ in er:
+                    if str("investmittelupload") in str(_[x]).replace("'", "").replace("(", "").replace(")", "").replace(",", ""):
+                        conf = 1
+                        x = x + 1
+                if conf != 1:
+                    Upload.objects.create(file = request.FILES["upload"], titel = "investmittelupload")
+                else:
+                    Upload.objects.filter(titel="investmittelupload").delete()
+                    Upload.objects.create(file = request.FILES["upload"], titel = "investmittelupload")
+                up = Upload.objects.filter(titel = "investmittelupload").values_list("file")
+                loc = str(up[0]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")
+                with open(f"/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/{loc}") as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter=',')
+                    x = 0
+                    for row in csv_reader:
+                        test.append(row)
+                ous = Investmittelplan.objects.values_list("klinik_ou")
+                if "OU" in test[0][0] and "Investmittel" in test[0][1]:
+                    pass
+                else:
+                    return render(request, "webapplication/upload.html", {
+                        "alert": "Im Header der CSV Datei müssen im ersten Feld 'OU' enthalten sein und im zweiten Feld 'Investmittel' enthalten sein. Bitte auch nicht mehr als diese zwei Spalten!"
+                    })
+                for _ in ous:
+                    if str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", "") == test[z][0]:
+                        Investmittelplan.objects.filter(klinik_ou = str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")).update(investmittel_jahresanfang_in_euro=test[z][1], investmittel_übrig_in_euro=test[z][1])
+                        austragung_la = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=int(str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", ""))).filter(ausgabe__year=this_year)
+                        for __ in austragung_la:
+                            austragung_be = BestellListe.objects.values_list('preis_pro_stück').get(pk=str(__[0]).replace("'", "").replace("(", "").replace(")", "").replace(",", ""))
+                            austragung_in = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(pk=int(str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")))
+                            abzug = austragung_in[0] - austragung_be[0]
+                            abrechnung = Investmittelplan.objects.update_or_create(klinik_ou=str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", ""), defaults={'investmittel_übrig_in_euro': abzug})
+                        z = z + 1
+                        y = y + 1
+                    else:
+                        Investmittelplan.objects.filter(klinik_ou = str(ous[y]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")).update(investmittel_jahresanfang_in_euro="0", investmittel_übrig_in_euro="0")
+                        y = y + 1
+                return render(request, "webapplication/upload.html", {
+                    "message": "CSV erfolgreich importiert!"
+                })
+            else:
+                return render(request, "webapplication/upload.html", {
+                    "alert": "Es muss sich um eine .csv Datei handeln"
+                })
+    else:
+        form = UploadForm()
+        return render(request, "webapplication/upload.html", {
+            "form": form
+        })
+
+def download(request, download_id):
+    datei = get_object_or_404(Download, pk=download_id)
+    dateipfad = datei.dateipfad.path
+    response = FileResponse(open(dateipfad, 'rb'))
+    response['Content-Type'] = 'test/csv'
+    response['Content-Disposition'] = f'attachment; filename="{datei.titel}.csv"'
+    return response
+
+def investmittelplanung(request):
+    files=Download.objects.all()
+    if request.method == "POST":
+        percent = []
+        suggest = []
+        mittel = request.POST["gelder"]
+        alle = Investmittelplan_Soll.objects.values_list('investmittel_gesamt')
+        l = len(alle)
+        i = 0
+        c = 0.00
+        x = 0
+        y = 0
+        while i < l:
+            c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
+            i = i + 1
+
+        gmittel = Investmittelplan_Soll.objects.values_list('ou', 'investmittel_gesamt')
+        for _ in gmittel:
+            perc = float(float(gmittel[x][1]) * 100 / c)
+            percent.append([gmittel[x][0], str(perc).replace(",", ".")])
+            perc = float("{:.2f}".format(float(mittel) * (float(percent[x][1]) / 100)))
+            if request.POST[f"{x+1}"]:
+                suggest.append([percent[x][0], request.POST[f"{x+1}"]])
+            else:
+                suggest.append([percent[x][0], perc])
+            x = x + 1
+
+        f = csv.writer(open("/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelvorschlag.csv", "w"))
+        f.writerow(["OU", "Investmittel geplant"])
+
+        for _ in suggest:
+            f.writerow([suggest[y][0], suggest[y][1]])
+            y = y + 1
+
+        return render(request, "webapplication/investmittelplanung.html", {
+            "percent": percent,
+            "files": files,
+            "confirm": "1"
+        })
+    else:
+        percent = []
+        count = []
+        alle = Investmittelplan_Soll.objects.values_list('investmittel_gesamt')
+        l = len(alle)
+        i = 0
+        c = 0.00
+        x = 0
+        while i < l:
+            c = c + float(str(alle[i]).replace("(Decimal('", "").replace("'),)", ""))
+            i = i + 1
+
+        gmittel = Investmittelplan_Soll.objects.values_list('ou', 'investmittel_gesamt')
+        for _ in gmittel:
+            perc = float(float(gmittel[x][1]) * 100 / c)
+            percent.append([gmittel[x][0], str(perc).replace(",", ".")])
+            x = x + 1
+
+        return render(request, "webapplication/investmittelplanung.html", {
+            "percent": percent,
+            "files": files
+        })
+
+def invest_alt(request):
+    if request.method == "POST":
+        x = 0
+        invest = Investmittelplan.objects.values_list('klinik_ou', 'investmittel_jahresanfang_in_euro', 'investmittel_übrig_in_euro')
+        invest_alt = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year) - 1))
+        if not invest_alt:
+            for _ in invest:
+                Investmittelplan_Alt.objects.create(klinik_ou=invest[x][0], investmittel_jahresanfang_in_euro=invest[x][1], investmittel_übrig_in_euro=invest[x][2], jahr=(int(datetime.date.today().year) - 1))
+                x = x + 1
+        else:
+            y = 1
+            while y <= 99:
+                try:
+                    Investmittelplan_Alt.objects.get(klinik_ou=y).delete()
+                    y = y + 1
+                except ObjectDoesNotExist:
+                    y = y + 1
+            for _ in invest:
+                Investmittelplan_Alt.objects.create(klinik_ou=invest[x][0], investmittel_jahresanfang_in_euro=invest[x][1], investmittel_übrig_in_euro=invest[x][2], jahr=(int(datetime.date.today().year) - 1))
+                x = x + 1
+        
+        investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
+        jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
+        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year) - 1))
+        
+        return render(request, "webapplication/invest_alt.html", {
+            "investmittelplan_alt": investmittelplan_alt,
+            "jahr": jahr,
+            "jahr_aktuell": str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+        })
+    else:
+        investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
+        jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
+        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year) - 1))
+        if jahr_aktuell:
+            jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+        else:
+            jahr_aktuell = ""
+        return render(request, "webapplication/invest_alt.html", {
+            "investmittelplan_alt": investmittelplan_alt,
+            "jahr": jahr,
+            "jahr_aktuell": jahr_aktuell
+        })
+
 # View Function that represents the content of Investmittelplan
 def invest(request):
     x = 0
@@ -1120,7 +1327,7 @@ def invest(request):
         Liste = Investmittelplan.objects.values_list('klinik_ou', 'investmittel_jahresanfang_in_euro', 'investmittel_übrig_in_euro', 'bereich', 'team').filter(Q(klinik_ou__icontains=request.POST["input"]) | Q(investmittel_jahresanfang_in_euro__icontains=request.POST["input"]) | Q(investmittel_übrig_in_euro__icontains=request.POST["input"]) | Q(bereich__icontains=request.POST["input"]) | Q(team__icontains=request.POST["input"]))
         
         f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w"))
-        f.writerow(["klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro", "bereich", "team"])
+        f.writerow(["OU", "Investmittel Jahresanfang in Euro", "Investmittel übrig in Euro", "Bereich", "Team"])
 
         for _ in Liste:
             f.writerow([Liste[x][0], Liste[x][1], Liste[x][2], Liste[x][3], Liste[x][4]])
@@ -1164,6 +1371,7 @@ def detail_invest(request, klinik_ou):
     x = 0
     files = Download.objects.all()
     conf = 0
+    this_year = str(int(datetime.date.today().year))
 
     if request.method == "POST":
         ou = klinik_ou
@@ -1201,7 +1409,7 @@ def detail_invest(request, klinik_ou):
     else:
         ou = klinik_ou
         nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
-        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).annotate(Menge=Count("bestell_nr_field"))
+        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück', 'ausgabe').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=this_year).annotate(Menge=Count("bestell_nr_field"))
         return render(request, "webapplication/detail_invest.html", {
             "detail_invest": detail_invest,
             "klinik_ou": ou,

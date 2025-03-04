@@ -3,58 +3,15 @@
 {% load static %}
 
 {% block body %}
-    <div class="create">
-        <form action="{% url 'csv' %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <input class="form-control" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-            </div>
-            <input class="btn btn-primary" type="submit" value="Datei erstellen">
-            {% if confirm %}
-                {% for file in files %}
-                    <input class="btn btn-primary" type="button" value="Download" onclick="window.location.href='{% url 'download' file.id %}'">
-                {% endfor %}
-            {% endif %}
-        </form>
-    </div>
-    <table aria-live="polite" id="myTable" class="sortable tables" cellspacing="0">
-        <thead>
-            <tr>
-                <th>SAP Bestell-Nr.</th>
-                <th>Modell</th>
-                <th>Typ</th>
-                <th>Spezifikation</th>
-                <th>Zuweisung</th>
-                <th>Ersteller</th>
-                <th>Bearbeitet</th>
-                <th>Invest</th>
-                <th>Preis pro Stück</th>
-                <th>Menge</th>
-                <th>Anzahl Geliefert</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for item in bestell_liste %}
-            {% if item.geliefert != "1" %}
-                <tr class="custom_row">
-                    <td>{{ item.sap_bestell_nr_field }}</td>
-                    <td>{{ item.modell }}</td>
-                    <td>{{ item.typ }}</td>
-                    <td>{{ item.spezifikation }}</td>
-                    <td>{{ item.zuweisung }}</td>
-                    <td>{{ item.ersteller }}</td>
-                    <td>{{ item.bearbeitet|date:"d. E Y - H:i" }}</td>
-                    <td>{{ item.investmittel }}</td>
-                    <td>{{ item.preis_pro_stück|intcomma }}€</td>
-                    <td>{{ item.menge }}</td>
-                    <td>{{ item.geliefert_anzahl }}</td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-        </tbody>
-    </table>
-
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input class="button" type="file" name="upload"></input>
+        <button class="btn btn-primary" type="submit">Upload</button>
+    </form>
     {% if message %}
         <div>{{ message }}</div>
+    {% endif %}
+    {% if test %}
+        <div>{{ test }}</div>
     {% endif %}
 {% endblock %}
