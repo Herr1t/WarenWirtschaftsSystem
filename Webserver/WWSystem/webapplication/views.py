@@ -1165,7 +1165,7 @@ def upload(request):
                     Upload.objects.create(file = request.FILES["upload"], titel = "investmittelupload")
                 up = Upload.objects.filter(titel = "investmittelupload").values_list("file")
                 loc = str(up[0]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")
-                with open(f"/Users/voigttim/Documents/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/{loc}") as csv_file:
+                with open(f"/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/{loc}") as csv_file:
                     csv_reader = csv.reader(csv_file, delimiter=',')
                     x = 0
                     for row in csv_reader:

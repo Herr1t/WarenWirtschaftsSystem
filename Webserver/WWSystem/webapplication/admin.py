@@ -25,7 +25,7 @@ class Bestell_ListeAdmin(admin.ModelAdmin):
 
 class LagerlisteAdmin(admin.ModelAdmin):
     list_display = ("inventarnummer", "klinik", "typ", "modell", "spezifikation", "zuweisung", "bestell_nr_field", "herausgeber", "ausgabe", "ausgegeben")
-    list_filter = ("herausgeber", )
+    list_filter = ("herausgeber", "klinik")
     search_fields = ("inventarnummer", "bestell_nr_field__sap_bestell_nr_field")
 
 class Lagerliste_ohne_InvestAdmin(admin.ModelAdmin):
