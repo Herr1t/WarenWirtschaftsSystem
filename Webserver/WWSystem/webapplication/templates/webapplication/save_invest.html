@@ -1,0 +1,24 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Speichern des Investmittelplan's</h1>
+    <div class="create">
+        <h2>Bist du dir Sicher?</h2>
+        <hr>
+
+        <form id="form" action="{% url 'save_invest' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <select autofocus class="form-control" name="confirm">
+                    <option value="">Ja oder Nein auswählen</option>
+                    <option value="yes">Ja</option>
+                    <option value="no">Nein</option>
+                </select>
+            </div>
+
+            <div style="text-align: right;">
+                <input style="margin-left: 7px;" class="btn btn-primary" type="submit", value="Bestätigen">
+            </div>
+        </form>
+    </div>   
+{% endblock %}

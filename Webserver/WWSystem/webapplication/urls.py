@@ -16,6 +16,7 @@ urlpatterns = [
     path("investmittelplanung", views.investmittelplanung, name="investmittelplanung"),
     path("download/<int:download_id>/", views.download, name="download"),
     path("invest", views.invest, name="investmittel"),
+    path("invest/save", views.save_invest, name="save_invest"),
     path("invest/upload", views.upload, name="upload"),
     path("invest_alt", views.invest_alt, name="invest_alt"),
     path("invest/<int:klinik_ou>", views.detail_invest, name="detail_investmittel"),

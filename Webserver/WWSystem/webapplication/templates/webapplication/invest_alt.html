@@ -5,10 +5,7 @@
     <h1 class="header" style="text-align: center;">Investmittelplan vergangener Jahre</h1>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suche">
     <input class="button btn zurück" style="float: left; margin-left: 1.5%;" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
-    <form action="{% url 'invest_alt' %}" method="post">
-        {% csrf_token %}
-        <input class="btn btn-primary" style="float: left; margin-left: 0.5%; margin-top: 0.28%;" type="submit" value="aktuellen Investmittelplan speichern">
-    </form>
+    <input class="btn btn-primary" style="float: left; margin-left: 0.5%; margin-top: 0.28%;" type="button" value="aktuellen Investmittelplan speichern" onclick="window.location.href='{% url 'save_invest' %}'"">
     <select style="width: 7%; float: right; margin-top: 0.14cm; margin-right: 7px;" class="form-control" name="Jahr" id="jahrSelect">
         <option value="{{ jahr_aktuell }}">Jahr {{ jahr_aktuell }}</option>
         {% for item in jahr %}

@@ -1275,53 +1275,73 @@ def investmittelplanung(request):
             "files": files
         })
 
-def invest_alt(request):
-    if request.method == "POST":
-        x = 0
-        invest = Investmittelplan.objects.values_list('klinik_ou', 'investmittel_jahresanfang_in_euro', 'investmittel_übrig_in_euro')
-        invest_alt = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
-        if not invest_alt:
-            for _ in invest:
-                Investmittelplan_Alt.objects.create(klinik_ou=invest[x][0], investmittel_jahresanfang_in_euro=invest[x][1], investmittel_übrig_in_euro=invest[x][2], jahr=(int(datetime.date.today().year) - 1))
-                x = x + 1
-        else:
-            y = 1
-            while y <= 99:
-                try:
-                    Investmittelplan_Alt.objects.get(klinik_ou=y).delete()
-                    y = y + 1
-                except ObjectDoesNotExist:
-                    y = y + 1
-            for _ in invest:
-                Investmittelplan_Alt.objects.create(klinik_ou=invest[x][0], investmittel_jahresanfang_in_euro=invest[x][1], investmittel_übrig_in_euro=invest[x][2], jahr=(int(datetime.date.today().year) - 1))
-                x = x + 1
-        
-        investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
-        jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year - 1))).distinct()
-        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
-        if jahr_aktuell:
-            jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
-        else:
-            jahr_aktuell = ""
-        
-        return render(request, "webapplication/invest_alt.html", {
-            "investmittelplan_alt": investmittelplan_alt,
-            "jahr": jahr,
-            "jahr_aktuell": jahr_aktuell
-        })
+def save_invest(request):
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel"))
     else:
-        investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
-        jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
-        jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
-        if jahr_aktuell:
-            jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+        if request.method == 'POST':
+            answer = request.POST["confirm"]
+            # Deletion of entries if selected "yes"
+            if answer in "yes":
+                x = 0
+                invest = Investmittelplan.objects.values_list('klinik_ou', 'investmittel_jahresanfang_in_euro', 'investmittel_übrig_in_euro')
+                invest_alt = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
+                if not invest_alt:
+                    for _ in invest:
+                        Investmittelplan_Alt.objects.create(klinik_ou=invest[x][0], investmittel_jahresanfang_in_euro=invest[x][1], investmittel_übrig_in_euro=invest[x][2], jahr=(int(datetime.date.today().year) - 1))
+                        x = x + 1
+                else:
+                    y = 1
+                    while y <= 99:
+                        try:
+                            Investmittelplan_Alt.objects.filter(klinik_ou=y).filter(jahr=(int(datetime.date.today().year - 1))).delete()
+                            y = y + 1
+                        except ObjectDoesNotExist:
+                            y = y + 1
+                    for _ in invest:
+                        Investmittelplan_Alt.objects.create(klinik_ou=invest[x][0], investmittel_jahresanfang_in_euro=invest[x][1], investmittel_übrig_in_euro=invest[x][2], jahr=(int(datetime.date.today().year) - 1))
+                        x = x + 1
+                investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
+                jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
+                jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
+                if jahr_aktuell:
+                    jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+                else:
+                    jahr_aktuell = ""
+                return render(request, "webapplication/invest_alt.html", {
+                    "investmittelplan_alt": investmittelplan_alt,
+                    "jahr": jahr,
+                    "jahr_aktuell": jahr_aktuell
+                })
+            else:
+                investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
+                jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
+                jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
+                if jahr_aktuell:
+                    jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+                else:
+                    jahr_aktuell = ""
+                return render(request, "webapplication/invest_alt.html", {
+                    "investmittelplan_alt": investmittelplan_alt,
+                    "jahr": jahr,
+                    "jahr_aktuell": jahr_aktuell
+                })
         else:
-            jahr_aktuell = ""
-        return render(request, "webapplication/invest_alt.html", {
-            "investmittelplan_alt": investmittelplan_alt,
-            "jahr": jahr,
-            "jahr_aktuell": jahr_aktuell
-        })
+            return render(request, "webapplication/save_invest.html")
+
+def invest_alt(request):
+    investmittelplan_alt = Investmittelplan_Alt.objects.all().order_by('klinik_ou')
+    jahr = Investmittelplan_Alt.objects.values('jahr').exclude(jahr=(int(datetime.date.today().year) - 1)).distinct()
+    jahr_aktuell = Investmittelplan_Alt.objects.values_list('jahr').filter(jahr=(int(datetime.date.today().year - 1)))
+    if jahr_aktuell:
+        jahr_aktuell = str(jahr_aktuell[0]).replace("(", "").replace(",", "").replace(")", "")
+    else:
+        jahr_aktuell = ""
+    return render(request, "webapplication/invest_alt.html", {
+        "investmittelplan_alt": investmittelplan_alt,
+        "jahr": jahr,
+        "jahr_aktuell": jahr_aktuell
+    })
 
 # View Function that represents the content of Investmittelplan
 def invest(request):
