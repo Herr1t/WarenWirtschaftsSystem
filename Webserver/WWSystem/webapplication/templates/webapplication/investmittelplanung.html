@@ -5,6 +5,7 @@
         <div>{{ message }}</div>
     {% endif %}
     <h1 class="header" style="text-align: center;">Investmittelplanung</h1>
+    <h2 id="sumDisplay" style="text-align: center; margin-top: 20px;">Gesamtsumme: 0.00 €</h2>
     <form action="{% url 'investmittelplanung' %}" method="post">
     {% csrf_token %}
         <div class="create" style="margin-bottom: 1%;">
@@ -41,31 +42,49 @@
     </form>
     <script>
         window.onload = function() {
-            // Funktion, die die Platzhalter für die Eingabefelder setzt
             function updatePlaceholders() {
-                var gelder = parseFloat(document.querySelector('input[name="gelder"]').value); // Hole den Wert des "gelder" Input-Feldes
+                var gelder = parseFloat(document.querySelector('input[name="gelder"]').value); 
                 if (!isNaN(gelder) && gelder > 0) {
-                    // Durchlaufe alle Zeilen der Tabelle
                     var rows = document.querySelectorAll('#myTable tbody tr');
                     rows.forEach(function(row) {
-                        // Hole den Prozentsatz aus dem <td id="percent"> der aktuellen Zeile
                         var percent = parseFloat(row.querySelector('#percent').textContent);
                         if (!isNaN(percent)) {
-                            // Berechne den entsprechenden Wert und setze den Placeholder des Input-Feldes
                             var calculatedValue = (gelder * percent) / 100;
-    
-                            // Setze den Placeholder mit der richtigen Anzahl von Dezimalstellen
                             var inputField = row.querySelector('input[type="float"]');
-                            inputField.placeholder = calculatedValue.toFixed(2) + " €"; // Setze den Placeholder
+                            inputField.placeholder = calculatedValue.toFixed(2) + " €";
                         }
                     });
                 }
+                updateSum(); // Aktualisiert die Summe direkt nach dem Setzen der Platzhalter
             }
     
-            // Eventlistener für das "gelder"-Input-Feld
+            function updateSum() {
+                var totalSum = 0;
+                var rows = document.querySelectorAll('#myTable tbody tr');
+    
+                rows.forEach(function(row) {
+                    var inputField = row.querySelector('input[type="float"]');
+                    var inputValue = parseFloat(inputField.value); 
+                    
+                    if (!isNaN(inputValue)) {
+                        totalSum += inputValue; // Eingabewert hinzufügen
+                    } else {
+                        var placeholderValue = parseFloat(inputField.placeholder); 
+                        if (!isNaN(placeholderValue)) {
+                            totalSum += placeholderValue; // Platzhalterwert verwenden
+                        }
+                    }
+                });
+    
+                document.getElementById('sumDisplay').textContent = "Gesamtsumme: " + totalSum.toFixed(2) + " €";
+            }
+    
             document.querySelector('input[name="gelder"]').addEventListener('input', updatePlaceholders);
     
-            // Initiale Placeholder-Berechnung beim Laden der Seite
+            document.querySelectorAll('input[type="float"]').forEach(input => {
+                input.addEventListener('input', updateSum);
+            });
+    
             updatePlaceholders();
         };
     </script>
