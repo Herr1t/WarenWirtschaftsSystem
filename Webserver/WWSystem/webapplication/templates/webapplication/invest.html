@@ -8,7 +8,7 @@
     <form action="{% url 'investmittel' %}" method="post">
         {% csrf_token %}
         <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-        <input class="btn btn-secondary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="CSV Upload" onclick="window.location.href='{% url 'upload' %}'">
+        <input hidden class="btn btn-secondary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="CSV Upload" onclick="window.location.href='{% url 'upload' %}'">
         <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Export Datei erstellen">
         {% if confirm %}
             {% for file in files %}
