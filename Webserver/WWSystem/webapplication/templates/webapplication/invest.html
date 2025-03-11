@@ -3,7 +3,7 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplan</h1>
-    <input class="button" style="margin-left: 1.5%;" type="button" value="Investmittelplan vergangener Jahre" onclick="window.location.href='{% url 'invest_alt' %}'"></input>
+    <input hidden class="button" style="margin-left: 1.5%;" type="button" value="Investmittelplan vergangener Jahre" onclick="window.location.href='{% url 'invest_alt' %}'"></input>
     <h2 style="text-align: left; margin-left: 1.2%;">Seitenauswahl</h2>
     <form action="{% url 'investmittel' %}" method="post">
         {% csrf_token %}
