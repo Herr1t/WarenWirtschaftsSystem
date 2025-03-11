@@ -1166,6 +1166,7 @@ def upload(request):
                 up = Upload.objects.filter(titel = "investmittelupload").values_list("file")
                 loc = str(up[0]).replace("'", "").replace("(", "").replace(")", "").replace(",", "")
                 with open(f"/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/{loc}") as csv_file:
+                #with open(f"/Users/voigttim/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/{loc}") as csv_file:
                     csv_reader = csv.reader(csv_file, delimiter=',')
                     x = 0
                     for row in csv_reader:
@@ -1241,6 +1242,7 @@ def investmittelplanung(request):
             x = x + 1
 
         f = csv.writer(open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelvorschlag.csv", "w"))
+        #f = csv.writer(open("/Users/voigttim/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelvorschlag.csv", "w"))
         f.writerow(["OU", "Investmittel geplant"])
 
         for _ in suggest:
