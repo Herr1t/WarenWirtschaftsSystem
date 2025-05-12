@@ -33,6 +33,12 @@ CREATE TABLE `Bestell_Liste` (
     FOREIGN KEY(`Ersteller`) REFERENCES `webapplication_user`(`username`)
 );
 
+CREATE Table `OU` (
+    `OU_id` INT NOT NULL AUTO_INCREMENT,
+    `OU` INT NOT NULL,
+    PRIMARY KEY(`OU_id`)
+);
+
 CREATE TABLE `Investmittelplan` (
     `Klinik_OU` TINYINT NOT NULL,
     `Investmittel_Jahresanfang_in_Euro` DECIMAL(10, 2) NOT NULL CHECK(`Investmittel_Jahresanfang_in_Euro` >= 0) DEFAULT 0,
@@ -50,7 +56,7 @@ CREATE TABLE `Investmittelplan_Soll` (
 
 CREATE TABLE `Detail_Investmittelplan_Soll` (
     `id` INT NOT NULL AUTO_INCREMENT,
-    `OU_InvSoll` TINYINT NOT NULL,
+    `OU_id` TINYINT NOT NULL,
     `Typ` VARCHAR(50) NOT NULL,
     `Modell` VARCHAR(50) NOT NULL,
     `Spezifikation` TINYTEXT,
@@ -59,7 +65,7 @@ CREATE TABLE `Detail_Investmittelplan_Soll` (
     `Admin` VARCHAR(35) DEFAULT 'Kein Ersteller',
     PRIMARY KEY(`id`),
     FOREIGN KEY(`Admin`) REFERENCES `webapplication_user`(`username`),
-    FOREIGN KEY(`OU_InvSoll`) REFERENCES `Investmittelplan_Soll`(`OU`)
+    FOREIGN KEY(`OU_id`) REFERENCES `OU`(`OU_id`)
 );
     
 CREATE TABLE `Test` ( 
@@ -99,20 +105,15 @@ CREATE TABLE `Achievements` (
     FOREIGN KEY(`User`) REFERENCES `webapplication_user`(`username`)
 );
 
-CREATE Table `OU` (
-`OU_id` INT NOT NULL AUTO_INCREMENT,
-`OU` INT NOT NULL,
-PRIMARY KEY(`OU_id`)
-);
-
 CREATE Table `Invest` ( 
-`id` INT NOT NULL AUTO_INCREMENT, 
-`ou_id` INT NOT NULL, 
-`investmittel_übrig` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
-`investmittel_gesamt` DECIMAL(8, 2) DEFAULT 0, 
-`team` VARCHAR(20), 
-`bereich` VARCHAR(40), 
-`jahr` INT NOT NULL, 
-`typ` VARCHAR (20) NOT NULL,
-PRIMARY KEY(`id`), 
-FOREIGN KEY(`ou_id`) REFERENCES `OU`(`OU_id`) );
+    `id` INT NOT NULL AUTO_INCREMENT, 
+    `ou_id` INT NOT NULL, 
+    `investmittel_übrig` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
+    `investmittel_gesamt` DECIMAL(8, 2) DEFAULT 0, 
+    `team` VARCHAR(20), 
+    `bereich` VARCHAR(40), 
+    `jahr` INT NOT NULL, 
+    `typ` VARCHAR (20) NOT NULL,
+    PRIMARY KEY(`id`), 
+    FOREIGN KEY(`ou_id`) REFERENCES `OU`(`OU_id`) 
+);
