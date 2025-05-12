@@ -32,7 +32,10 @@
                             <a class="nav-link" href="{% url 'investmittel' %}">Investmittelplan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'investmittel_soll' %}">Investmittelplan 2025</a>
+                            <a class="nav-link" href="{% url 'investmittel_soll' %}">Investmittelplan Kliniken</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'pw_reset' %}">Passwort Reset</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
@@ -51,10 +54,13 @@
                             <a class="nav-link" href="{% url 'investmittel' %}">Investmittelplan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'investmittel_soll' %}">Investmittelplan 2025</a>
+                            <a class="nav-link" href="{% url 'investmittel_soll' %}">Investmittelplan Kliniken</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'profile' user.id %}">Profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'pw_reset' %}">Passwort Reset</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
@@ -69,7 +75,7 @@
                     <a class="nav-link" href="{% url 'register' %}">Registrieren</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'pw_reset' %}">Passwort Reset</a>
+                    <a class="nav-link" href="{% url 'pw_reset_msg' %}">Passwort Reset</a>
                 </li>
             {% endif %}
         </ul>

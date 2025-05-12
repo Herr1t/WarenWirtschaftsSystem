@@ -2,70 +2,70 @@
 {% load humanize %}
 
 {% block body %}
-    <form name="Invest" id="id_Invest" action="" method="get">
+    <form action="" method="post">
         {% csrf_token %}
-        <div style="text-align: center;">
-            <h1 class="header" style="text-align: center; display: inline-block;">Investmittelplan</h1>
-            <select style="display: inline-block; width: 4%; margin-left: 5px; margin-top: -10px" name="jahr" id="id_jahr" form="id_Invest" class="form-control">
-                {% for jahr in Jahre %}
-                    <option value="{{ jahr.jahr }}">{{ jahr.jahr }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        {% if message %}
-            <div>{{ message }}</div>
-        {% endif %}
-        {% if allowed == 1 %}
-            <input class="button" style="margin-left: 1.5%;" type="button" value="Investmittelplanung" onclick="window.location.href='{% url 'investmittelplanung' %}'"></input>
-            <input class="button" type="button" value="Bearbeitungsmodus" id="editButton"></input>
-        {% endif %}
-        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" id="downloadButton" value="Export Datei Download" onclick="window.location.href='{% url 'download' typ '1' %}'">
-        <table id="myTable" class="sortable tables">
-            <thead>
-                <tr style="position: sticky; top: 0; overflow: hidden;">
-                    <th>Klinik/OU</th>
-                    <th>Bereich</th>
-                    <th>Team</th>
-                    <th>Investmittel Jahresanfang</th>
-                    <th>Investmittel Übrig</th>
-                    <th>Investmittel Verausgabt</th>
-                    <th>Investmittel Geplant</th>
-                    <th>Jahr</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in rows %}
-                    <tr id="{{ forloop.counter }}" class="custom_row">
-                    
+        <form name="ModifyInvest" id="id_ModifyInvest" action="" method="get">
+            {% csrf_token %}
+            <div style="text-align: center;">
+                <h1 class="header" style="text-align: center; display: inline-block;">Investmittelplan</h1>
+                <select hidden style="display: inline-block; width: 4%; margin-left: 5px; margin-top: -10px" name="jahr" id="id_jahr" form="id_ModifyInvest" class="form-control">
+                    {% for jahr in Jahr %}
+                        <option value="{{ jahr.jahr }}">{{ jahr.jahr }}</option>
+                    {% endfor %}
+                </select>
+                <input hidden name="Jahr" id="Jahr">
+            </div>
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
+            <div class="create" style="margin-bottom: 1%;">
+                <input class="form-control" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+                <input class="button btn zurück" style="margin-top: 1.5%;" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+                <input class="btn btn-primary" style="margin-top: 1.5%; margin-right: 0.5%; float: right;" id="submit" type="submit" value="Planen">
+            </div>
+            <table id="myTable" class="sortable tables">
+                <thead>
+                    <tr style="position: sticky; top: 0; overflow: hidden;">
+                        <th>Klinik/OU</th>
+                        <th>Bereich</th>
+                        <th>Team</th>
+                        <th>Investmittel Jahresanfang</th>
+                        <th>Investmittel Übrig</th>
+                        <th>Investmittel Verausgabt</th>
+                        <th>Investmittel Geplant</th>
+                        <th>Jahr</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for item in rows %}
+                        <tr id="{{ forloop.counter }}" class="custom_row">
+                        
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
     </form>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const jahrSelect = document.getElementById('id_jahr');
-            const editButton = document.getElementById('editButton');
+            const select = document.getElementById('id_jahr');
+            const hiddenInput = document.getElementById('Jahr');
         
-            editButton.addEventListener('click', function () {
-                const selectedYear = jahrSelect.value;
-                const url = `/invest/${selectedYear}`;  // Adjust if your URL pattern differs
-                window.location.href = url;
+            function updateHiddenInput() {
+                hiddenInput.value = select.value;
+            }
+        
+            // Update on page load and on change
+            updateHiddenInput();
+            select.addEventListener('change', updateHiddenInput);
+        });
+
+        function formatNumber(value) {
+            return Number(value).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             });
-        });
-
-        // Optionally, add an event listener to continuously update the URL dynamically as the user types
-        document.getElementById("myInput").addEventListener("input", function () {
-            // Get the value typed into the input field
-            var inputValue = document.getElementById("myInput").value;
-            
-            // Format the URL
-            var url = "{% url 'download' typ '1' %}".replace("1", inputValue)
-
-            // Update the onclick attribute of the button with the new URL
-            document.getElementById("downloadButton").setAttribute("onclick", "window.location.href='" + url + "'");
-        });
+        }
 
         // Automatically select current year in the "jahr" select box
         window.addEventListener('DOMContentLoaded', function () {
@@ -82,18 +82,11 @@
             jahrSelect.dispatchEvent(new Event('change'));
         });
 
-        function formatNumber(value) {
-            return Number(value).toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-
         // Example AJAX call using the function
         document.getElementById("id_jahr").addEventListener("change", function(){
             $.ajax({
                 type: 'GET',
-                url: "get-investaktiv/",
+                url: "get-modifyinvest/",
                 data: {
                     jahr: $("#id_jahr").val()
                 },
@@ -128,8 +121,13 @@
                         select.appendChild(td);
 
                         var td = document.createElement("td");
-                        td.value = formatNumber(response.inv_gesamt[i]["investmittel_gesamt"]) + "€";
-                        td.innerHTML = formatNumber(response.inv_gesamt[i]["investmittel_gesamt"]) + "€";
+                        var input = document.createElement("input");
+                        input.value = formatNumber(response.inv_gesamt[i]["investmittel_gesamt"]);
+                        input.innerHTML = formatNumber(response.inv_gesamt[i]["investmittel_gesamt"]);
+                        input.setAttribute("class", "form-control");
+                        input.setAttribute("type", "float");
+                        input.setAttribute("name", response.ou[i]["ou_id__ou"]);
+                        td.appendChild(input);
                         select.appendChild(td);
 
                         var td = document.createElement("td");

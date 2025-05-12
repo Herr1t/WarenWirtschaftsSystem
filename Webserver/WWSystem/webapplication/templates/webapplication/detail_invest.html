@@ -3,23 +3,11 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittel der Klinik {{ klinik_ou }}</h1>
-    <form action="{% url 'detail_investmittel' klinik_ou %}" method="post">
-        {% csrf_token %}
-        <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
-        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Export Datei erstellen">
-        {% if confirm %}
-            {% for file in files %}
-                {% if file.titel == expected_file %}
-                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Export Datei Download" onclick="window.location.href='{% url 'download' file.id %}'">
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </form>
-
+    <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
     <table id="myTable" class="sortable tables">
         <thead>
-            <tr>
+            <tr style="position: sticky; top: 0; overflow: hidden;">
                 <th>Klinik/OU</th>
                 <th>Bestell-Nr.</th>
                 <th>Modell</th>

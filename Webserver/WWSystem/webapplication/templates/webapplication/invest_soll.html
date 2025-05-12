@@ -2,54 +2,201 @@
 {% load humanize %}
 
 {% block body %}
-    <h1 class="header" style="text-align: center;">Investmittelplan 2025</h1>
-    <table style="width: 15%; margin-left: auto; margin-right: auto;">
-        <thead>
-            <tr>
-                <th style="text-align: center; font-size: 120%;">Summe aller geplanten Investmittel</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="text-align: center; font-size: 150%;">{{ alle|intcomma }}€</td>
-            </tr>
-        </tbody>
-    </table>
-    <input class="button" style="float: left; margin-left: 1.5%;" value="Investmittelplanung" type="button" onclick="window.location.href='{% url 'investmittelplanung' %}'"></input>
-    <form action="{% url 'investmittel_soll' %}" method="post">
+    <form name="InvestSoll" id="id_InvestSoll" action="" method="get">
         {% csrf_token %}
+        <div style="text-align: center;">
+            <h1 class="header" style="text-align: center; display: inline-block;">Investmittelplan Kliniken</h1>
+            <select style="display: inline-block; width: 4%; margin-left: 5px; margin-top: -10px" name="jahr" id="id_jahr" form="id_InvestSoll" class="form-control">
+                {% for jahr in Jahre %}
+                    <option value="{{ jahr.jahr }}">{{ jahr.jahr }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <table style="width: 15%; margin-left: auto; margin-right: auto;">
+            <thead>
+                <tr>
+                    <th style="text-align: center; font-size: 120%;">Summe aller geplanten Investmittel</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: center; font-size: 150%;">0,00 €</td>
+                </tr>
+            </tbody>
+        </table>
         <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Export Datei erstellen">
-        {% if confirm %}
-            {% for file in files %}
-                {% if file.titel == "investmittelplan_planung" %}
-                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Export Datei Download" onclick="window.location.href='{% url 'download' file.id %}'">
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" id="downloadButton" value="Export Datei Download" onclick="window.location.href='{% url 'download' typ '1' %}'">
+        <table id="myTable" class="sortable tables">
+            <thead>
+                <tr style="position: sticky; top: 0; overflow: hidden;">
+                    <th>OU</th>
+                    <th>Bereich</th>
+                    <th>Team</th>
+                    <th>Investmittel Gesamt</th>
+                    <th>Jahr</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in rows %}
+                    <tr id="{{ forloop.counter }}" class="custom_row">
+                    
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </form>
-    <table id="myTable" class="sortable tables">
-        <thead>
-            <tr>
-                <th>OU</th>
-                <th>Bereich</th>
-                <th>Team</th>
-                <th>Investmittel Gesamt</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for item in investmittelplan_soll %}
-            <tr class="custom_row">
-                <td>
-                    <a class="link" href="{% url 'detail_investmittel_soll' item.ou %}">
-                        {{ item.ou }}
-                    </a>
-                </td>
-                <td>{{ item.bereich }}</td>
-                <td>{{ item.team }}</td>
-                <td>{{ item.investmittel_gesamt|intcomma }}€</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <script>
+        // Optionally, add an event listener to continuously update the URL dynamically as the user types
+        document.getElementById("myInput").addEventListener("input", function () {
+            // Get the value typed into the input field
+            var inputValue = document.getElementById("myInput").value;
+            
+            // Format the URL
+            var url = "{% url 'download' typ '1' %}".replace("1", inputValue)
+
+            // Update the onclick attribute of the button with the new URL
+            document.getElementById("downloadButton").setAttribute("onclick", "window.location.href='" + url + "'");
+        });
+
+        // Automatically select current year in the "jahr" select box
+        window.addEventListener('DOMContentLoaded', function () {
+            const currentYear = new Date().getFullYear().toString();
+            const jahrSelect = document.getElementById("id_jahr");
+            for (let i = 0; i < jahrSelect.options.length; i++) {
+                if (jahrSelect.options[i].value === currentYear) {
+                    jahrSelect.selectedIndex = i;
+                    break;
+                }
+            }
+
+            // Optional: Trigger the change event if needed
+            jahrSelect.dispatchEvent(new Event('change'));
+        });
+
+        function formatNumber(value) {
+            return Number(value).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Example AJAX call using the function
+        document.getElementById("id_jahr").addEventListener("change", function(){
+            $.ajax({
+                type: 'GET',
+                url: "get-investsoll/",
+                data: {
+                    jahr: $("#id_jahr").val()
+                },
+                dataType: 'json',
+                success: function(response){
+                    for (var i = 0; i < response.ou.length; i++){
+                        var select = document.getElementById([i+1])
+                        document.getElementById([i+1]).innerHTML = "";
+                        
+                        var td = document.createElement("td");
+                        //td.value = response.ou[i]["ou_id__ou"];
+                        //td.innerHTML = response.ou[i]["ou_id__ou"];
+                        var a = document.createElement("a");
+                        var jahr = document.getElementById("id_jahr").value;
+                        var ou = response.ou[i]["ou_id__ou"];
+                        var href = `/invest_soll/${ou}/${jahr}`;
+                        a.setAttribute("class", "link");
+                        a.setAttribute("href", href);
+                        a.value = response.ou[i]["ou_id__ou"];
+                        a.innerHTML = response.ou[i]["ou_id__ou"];
+                        td.appendChild(a);
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = response.bereich[i]["bereich"];
+                        td.innerHTML = response.bereich[i]["bereich"];
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = response.team[i]["team"];
+                        td.innerHTML = response.team[i]["team"];
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = formatNumber(response.inv_geplant[i]["investmittel_gesamt"]) + "€";
+                        td.innerHTML = formatNumber(response.inv_geplant[i]["investmittel_gesamt"]) + "€";
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = document.getElementById("id_jahr").value;
+                        td.innerHTML = document.getElementById("id_jahr").value;
+                        select.appendChild(td);
+                    }
+                }
+            });
+        });
+
+        document.getElementById("id_jahr").addEventListener("change", function () {
+            const selectedYear = this.value;
+            const sumDisplayCell = document.querySelector("table:nth-of-type(1) tbody td");
+        
+            $.ajax({
+                type: 'GET',
+                url: "get-investsoll/",
+                data: {
+                    jahr: selectedYear
+                },
+                dataType: 'json',
+                success: function (response) {
+                    // Clear and rebuild the table
+                    for (var i = 0; i < response.ou.length; i++) {
+                        const row = document.getElementById(i + 1);
+                        row.innerHTML = "";
+        
+                        const ou = response.ou[i]["ou_id__ou"];
+                        const bereich = response.bereich[i]["bereich"];
+                        const team = response.team[i]["team"];
+                        const investValue = response.inv_geplant[i]["investmittel_gesamt"];
+                        const formattedInvest = formatNumber(investValue) + "€";
+        
+                        row.innerHTML = `
+                            <td><a class="link" href="/invest_soll/${ou}/${selectedYear}">${ou}</a></td>
+                            <td>${bereich}</td>
+                            <td>${team}</td>
+                            <td>${formattedInvest}</td>
+                            <td>${selectedYear}</td>
+                        `;
+                    }
+        
+                    // ✅ After the table has been populated, calculate total
+                    let total = 0;
+                    const rows = document.querySelectorAll("#myTable tbody tr");
+        
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll("td");
+                        if (cells.length >= 5) {
+                            const year = cells[4].innerText.trim();
+                            const investRaw = cells[3].innerText;
+        
+                            if (year === selectedYear && investRaw) {
+                                const normalized = investRaw
+                                    .replace(/\./g, '')         // Remove thousands separator
+                                    .replace(',', '.')          // Convert comma to dot
+                                    .replace(/[^\d.-]/g, '');   // Strip non-numeric
+        
+                                const number = parseFloat(normalized);
+                                if (!isNaN(number)) {
+                                    total += number;
+                                }
+                            }
+                        }
+                    });
+        
+                    // Format total as Euro currency
+                    const formattedTotal = total.toLocaleString('de-DE', {
+                        style: 'currency',
+                        currency: 'EUR'
+                    });
+        
+                    sumDisplayCell.innerText = formattedTotal;
+                }
+            });
+        });
+      </script>
 {% endblock %}

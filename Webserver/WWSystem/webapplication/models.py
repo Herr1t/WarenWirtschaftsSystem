@@ -11,6 +11,17 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     pass
 
+class Ou(models.Model):
+    ou_id = models.AutoField(db_column='OU_id', primary_key=True)  # Field name made lowercase.
+    ou = models.IntegerField(db_column='OU')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'OU'
+        
+    def __str__(self):
+        return str(self.ou)
+
 class BestellListe(models.Model):
     sap_bestell_nr_field = models.CharField(db_column='SAP_Bestell_Nr.', max_length=20, primary_key=True)  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
     modell = models.CharField(db_column='Modell', max_length=50)  # Field name made lowercase.
@@ -99,7 +110,8 @@ class Investmittelplan_Soll(models.Model):
     
 class Detail_Investmittelplan_Soll(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True)
-    ou_invsoll = models.ForeignKey(Investmittelplan_Soll, models.DO_NOTHING, db_column='OU_InvSoll')
+    ou_id = models.ForeignKey('Ou', models.DO_NOTHING, db_column='OU_id')  # Field name made lowercase.
+    jahr = models.IntegerField(db_column="jahr")
     typ = models.CharField(db_column='Typ', max_length=50)
     modell = models.CharField(db_column='Modell', max_length=50)
     menge = models.IntegerField(db_column='Menge')
@@ -112,7 +124,7 @@ class Detail_Investmittelplan_Soll(models.Model):
         db_table = 'Detail_Investmittelplan_Soll'
 
     def __str__(self):
-        return str(self.ou_invsoll)
+        return str(self.ou_id)
     
 class Achievements(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True)
@@ -147,11 +159,41 @@ class Investmittelplan_Alt(models.Model):
     investmittel_jahresanfang_in_euro = models.DecimalField(max_digits=8, decimal_places=2)  # Field name made lowercase.
     investmittel_übrig_in_euro = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
     jahr = models.IntegerField(blank=True)
+    
+# class OU(models.Model):
+#     ou_id = models.IntegerField(db_column="OU_id", primary_key=True)
+#     ou = models.IntegerField(db_column="OU")
+    
+# class Invest(models.Model):
+#     id = models.IntegerField(db_column="id", primary_key=True)
+#     ou_id = models.ForeignKey(OU, models.DO_NOTHING, db_column="ou_id")
+#     investmittel_übrig = models.DecimalField(db_column="investmittel_übrig")
+#     investmittel_gesamt = models.DecimalField(db_column="investmittel_gesamt")
+#     team = models.CharField(db_column="team")
+#     bereich = models.CharField(db_column="bereich")
+#     jahr = models.BigIntegerField(db_column="jahr")
+#     typ = models.CharField(db_column="typ")
 
-class Upload(models.Model):
-    titel = models.CharField(max_length=50)
-    file = models.FileField(upload_to='Upload/')
-    hochgeladen = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return str(self.titel)
+class Invest(models.Model):
+    id = models.IntegerField(db_column="id", primary_key=True)
+    ou = models.ForeignKey('Ou', models.DO_NOTHING)
+    investmittel_verausgabt = models.DecimalField(max_digits=8, decimal_places=2)
+    investmittel_übrig = models.DecimalField(max_digits=8, decimal_places=2)
+    investmittel_gesamt = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    team = models.CharField(max_length=20, blank=True, null=True)
+    bereich = models.CharField(max_length=40, blank=True, null=True)
+    jahr = models.IntegerField()
+    typ = models.CharField(max_length=20)
+
+    class Meta:
+        managed = False
+        db_table = 'Invest'
+
+# class Upload(models.Model):
+#     titel = models.CharField(max_length=50)
+#     file = models.FileField(upload_to='Upload/')
+#     hochgeladen = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return str(self.titel)

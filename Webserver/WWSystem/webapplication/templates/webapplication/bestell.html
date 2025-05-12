@@ -3,27 +3,17 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">BestellListe</h1>
-    <form action="{% url 'bestell_liste' %}" method="post">
-        {% csrf_token %}
-        <input style="margin-left: 1.5%;" class="button" value="BestellListen Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_bestell' %}'"></input>
-        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Export Datei erstellen">
-        {% if confirm %}
-            {% for file in files %}
-                {% if file.titel == "bestellliste" %}
-                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Export Datei Download" onclick="window.location.href='{% url 'download' file.id %}'">
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-        <input class="button" value="Heute" type="button" id="today" onclick="today()">
-        <input class="button" value="Alle" type="button" id="today" onclick="undo()">
-    </form>
+    <input style="margin-left: 1.5%;" class="button" value="BestellListen Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_bestell' %}'"></input>
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" id="downloadButton" value="Export Datei Download" onclick="window.location.href='{% url 'download' typ '1' %}'">
+    <input class="button" value="Heute" type="button" id="today" onclick="today()">
+    <input class="button" value="Alle" type="button" id="today" onclick="undo()">
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
     <table aria-live="polite" id="myTable" class="sortable tables" cellspacing="0">
         <thead>
-            <tr>
+            <tr style="position: sticky; top: 0; overflow: hidden;">
                 <th>SAP Bestell-Nr.</th>
                 <th>Modell</th>
                 <th>Typ</th>
@@ -71,4 +61,17 @@
         {% endfor %}
         </tbody>
     </table>
+    <script>
+        // Optionally, add an event listener to continuously update the URL dynamically as the user types
+        document.getElementById("myInput").addEventListener("input", function () {
+            // Get the value typed into the input field
+            var inputValue = document.getElementById("myInput").value;
+            
+            // Format the URL
+            var url = "{% url 'download' typ '1' %}".replace("1", inputValue)
+
+            // Update the onclick attribute of the button with the new URL
+            document.getElementById("downloadButton").setAttribute("onclick", "window.location.href='" + url + "'");
+        });
+    </script>
 {% endblock %}

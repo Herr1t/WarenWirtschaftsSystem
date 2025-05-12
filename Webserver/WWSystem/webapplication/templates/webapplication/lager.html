@@ -2,7 +2,7 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Lagerliste</h1>
-    <table class="tables" style="width: 38%; text-align: center; margin-left: auto; margin-right: auto;">
+    <table id="summaryTable" class="tables" style="width: 38%; text-align: center; margin-left: auto; margin-right: auto;">
         <thead>
             <tr>
                 <th>Monitor</th>
@@ -17,9 +17,17 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ monitor }}</td>
-                <td>{{ notebook }}</td>
-                <td>{{ pc }}</td>
+                <td style="white-space: pre-line">{{ monitor24 }} x 24 Zoll
+                    {{ monitor27 }} x 27 Zoll
+                    {{ monitor32 }} x 32 Zoll
+                </td>
+                <td style="white-space: pre-line">{{ notebook13 }} x 13 Zoll
+                    {{ notebook14 }} x 14 Zoll
+                    {{ notebook15 }} x 15 Zoll
+                </td>
+                <td style="white-space: pre-line">{{ pcsff }} x SFF
+                    {{ pcmff }} x MFF
+                </td>
                 <td>{{ drucker }}</td>
                 <td>{{ scanner }}</td>
                 <td>{{ dock }}</td>
@@ -28,33 +36,26 @@
             </tr>
         </tbody>
     </table>
-    <form action="{% url 'lagerliste' %}" method="post">
-        {% csrf_token %}
-        <input style="margin-left: 1.5%;" class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
-        <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
-        <input class="button" value="Rückgabe" type="button" onclick="window.location.href='{% url 'rückgabe' %}'"></input>
-        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-        <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="submit" value="Export Datei erstellen">
-        {% if confirm %}
-            {% for file in files %}
-                {% if file.titel == "lagerliste" %}
-                    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" value="Export Datei Download" onclick="window.location.href='{% url 'download' file.id %}'">
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    </form>
+    <input style="margin-left: 1.5%;" class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager' %}'"></input>
+    <input class="button" value="Aus Lagerliste austragen" type="button" onclick="window.location.href='{% url 'handout_lager' %}'"></input>
+    <input class="button" value="Rückgabe" type="button" onclick="window.location.href='{% url 'rückgabe' %}'"></input>
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+    <input class="btn btn-primary" style="float: right; margin-right: 10px; margin-top: 6.5px;" type="button" id="downloadButton" value="Export Datei Download" onclick="window.location.href='{% url 'download' typ '1' %}'">
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
     <table id="myTable" class="sortable tables">
         <thead>
-            <tr>
+            <tr style="position: sticky; top: 0; overflow: hidden;">
                 <th>Bestell-Nr.</th>
                 <th>Modell</th>
                 <th>Typ</th>
                 <th>Spezifikation</th>
                 <th>Zuweisung</th>
                 <th>Menge</th>
+                <th>Ausgegeben</th>
+                <th>Bestellt</th>
+                <th>Geliefert</th>
             </tr>
         </thead>
         <tbody>
@@ -71,9 +72,75 @@
                     <td>{{ item.spezifikation }}</td>
                     <td>{{ item.zuweisung }}</td>
                     <td>{{ item.Menge }}</td>
+                    <td>{{ item.ausgegeben }}</td>
+                    <td>{{ item.menge }}</td>
+                    <td>{{ item.geliefert_anzahl }}</td>
                 </tr>
             {% endif %}
         {% endfor %}
         </tbody>
     </table>
+    <script>
+        // Optionally, add an event listener to continuously update the URL dynamically as the user types
+        document.getElementById("myInput").addEventListener("input", function () {
+            // Get the value typed into the input field
+            var inputValue = document.getElementById("myInput").value;
+            
+            // Format the URL
+            var url = "{% url 'download' typ '1' %}".replace("1", inputValue)
+
+            // Update the onclick attribute of the button with the new URL
+            document.getElementById("downloadButton").setAttribute("onclick", "window.location.href='" + url + "'");
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const headers = document.querySelectorAll("#summaryTable thead th"); // Only first table headers
+            const searchInput = document.querySelector(".searchbar"); // Search input field
+            const table = document.getElementById("myTable"); // Second table
+            let lastClickedHeader = null; // Store the last clicked header
+        
+            // Add event listeners to the first table headers
+            headers.forEach(header => {
+                header.addEventListener("click", function () {
+                    const searchValue = header.textContent.trim();
+        
+                    if (lastClickedHeader === searchValue) {
+                        // If the same header is clicked again, clear the search
+                        searchInput.value = "";
+                        filterTable(""); // Reset table filtering
+                        lastClickedHeader = null; // Reset the last clicked header
+                    } else {
+                        // Otherwise, fill the search and filter the table
+                        searchInput.value = searchValue;
+                        filterTable(searchValue);
+                        lastClickedHeader = searchValue; // Update last clicked header
+                    }
+                });
+            });
+        
+            // Function to filter the second table based on the search value
+            function filterTable(searchValue) {
+                const rows = table.querySelectorAll("tbody tr");
+        
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll("td");
+                    let matchFound = false;
+        
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(searchValue.toLowerCase())) {
+                            matchFound = true;
+                        }
+                    });
+        
+                    row.style.display = matchFound || searchValue === "" ? "" : "none"; // Show/hide row
+                });
+            }
+        
+            // Also trigger filtering when typing in the search input
+            searchInput.addEventListener("keyup", function () {
+                filterTable(searchInput.value);
+                lastClickedHeader = null; // Reset last clicked header when typing manually
+            });
+        });
+    </script>
 {% endblock %}

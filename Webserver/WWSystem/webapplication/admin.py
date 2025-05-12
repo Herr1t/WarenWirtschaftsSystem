@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements, Download, Investmittelplan_Alt, Upload
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements, Download, Investmittelplan_Alt, Invest
 # Register your models here.
 
 class Achievements_SollAdmin(admin.ModelAdmin):
@@ -14,9 +14,9 @@ class Investmittelplan_SollAdmin(admin.ModelAdmin):
     search_fields = ("ou", "bereich")
 
 class Detail_Investmittelplan_SollAdmin(admin.ModelAdmin):
-    list_display = ("ou_invsoll", "typ", "modell", "menge", "preis_pro_stück", "admin", "spezifikation")
+    list_display = ("id", "ou_id__ou", "typ", "modell", "menge", "preis_pro_stück", "admin", "spezifikation")
     list_filter = ("typ", "modell")
-    search_fields = ("ouinvsoll", )
+    search_fields = ("id", )
 
 class Bestell_ListeAdmin(admin.ModelAdmin):
     list_display = ("sap_bestell_nr_field", "modell", "typ", "menge", "preis_pro_stück", "spezifikation", "zuweisung", "link", "investmittel", "bearbeitet", "ersteller", "geliefert", "geliefert_anzahl")
@@ -36,6 +36,10 @@ class Lagerliste_ohne_InvestAdmin(admin.ModelAdmin):
 class InvestmittelpanAdmin(admin.ModelAdmin):
     list_display = ("klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro")
     search_fields = ("klinik_ou", )
+    
+class InvestAdmin(admin.ModelAdmin):
+    list_display = ("ou_id", "investmittel_übrig", "investmittel_gesamt", "jahr", "typ")
+    search_fields = ("ou_id", "jahr", "typ")
 
 class Investmittelpan_AltAdmin(admin.ModelAdmin):
     list_display = ("klinik_ou", "investmittel_jahresanfang_in_euro", "investmittel_übrig_in_euro", "jahr")
@@ -48,10 +52,10 @@ admin.site.register(Lagerliste, LagerlisteAdmin)
 admin.site.register(Lagerliste_ohne_Invest, Lagerliste_ohne_InvestAdmin)
 admin.site.register(BestellListe, Bestell_ListeAdmin)
 admin.site.register(Investmittelplan, InvestmittelpanAdmin)
+admin.site.register(Invest, InvestAdmin)
 admin.site.register(Investmittelplan_Soll, Investmittelplan_SollAdmin)
 admin.site.register(Detail_Investmittelplan_Soll, Detail_Investmittelplan_SollAdmin)
 admin.site.register(Achievements, Achievements_SollAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Download)
-admin.site.register(Upload)
 admin.site.register(Investmittelplan_Alt, Investmittelpan_AltAdmin)

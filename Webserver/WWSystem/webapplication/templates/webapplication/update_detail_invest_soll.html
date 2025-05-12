@@ -7,7 +7,7 @@
         <hr>
 
         {% for item in invest_soll %}
-            <form action="{% url 'update_detail_invest_soll' item.ou_invsoll item.id %}" method="post" onsubmit="return validateForm()">
+            <form action="{% url 'update_detail_invest_soll' ou item.id %}" method="post" onsubmit="return validateForm()">
                 {% csrf_token %}
                 <div class="form-group">
                     <input class="form-control" type="text" name="modell" id="modell" placeholder="Modell: {{ item.modell }}">

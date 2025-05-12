@@ -3,10 +3,36 @@
 {% load static %}
 
 {% block body %}
-    <form method="post" enctype="multipart/form-data">
+    <form name="Test" id="id_Test" action="" method="get">
         {% csrf_token %}
-        <input class="button" type="file" name="upload"></input>
-        <button class="btn btn-primary" type="submit">Upload</button>
+        <select name="jahr" id="id_jahr" form="id_Test">
+            {% for jahr in Jahre %}
+                <option value="{{ jahr.jahr }}">{{ jahr.jahr }}</option>
+            {% endfor %}
+        </select>
+        <select name="bereich" id="id_bereich" form="id_Test">
+
+        </select>
+        <table id="myTable" class="sortable tables">
+            <thead>
+                <tr>
+                    <th>Klinik/OU</th>
+                    <th>Bereich</th>
+                    <th>Team</th>
+                    <th>Investmittel Jahresanfang</th>
+                    <th>Investmittel Übrig</th>
+                    <th>Investmittel Verausgabt</th>
+                    <th>Investmittel Geplant</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in rows %}
+                    <tr id="{{ forloop.counter }}" class="custom_row">
+                    
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </form>
     {% if message %}
         <div>{{ message }}</div>
@@ -14,4 +40,101 @@
     {% if test %}
         <div>{{ test }}</div>
     {% endif %}
+    <script>
+        document.getElementById("id_jahr").addEventListener("change", function(){
+            document.getElementById("id_bereich").innerHTML = "";
+            $.ajax({
+                type: 'GET',
+                url: "get-bereich/",
+                data: {
+                    jahr: $("#id_jahr").val(),
+                },
+                dataType: 'json',
+                success: function(response){
+                    var select = document.getElementById("id_bereich");
+                    for (var i = 0; i < response.bereich.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = response.bereich[i]["bereich"];
+                        option.innerHTML = response.bereich[i]["bereich"];
+                        select.appendChild(option);
+                    }
+                }
+            });
+        });
+
+        // Automatically select current year in the "jahr" select box
+        window.addEventListener('DOMContentLoaded', function () {
+            const currentYear = new Date().getFullYear().toString();
+            const jahrSelect = document.getElementById("id_jahr");
+            for (let i = 0; i < jahrSelect.options.length; i++) {
+                if (jahrSelect.options[i].value === currentYear) {
+                    jahrSelect.selectedIndex = i;
+                    break;
+                }
+            }
+
+            // Optional: Trigger the change event if needed
+            jahrSelect.dispatchEvent(new Event('change'));
+        });
+
+        function formatNumber(value) {
+            return Number(value).toLocaleString("de-DE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Example AJAX call using the function
+        document.getElementById("id_jahr").addEventListener("change", function(){
+            $.ajax({
+                type: 'GET',
+                url: "get-bereich/",
+                data: {
+                    jahr: $("#id_jahr").val()
+                },
+                dataType: 'json',
+                success: function(response){
+                    for (var i = 0; i < response.ou.length; i++){
+                        var select = document.getElementById([i+1])
+                        document.getElementById([i+1]).innerHTML = "";
+                        
+                        var td = document.createElement("td");
+                        td.value = response.ou[i]["ou_id__ou"];
+                        td.innerHTML = response.ou[i]["ou_id__ou"];
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = response.bereich[i]["bereich"];
+                        td.innerHTML = response.bereich[i]["bereich"];
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = response.team[i]["team"];
+                        td.innerHTML = response.team[i]["team"];
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = formatNumber(response.inv_gesamt[i]["investmittel_gesamt"]);
+                        td.innerHTML = formatNumber(response.inv_gesamt[i]["investmittel_gesamt"]);
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = formatNumber(response.inv_übrig[i]["investmittel_übrig"]);
+                        td.innerHTML = formatNumber(response.inv_übrig[i]["investmittel_übrig"]);
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = formatNumber(response.inv_verausgabt[i]["investmittel_verausgabt"]);
+                        td.innerHTML = formatNumber(response.inv_verausgabt[i]["investmittel_verausgabt"]);
+                        select.appendChild(td);
+
+                        var td = document.createElement("td");
+                        td.value = formatNumber(response.inv_geplant[i]["investmittel_gesamt"]);
+                        td.innerHTML = formatNumber(response.inv_geplant[i]["investmittel_gesamt"]);
+                        select.appendChild(td);
+                    }
+                }
+            });
+        });
+        </script>
 {% endblock %}

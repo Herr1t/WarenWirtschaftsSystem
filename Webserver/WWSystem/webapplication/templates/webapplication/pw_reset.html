@@ -4,24 +4,28 @@
 
     <h2 class="header">Passwort Zurücksetzen</h2>
 
-    <form style="padding-bottom: 10px;" action="{% url 'pw_reset' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Username">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="new_password" placeholder="New Password">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="confirm_password" placeholder="Confirm Password">
-        </div>
-        <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Bestätigen">
-    </form>
+    {% if check %}
+        <div class="alert alert-danger" role="alert">Bitte Informieren Sie Tim Voigt, dass Sie Ihr Passwort vergessen haben!</div>
+    {% else %}
+        <form style="padding-bottom: 10px;" action="{% url 'pw_reset' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="password" name="new_password" placeholder="New Password">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="password" name="confirm_password" placeholder="Confirm Password">
+            </div>
+            <input style="margin-left: 7px;" class="btn btn-primary" type="submit" value="Bestätigen">
+        </form>
 
-    {% if message %}
-        <div class="alert alert-danger" role="alert">{{ message }}</div>
-    {% endif %}
-    {% if confirm %}
-        <div class="alert alert-success" role="alert">Ihr Passwort wurde erfolgreich geändert!</div>
+        {% if message %}
+            <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endif %}
+        {% if confirm %}
+            <div class="alert alert-success" role="alert">Ihr Passwort wurde erfolgreich geändert!</div>
+        {% endif %}
     {% endif %}
 {% endblock %}
