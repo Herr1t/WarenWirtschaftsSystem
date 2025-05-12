@@ -98,3 +98,21 @@ CREATE TABLE `Achievements` (
     PRIMARY KEY(`id`),
     FOREIGN KEY(`User`) REFERENCES `webapplication_user`(`username`)
 );
+
+CREATE Table `OU` (
+`OU_id` INT NOT NULL AUTO_INCREMENT,
+`OU` INT NOT NULL,
+PRIMARY KEY(`OU_id`)
+);
+
+CREATE Table `Invest` ( 
+`id` INT NOT NULL AUTO_INCREMENT, 
+`ou_id` INT NOT NULL, 
+`investmittel_übrig` DECIMAL(8, 2) NOT NULL DEFAULT 0, 
+`investmittel_gesamt` DECIMAL(8, 2) DEFAULT 0, 
+`team` VARCHAR(20), 
+`bereich` VARCHAR(40), 
+`jahr` INT NOT NULL, 
+`typ` VARCHAR (20) NOT NULL,
+PRIMARY KEY(`id`), 
+FOREIGN KEY(`ou_id`) REFERENCES `OU`(`OU_id`) );
