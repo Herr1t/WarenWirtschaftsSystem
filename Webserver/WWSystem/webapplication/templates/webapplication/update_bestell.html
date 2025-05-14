@@ -73,11 +73,13 @@
             </div>
             {% if item.investmittel == 'Nein' %}
                 <div class="form-group">
-                    <input class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
+                    <text style="float: left; margin-top: 29px; margin-left: 3px;">Anzahl geliefert:</text> 
+                    <input style="float: right; width: 85%; margin-bottom: 15px;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
                 </div>
             {% else %}
                 <div style="display: none;" class="form-group">
-                    <input class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
+                    <text style="float: left; margin-top: 29px; margin-left: 3px;">Anzahl geliefert:</text>
+                    <input style="float: right; width: 85%; margin-bottom: 15px;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
                 </div>
             {% endif %}
             {% if message %}
