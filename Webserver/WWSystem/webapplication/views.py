@@ -984,6 +984,7 @@ def update(request, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
     else:
+        files = Download.objects.all()
         nr = bestell_nr
         if request.method == "POST":
             items = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'menge', 'preis_pro_stück', 'spezifikation', 'geliefert_anzahl', 'zuweisung').get(pk=nr)
@@ -1043,7 +1044,9 @@ def update(request, bestell_nr):
                 return render(request, "webapplication/bestell.html", {
                     "bestell_nr": bestell_nr,
                     "bestell_liste": BestellListe.objects.all(),
-                    "unlock": ach
+                    "unlock": ach,
+                    "files": files,
+                    "typ": "bestellliste"
                 })
             # If the column "sap_bestell_nr_field" was changed it uses this output
             if str(bnr) != str(nr):
@@ -1171,6 +1174,7 @@ def download(request, typ, input):
     download_id=""
     inputs = ""
     x = 0
+    path = "/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/"
     if input == 1:
         pass
     else:
@@ -1178,7 +1182,7 @@ def download(request, typ, input):
     if typ == "invest_aktiv":
         Liste = Invest.objects.values_list('ou_id__ou', 'investmittel_gesamt', 'investmittel_übrig', 'bereich', 'team').filter(Q(ou_id__ou__icontains=inputs) | Q(investmittel_gesamt__icontains=inputs) | Q(investmittel_übrig__icontains=inputs) | Q(bereich__icontains=inputs) | Q(team__icontains=inputs)).filter(typ="Aktiv").filter(jahr=(int(datetime.date.today().year)))
         
-        file = open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w")
+        file = open(f"{path}investmittelplan.csv", "w")
         f = csv.writer(file)
         #f = csv.writer(open("/Users/voigttim/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan.csv", "w"))
         f.writerow(["OU", "Investmittel Jahresanfang in Euro", "Investmittel übrig in Euro", "Bereich", "Team"])
@@ -1193,7 +1197,7 @@ def download(request, typ, input):
     elif typ == "lager":
         Liste = Lagerliste.objects.values_list('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').filter(Q(bestell_nr_field__sap_bestell_nr_field__icontains=inputs) | Q(modell__icontains=inputs) | Q(typ__icontains=inputs) | Q(spezifikation__icontains=inputs) | Q(zuweisung__icontains=inputs)).exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
         
-        file = open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/lagerliste.csv", "w")        
+        file = open(f"{path}lagerliste.csv", "w")        
         f = csv.writer(file)        
         f.writerow(["Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Menge"])
 
@@ -1207,7 +1211,7 @@ def download(request, typ, input):
     elif typ == "bestellliste":
         Liste = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'spezifikation', 'zuweisung', 'ersteller', 'investmittel', 'preis_pro_stück', 'menge', 'geliefert_anzahl').filter(Q(sap_bestell_nr_field__icontains=inputs) | Q(modell__icontains=inputs) | Q(typ__icontains=inputs) | Q(spezifikation__icontains=inputs) | Q(zuweisung__icontains=inputs) | Q(ersteller__username__icontains=inputs) | Q(investmittel__icontains=inputs) | Q(preis_pro_stück__icontains=inputs) | Q(menge__icontains=inputs) | Q(geliefert_anzahl__icontains=inputs)).exclude(geliefert="1")
 
-        file = open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/bestellliste.csv", "w")
+        file = open(f"{path}bestellliste.csv", "w")
         #f = csv.writer()        
         f = csv.writer(file)        
         f.writerow(["SAP Bestell-Nr.", "Modell", "Typ", "Spezifikation", "Zuweisung", "Ersteller", "Invest", "Preis pro Stück", "Menge", "Anzahl Geliefert"])
@@ -1223,7 +1227,7 @@ def download(request, typ, input):
     elif typ == "invest_planung":
         Liste = Invest.objects.values_list('ou_id__ou', 'bereich', 'team', 'investmittel_gesamt').filter(Q(ou_id__ou__icontains=inputs) | Q(investmittel_gesamt__icontains=inputs) | Q(bereich__icontains=inputs) | Q(team__icontains=inputs)).filter(typ="Planung").filter(jahr=this_year)
         
-        file = open("/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan_planung.csv", "w")
+        file = open(f"{path}investmittelplan_planung.csv", "w")
         #f = csv.writer(open("/Users/voigttim/Programming/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/investmittelplan_planung.csv", "w"))
         f = csv.writer(file)
         f.writerow(["OU", "Bereich", "Team", "Investmittel Gesamt"])
@@ -1386,7 +1390,8 @@ def detail_invest_soll(request, ou, jahr):
     return render(request, "webapplication/detail_invest_soll.html", {
         "ou": ou,
         "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.values('id', 'ou_id__ou', 'typ', 'modell', 'preis_pro_stück', 'spezifikation', 'admin', 'menge').filter(ou_id__ou=ou).filter(jahr=jahr),
-        "files": files
+        "files": files,
+        "jahr": jahr
     })
 
 def create_invest_soll(request, ou):

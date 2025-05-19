@@ -7,7 +7,7 @@
         <form name="ModifyInvest" id="id_ModifyInvest" action="" method="get">
             {% csrf_token %}
             <div style="text-align: center;">
-                <h1 class="header" style="text-align: center; display: inline-block;">Investmittelplan</h1>
+                <h1 class="header" style="text-align: center; display: inline-block;">Bearbeitungsmodus</h1>
                 <select hidden style="display: inline-block; width: 4%; margin-left: 5px; margin-top: -10px" name="jahr" id="id_jahr" form="id_ModifyInvest" class="form-control">
                     {% for jahr in Jahr %}
                         <option value="{{ jahr.jahr }}">{{ jahr.jahr }}</option>
@@ -20,8 +20,8 @@
             {% endif %}
             <div class="create" style="margin-bottom: 1%;">
                 <input class="form-control" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
-                <input class="button btn zurück" style="margin-top: 1.5%;" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
-                <input class="btn btn-primary" style="margin-top: 1.5%; margin-right: 0.5%; float: right;" id="submit" type="submit" value="Planen">
+                <input class="button btn zurück" style="margin-top: 1.5%;" value="Bearbeitungsmodus verlassen" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+                <input class="btn btn-primary" style="margin-top: 1.5%; margin-right: 0.5%; float: right;" id="submit" type="submit" value="Planung übernehmen">
             </div>
             <table id="myTable" class="sortable tables">
                 <thead>
