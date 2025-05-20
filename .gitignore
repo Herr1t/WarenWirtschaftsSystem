@@ -8,3 +8,4 @@ Webserver/WWSystem/webapplication/.DS_Store
 Webserver/WWSystem/webapplication/__init__.py
 Webserver/WWSystem/webapplication/external_functions/__pycache__/create_lager.cpython-38.pyc
 Webserver/WWSystem/webapplication/external_functions/__pycache__/getmethod.cpython-38.pyc
+Webserver/WWSystem/WWSystem/settings.py
