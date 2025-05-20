@@ -187,48 +187,59 @@
              * Event listener for sorting table columns on click.
              * It sorts the table rows based on the clicked column header.
              */
-            document.addEventListener('click', function (e) {
+             document.addEventListener('click', function (e) {
                 try {
-                    // Function to find the ancestor element with a specific tag
                     function findElementRecursive(element, tag) {
-                        return element.nodeName === tag ? element : 
-                            findElementRecursive(element.parentNode, tag)
+                        return element.nodeName === tag ? element : findElementRecursive(element.parentNode, tag)
                     }
-                    
-                    // CSS classes for sorting
+            
                     var descending_th_class = ' dir-d '
                     var ascending_th_class = ' dir-u '
                     var ascending_table_sort_class = 'asc'
-                    
-                    // Regular expressions
+            
                     var regex_dir = / dir-(u|d) /
                     var regex_table = /\bsortable\b/
-                    
-                    // Check if alt key is pressed
+            
                     var alt_sort = e.shiftKey || e.altKey
-                    
-                    // Find the clicked TH element
+            
                     var element = findElementRecursive(e.target, 'TH')
                     var tr = findElementRecursive(element, 'TR')
                     var table = findElementRecursive(tr, 'TABLE')
-                    
-                    // Function to reclassify element with sorting direction
+            
                     function reClassify(element, dir) {
                         element.className = element.className.replace(regex_dir, '') + dir
                     }
-                    
-                    // Function to get value for sorting from element
+            
+                    // Updated getValue to try parsing date format
                     function getValue(element) {
-                        return ((alt_sort && element.getAttribute('data-sort-alt')) || 
-                            element.getAttribute('data-sort') || element.innerText)
+                        var raw = (alt_sort && element.getAttribute('data-sort-alt')) || 
+                                  element.getAttribute('data-sort') || 
+                                  element.innerText
+            
+                        // Try to parse "03. April 2025 - 14:09" format
+                        var dateMatch = raw.match(/^(\d{2})\. ([A-Za-zäöüÄÖÜ]+) (\d{4}) - (\d{2}):(\d{2})$/)
+                        if (dateMatch) {
+                            var months = {
+                                'January': 0, 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
+                                'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11,
+                                'Januar': 0, 'Februar': 1, 'März': 2, 'April': 3, 'Mai': 4, 'Juni': 5,
+                                'Juli': 6, 'August': 7, 'September': 8, 'Oktober': 9, 'November': 10, 'Dezember': 11
+                            }
+                            var day = parseInt(dateMatch[1], 10)
+                            var month = months[dateMatch[2]]
+                            var year = parseInt(dateMatch[3], 10)
+                            var hour = parseInt(dateMatch[4], 10)
+                            var minute = parseInt(dateMatch[5], 10)
+                            return new Date(year, month, day, hour, minute).getTime()
+                        }
+            
+                        return raw
                     }
-                    
-                    // Check if the table is sortable
+            
                     if (regex_table.test(table.className)) {
                         var column_index
                         var nodes = tr.cells
-                        
-                        // Find column index of clicked TH element
+            
                         for (var i = 0; i < nodes.length; i++) {
                             if (nodes[i] === element) {
                                 column_index = element.getAttribute('data-sort-col') || i
@@ -236,8 +247,7 @@
                                 reClassify(nodes[i], '')
                             }
                         }
-                        
-                        // Determine sorting direction
+            
                         var dir = descending_th_class
                         if (
                             element.className.indexOf(descending_th_class) !== -1 ||
@@ -247,18 +257,19 @@
                             dir = ascending_th_class
                         }
                         reClassify(element, dir)
-                        
-                        // Sorting logic
+            
                         var org_tbody = table.tBodies[0]
                         var rows = [].slice.call(org_tbody.rows, 0)
                         var reverse = dir === ascending_th_class
+            
                         rows.sort(function (a, b) {
                             var x = getValue((reverse ? a : b).cells[column_index])
                             var y = getValue((reverse ? b : a).cells[column_index])
-                            return isNaN(x - y) ? x.localeCompare(y) : x - y
+                            return (typeof x === 'number' && typeof y === 'number')
+                                ? x - y
+                                : String(x).localeCompare(String(y))
                         })
-                        
-                        // Replace tbody with sorted rows
+            
                         var clone_tbody = org_tbody.cloneNode()
                         while (rows.length) {
                             clone_tbody.appendChild(rows.splice(0, 1)[0])
