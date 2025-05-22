@@ -1390,7 +1390,7 @@ def detail_invest(request, klinik_ou, jahr):
 
         ou = klinik_ou
         nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
-        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück', 'ausgabe', 'ausgegeben_an').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
+        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück', 'ausgegeben_an').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
         return render(request, "webapplication/detail_invest.html", {
             "detail_invest": detail_invest,
             "klinik_ou": ou,
