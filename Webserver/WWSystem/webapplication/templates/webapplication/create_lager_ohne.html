@@ -1,0 +1,36 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+  <h1 class="header" style="text-align: center;">Lagerliste</h1>
+  <div class="create">
+  
+    <h2>Lagerlisten Eintrag</h2>
+    <hr>
+    <form id="form" action="{% url 'create_lager_ohne' %}" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <select class="form-control" required name="bestell_nr">
+          <option value="">Bitte Bestell-Nr. auswählen</option>
+          {% for nr in bestell_nr %}
+            <option value="{{ nr.sap_bestell_nr_field }}">{{ nr.sap_bestell_nr_field }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% if message %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+      {% endif %}
+      <div style="text-align: right;">
+        <input class="btn btn-primary" type="submit", value="Eintragen">
+        <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'lager_ohne' %}'"></input>
+      </div>
+    </form>
+  </div>
+  <script>
+    function count() {
+      var inputFormDiv = document.getElementById('inputs');
+      return (inputFormDiv.getElementsByTagName('input').length);
+    }
+
+    document.getElementById("count").innerHTML = count()
+  </script>
+{% endblock %}

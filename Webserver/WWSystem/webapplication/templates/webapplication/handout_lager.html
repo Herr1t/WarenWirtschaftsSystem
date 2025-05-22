@@ -33,7 +33,10 @@
         <li style="float: right;" class="page btn" id="count"></li>
       </div>
       <div class="form-group">
-          <input class="form-control" type="text" name="klinik" required placeholder="OU">
+        <input class="form-control" type="text" name="klinik" required placeholder="OU">
+      </div>
+      <div class="form-group">
+        <input class="form-control" type="text" name="annahme" required placeholder="Admin">
       </div>
       {% if alarm %}
         <div class="alert alert-danger" role="alert">Die Investmittel der OU <b>{{ alarm }}</b> sind im Minusbereich: {{ geld }}€ momentan</div>

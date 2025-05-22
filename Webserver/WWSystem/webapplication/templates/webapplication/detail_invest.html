@@ -15,6 +15,7 @@
                 <th>Spezifikation</th>
                 <th>Preis pro Stück</th>
                 <th>Menge</th>
+                <th>Ausgegeben an</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,7 @@
                 <td>{{ item.spezifikation }}</td>
                 <td>{{ item.bestell_nr_field__preis_pro_stück|intcomma }}</td>
                 <td>{{ item.Menge }}</td>
+                <td>{{ item.ausgegeben_an }}</td>
             </tr>
         {% endfor %}
         </tbody>

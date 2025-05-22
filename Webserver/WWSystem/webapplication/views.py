@@ -360,6 +360,7 @@ def handout_lager(request):
         ausgabe_time = timezone.now()    # Timestamp of the handout
         clinic = request.POST["klinik"]  # Target clinic receiving the items
         issuer = request.user            # Logged-in user performing the handout
+        annahme = request.POST["annahme"]
 
         # Collect up to 50 selected items from the form data
         index = 0
@@ -411,7 +412,8 @@ def handout_lager(request):
                         ausgegeben=ausgegeben,
                         klinik=clinic,
                         ausgabe=ausgabe_time,
-                        herausgeber=issuer
+                        herausgeber=issuer,
+                        ausgegeben_an=annahme
                     )
 
                     # Retrieve current handout count for the user (if exists)
@@ -812,6 +814,34 @@ def lager_ohne_invest(request):
                 y = y + 1
         return render(request, "webapplication/lager_ohne_invest.html", {
             "lagerliste": Lagerliste_ohne_Invest.objects.all().values('bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung').exclude(ausgegeben="1").annotate(Menge=Count("bestell_nr_field"))
+        })
+
+def create_lager_ohne(request):
+    nr = BestellListe.objects.values('sap_bestell_nr_field').exclude(investmittel="Ja").exclude(geliefert=1)
+    
+    if request.method == "POST":
+        bestell_nr = request.POST["bestell_nr"]
+        bestellung = BestellListe.objects.values_list("menge", "typ", "modell", "spezifikation", "zuweisung").filter(sap_bestell_nr_field=bestell_nr)
+        menge = str(bestellung[0][0]).replace("(", "").replace(",)", "")
+        typ = str(bestellung[0][1]).replace("(", "").replace(",)", "")
+        modell = str(bestellung[0][2]).replace("(", "").replace(",)", "")
+        spezifikation = str(bestellung[0][3]).replace("(", "").replace(",)", "")
+        zuweisung = str(bestellung[0][4]).replace("(", "").replace(",)", "")
+        bestell_nr_field = BestellListe.objects.get(pk=bestell_nr)
+        i = 0
+        
+        while i < int(menge):
+            Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bestell_nr_field, ausgegeben=0)
+            i = i + 1
+        bestellung = BestellListe.objects.update_or_create(sap_bestell_nr_field=bestell_nr, defaults={'geliefert': 1})
+        
+        return render(request, "webapplication/create_lager_ohne.html", {
+            "bestell_nr": nr,
+            "message": "Einträge erfolgreich erstellt!"
+        })
+    else:
+        return render(request, "webapplication/create_lager_ohne.html", {
+            "bestell_nr": nr
         })
 
 # View Function that handles the "austragung" from entries in Lagerliste_ohne_Invest
@@ -1360,7 +1390,7 @@ def detail_invest(request, klinik_ou, jahr):
 
         ou = klinik_ou
         nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
-        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück', 'ausgabe').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
+        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück', 'ausgabe', 'ausgegeben_an').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
         return render(request, "webapplication/detail_invest.html", {
             "detail_invest": detail_invest,
             "klinik_ou": ou,

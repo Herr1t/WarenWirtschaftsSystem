@@ -3,6 +3,7 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Lagerliste ohne Invest</h1>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <input style="margin-left: 1.5%;" class="button" value="Lagerlisten Eintrag erstellen" type="button" onclick="window.location.href='{% url 'create_lager_ohne' %}'"></input>
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}

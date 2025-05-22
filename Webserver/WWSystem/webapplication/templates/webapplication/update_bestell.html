@@ -71,17 +71,10 @@
                 <text style="float: left; margin-top: 2.8%; margin-left: 0.4%;">Link:</text>
                 <input style="float: right; width: 85%; margin-bottom: 1.5%;" class="form-control" type="text" name="link" placeholder="">
             </div>
-            {% if item.investmittel == 'Nein' %}
-                <div class="form-group">
-                    <text style="float: left; margin-top: 2.8%; margin-left: 0.4%;">Anzahl geliefert:</text> 
-                    <input style="float: right; width: 85%; margin-bottom: 1.5%;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
-                </div>
-            {% else %}
-                <div style="display: none;" class="form-group">
-                    <text style="float: left; margin-top: 2.8%; margin-left: 0.4%;">Anzahl geliefert:</text>
-                    <input style="float: right; width: 85%; margin-bottom: 1.5%;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
-                </div>
-            {% endif %}
+            <div style="display: none;" class="form-group">
+                <text style="float: left; margin-top: 2.8%; margin-left: 0.4%;">Anzahl geliefert:</text>
+                <input style="float: right; width: 85%; margin-bottom: 1.5%;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
+            </div>
             {% if message %}
                 <div style="float: left; width: 98.6%;" class="alert alert-success" role="alert">{{ message }}</div>
             {% endif %}
