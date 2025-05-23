@@ -3,8 +3,39 @@
 
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittel der Klinik {{ klinik_ou }}</h1>
-    <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
-    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+    <table class="tables" style="width: 38%; text-align: center; margin-left: auto; margin-right: auto;">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Monitor</th>
+                <th>Notebook</th>
+                <th>Desktop-PC</th>
+                <th>Drucker</th>
+                <th>Scanner</th>
+                <th>Dockingstation</th>
+                <th>Diktiergerät</th>
+                <th>Transkription</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Geplant</td>
+                {% for item in detail_invest_soll_geplant %}
+                    <td>{{ item.menge }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Ausgegeben</td>
+                {% for item in detail_invest_soll_ausgegeben %}
+                    <td>{{ item.menge }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel' %}'"></input>
+        <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
+    </div>
     <table id="myTable" class="sortable tables">
         <thead>
             <tr style="position: sticky; top: 0; overflow: hidden;">
