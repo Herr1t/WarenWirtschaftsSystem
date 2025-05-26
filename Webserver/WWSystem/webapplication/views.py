@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Count, Q
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.urls.exceptions import NoReverseMatch
 from django.contrib.auth.models import Group
 import csv, datetime
 from django.http import HttpResponse, JsonResponse
@@ -1528,12 +1529,14 @@ def update_detail_invest_soll(request, ou, id, jahr):
         Invest.objects.update_or_create(id = str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_neu})
 
         if menge == "0":
-            Detail_Investmittelplan_Soll.objects.filter(id=id).delete()
-            return render(request, "webapplication/detail_invest_soll.html", {
-                "ou": ou,
-                "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_id__ou=ou),
-                "jahr": jahr
-            })
+            try:
+                Detail_Investmittelplan_Soll.objects.filter(id=id).delete()
+            except NoReverseMatch:
+                return render(request, "webapplication/detail_invest_soll.html", {
+                    "ou": ou,
+                    "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_id__ou=ou),
+                    "jahr": jahr
+                })
 
         return render(request, "webapplication/update_detail_invest_soll.html", {
             "invest_soll": Detail_Investmittelplan_Soll.objects.all().filter(id=id),
