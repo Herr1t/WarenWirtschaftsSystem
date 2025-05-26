@@ -1468,7 +1468,7 @@ def create_invest_soll(request, ou, jahr):
     if request.method == "POST":
         ou_id = Ou.objects.values_list('ou_id').filter(ou=ou)
         ou_invsoll = Ou.objects.get(ou_id=str(ou_id[0]).replace("(", "").replace(",", "").replace(")", ""))
-        id = Invest.objects.values_list("id").filter(ou_id__in=ou_id).filter(typ="Planung").filter(jahr=this_year)
+        id = Invest.objects.values_list("id").filter(ou_id__in=ou_id).filter(typ="Planung").filter(jahr=jahr)
         typ = request.POST["typ"]
         modell = request.POST["modell"]
         menge = request.POST["menge"]
@@ -1476,7 +1476,7 @@ def create_invest_soll(request, ou, jahr):
         admin = request.user
         spezifikation = request.POST["spezifikation"]
         try:
-            invest_planung = Detail_Investmittelplan_Soll.objects.create(ou_id=ou_invsoll, jahr=this_year, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis_pro_stück, admin=admin, spezifikation=spezifikation)
+            invest_planung = Detail_Investmittelplan_Soll.objects.create(ou_id=ou_invsoll, jahr=jahr, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis_pro_stück, admin=admin, spezifikation=spezifikation)
             preis = Detail_Investmittelplan_Soll.objects.values_list('preis_pro_stück').filter(ou_id=ou_invsoll)
             meng = Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_id=ou_invsoll)
             length = len(preis) - 1
@@ -1500,7 +1500,7 @@ def create_invest_soll(request, ou, jahr):
         "jahr": jahr
     })
 
-def update_detail_invest_soll(request, ou, id):
+def update_detail_invest_soll(request, ou, id, jahr):
     if request.method == "POST":
         items = Detail_Investmittelplan_Soll.objects.values_list("modell", "typ", "menge", "preis_pro_stück", "spezifikation").get(pk=id)
         modell = request.POST["modell"] or items[0]
@@ -1532,19 +1532,22 @@ def update_detail_invest_soll(request, ou, id):
             return render(request, "webapplication/detail_invest_soll.html", {
                 "ou": ou,
                 "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.all().filter(ou_id__ou=ou),
+                "jahr": jahr
             })
 
         return render(request, "webapplication/update_detail_invest_soll.html", {
             "invest_soll": Detail_Investmittelplan_Soll.objects.all().filter(id=id),
             "ou": ou,
             "id": id    ,
-            "message": "Eintrag erflogreich aktualisiert"
+            "message": "Eintrag erflogreich aktualisiert",
+            "jahr": jahr
         })
     else:
         return render(request, "webapplication/update_detail_invest_soll.html", {
             "invest_soll": Detail_Investmittelplan_Soll.objects.all().filter(id=id),
             "ou": ou,
-            "id": id
+            "id": id,
+            "jahr": jahr
         })
 
 def test(request):
