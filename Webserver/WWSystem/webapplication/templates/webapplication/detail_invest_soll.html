@@ -4,7 +4,7 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Investmittelplanung der OU {{ ou }} Jahr {{ jahr }}</h1>
     <input style="margin-left: 1.5%;" class="button" value="Zurück" type="button" onclick="window.location.href='{% url 'investmittel_soll' %}'"></input>
-    <input class="button" value="Investmittel planen" type="button" onclick="window.location.href='{% url 'create_investmittel_soll' ou %}'"></input>
+    <input class="button" value="Investmittel planen" type="button" onclick="window.location.href='{% url 'create_investmittel_soll' ou jahr %}'"></input>
     <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" name="input" placeholder="Suche">
     <table id="myTable" class="sortable tables">
         <thead>

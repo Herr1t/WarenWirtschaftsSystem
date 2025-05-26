@@ -1446,7 +1446,7 @@ def detail_invest_soll(request, ou, jahr):
         "jahr": jahr
     })
 
-def create_invest_soll(request, ou):
+def create_invest_soll(request, ou, jahr):
     if request.method == "POST":
         ou_id = Ou.objects.values_list('ou_id').filter(ou=ou)
         ou_invsoll = Ou.objects.get(ou_id=str(ou_id[0]).replace("(", "").replace(",", "").replace(")", ""))
@@ -1468,15 +1468,18 @@ def create_invest_soll(request, ou):
             Invest.objects.update_or_create(id = str(id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu})
             return render(request, "webapplication/create_invest_soll.html", {
                 "message": "Eintrag erfolgreich geplant",
-                "ou": ou
+                "ou": ou,
+                "jahr": jahr
             })
         except ValueError:
             return render(request, "webapplication/create_invest_soll.html", {
                 "alert": "Sie müssen angemeldet sein, damit Sie einen Eintrag erstellen können!",
-                "ou": ou
+                "ou": ou,
+                "jahr": jahr
             })
     return render(request, "webapplication/create_invest_soll.html", {
-        "ou": ou
+        "ou": ou,
+        "jahr": jahr
     })
 
 def update_detail_invest_soll(request, ou, id):

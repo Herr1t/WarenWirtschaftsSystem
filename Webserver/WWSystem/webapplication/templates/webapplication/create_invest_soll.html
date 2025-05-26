@@ -7,7 +7,7 @@
         <h2>Investmittel Eintrag</h2>
         <hr>
 
-        <form action="{% url 'create_investmittel_soll' ou %}" method="post" onsubmit="return validateForm()">
+        <form action="{% url 'create_investmittel_soll' ou jahr %}" method="post" onsubmit="return validateForm()">
             {% csrf_token %}
             <div class="form-group">
                 <select class="form-control" id="selectOption">
@@ -67,7 +67,7 @@
             </div>
             <div style="text-align: right;">
                 <input class="btn btn-primary" type="submit" value="Eintragen">
-                <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'detail_investmittel_soll' ou %}'"></input>
+                <input class="button btn zurück" value="Zurück" type="button" onclick="window.location.href='{% url 'detail_investmittel_soll' ou jahr %}'"></input>
             </div>
             {% if message %}
                 <div class="alert alert-success" role="alert">{{ message }}</div>
