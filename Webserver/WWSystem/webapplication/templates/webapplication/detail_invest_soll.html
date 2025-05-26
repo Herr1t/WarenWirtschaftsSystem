@@ -28,7 +28,7 @@
                 {% for group in request.user.groups.all %}
                     {% if group.name == 'Admin' %}
                         <td>
-                            <a class="link" href="{% url 'update_detail_invest_soll' item.ou_id__ou item.id %}">
+                            <a class="link" href="{% url 'update_detail_invest_soll' item.ou_id__ou item.id jahr %}">
                                 Bearbeiten
                             </a>
                         </td>
