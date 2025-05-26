@@ -1192,12 +1192,31 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
         })
 
 def some_view(request):
-    Jahre = Invest.objects.values('jahr').distinct()
-    context = {
-        "Jahre":Jahre,
-        "rows": Invest.objects.values('ou_id__ou').filter(typ="Aktiv").distinct()
-    }
-    return render(request, "webapplication/csv.html", context)
+    zeile = ""
+    jahr = 2026
+    ous = Ou.objects.values_list('ou_id', 'ou').distinct()
+    with open('/Users/voigttim/Downloads/Investplaung_2026_Desktop.csv', 'r') as file:
+        reader = csv.reader(file, delimiter=";")
+        for row in reader:
+            ou = str(row[0]).replace("OU0", "").replace("OU", "")
+            menge = row[1]
+            typ = row[2]
+            preis = str(row[3]).replace(" €", "")
+            modell = row[4]
+            for item in ous:
+                if str(item[1]).replace("(", "").replace(",)", "") == ou:
+                    ou_id = Ou.objects.get(ou_id=str(item[0]).replace("(", "").replace(",)", ""))
+                    Detail_Investmittelplan_Soll.objects.create(ou_id=ou_id, jahr=jahr, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis)
+                    alt_gesamt = Invest.objects.values_list('investmittel_gesamt').filter(jahr=jahr).filter(ou_id=str(item[0]).replace("(", "").replace(",)", "")).filter(typ="Planung")
+                    alt_gesamt = float(str(alt_gesamt[0]).replace("(Decimal('", "").replace("'),)", ""))
+                    kosten = int(menge) * int(preis)
+                    neu_gesamt = alt_gesamt + kosten
+                    invest_id = Invest.objects.values_list('id').filter(ou_id=ou_id).filter(jahr=jahr).filter(typ="Planung")
+                    Invest.objects.update_or_create(id=str(invest_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_gesamt})
+        
+    return render(request, "webapplication/csv.html", {
+        "message": str(invest_id[0]).replace("(", "").replace(",)", "")
+    })
 
 def download(request, typ, input):
     files = Download.objects.all()

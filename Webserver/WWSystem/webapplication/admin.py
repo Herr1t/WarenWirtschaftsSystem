@@ -14,7 +14,7 @@ class Investmittelplan_SollAdmin(admin.ModelAdmin):
     search_fields = ("ou", "bereich")
 
 class Detail_Investmittelplan_SollAdmin(admin.ModelAdmin):
-    list_display = ("id", "ou_id", "typ", "modell", "menge", "preis_pro_stück", "admin", "spezifikation")
+    list_display = ("id", "ou_id", "typ", "modell", "menge", "preis_pro_stück", "admin", "spezifikation", "jahr")
     list_filter = ("typ", "modell")
     search_fields = ("id", )
 

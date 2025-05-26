@@ -20,7 +20,7 @@ class Ou(models.Model):
         db_table = 'OU'
         
     def __str__(self):
-        return str(self.ou)
+        return str(self.ou_id)
 
 class BestellListe(models.Model):
     sap_bestell_nr_field = models.CharField(db_column='SAP_Bestell_Nr.', max_length=20, primary_key=True)  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
