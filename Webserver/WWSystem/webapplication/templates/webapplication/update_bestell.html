@@ -45,7 +45,7 @@
                     <option value="Dockingstation">Dockingstation</option>
                     <option value="Diktiergerät">Diktiergerät</option>
                     <option value="Transkription">Transkription</option>
-                </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
+                </select><input placeholder="Typ" class="form-control" name="typ" id="type" style="display:none; float: right; width: 85%; margin-bottom: 1.5%;" disabled="disabled" onblur="if(this.value==''){toggleField(this,this.previousSibling);}">
                 <span style="color: red;" id="typError" class="error"></span>
             </div>
             <div class="form-group">
@@ -69,7 +69,7 @@
             </div>
             <div class="form-group">
                 <text style="float: left; margin-top: 2.8%; margin-left: 0.4%;">Link:</text>
-                <input style="float: right; width: 85%; margin-bottom: 1.5%;" class="form-control" type="text" name="link" placeholder="">
+                <input style="float: right; width: 85%; margin-bottom: 1.5%;" class="form-control" type="url" name="link" placeholder="">
             </div>
             <div style="display: none;" class="form-group">
                 <text style="float: left; margin-top: 2.8%; margin-left: 0.4%;">Anzahl geliefert:</text>
