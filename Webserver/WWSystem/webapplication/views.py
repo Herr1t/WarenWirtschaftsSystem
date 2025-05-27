@@ -504,6 +504,7 @@ def handout_lager_all(request, bestell_nr):
         user = request.user  # Currently logged-in user
         issue_time = timezone.now()  # Timestamp of when items are handed out
         issued_flag = 1  # Value indicating that an item is now "issued"
+        annahme = request.POST["annahme"]
 
         # Lists to collect inventory numbers that failed for specific reasons
         dne_items = []     # Items that "Do Not Exist" in the Lagerliste table
@@ -547,7 +548,8 @@ def handout_lager_all(request, bestell_nr):
                     ausgegeben=issued_flag,      # Set item as issued
                     klinik=clinic,               # Record issuing clinic
                     ausgabe=issue_time,          # Timestamp of issue
-                    herausgeber=user             # User who issued the item
+                    herausgeber=user,             # User who issued the item
+                    ausgegeben_an=annahme
                 )
 
                 # Step 4g: Track achievements by updating handout counts
@@ -1552,6 +1554,9 @@ def update_detail_invest_soll(request, ou, id, jahr):
             "id": id,
             "jahr": jahr
         })
+
+def löschen_detail_invest_soll(request, id):
+    pass
 
 def test(request):
     if group_check(request.user) == '1':

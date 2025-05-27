@@ -27,6 +27,7 @@ urlpatterns = [
     path("invest_soll/<int:ou>/<int:jahr>", views.detail_invest_soll, name="detail_investmittel_soll"),
     path("invest_soll/<int:ou>/<int:jahr>/create_invest_soll", views.create_invest_soll, name="create_investmittel_soll"),
     path("invest_soll/<int:ou>/<int:id>/<int:jahr>/update_detail_invest_soll", views.update_detail_invest_soll, name="update_detail_invest_soll"),
+    path("invest_soll/<int:id>/löschen_detail_invest_soll", views.löschen_detail_invest_soll, name="löschen_detail_invest_soll"),
     path("create_bestell", views.create_bestell, name="create_bestell"),
     path("create_lager", views.create_lager, name="create_lager"),
     path("create_lager_ohne", views.create_lager_ohne, name="create_lager_ohne"),
