@@ -1195,25 +1195,25 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
         })
 
 def some_view(request):
-    zeile = ""
-    jahr = 2026
-    ous = Ou.objects.values_list('ou_id', 'ou').distinct()
-    path = "/media/daten/Invest/"
-    with open(f'{path}Investplaung_2026_Desktop.csv', 'r') as file:
-        reader = csv.reader(file, delimiter=";")
-        next(reader)
-        for row in reader:
-            ou = str(row[0]).replace("OU0", "").replace("OU", "")
-            menge = row[1]
-            if not menge:
-                menge = 0
-            typ = row[2]
-            preis = str(row[3]).replace(" €", "").replace(".", "")
-            modell = row[4]
-            if int(menge) > 0:
-                for item in ous:
-                    if str(item[1]).replace("(", "").replace(",)", "") == ou:
-                        ou_id = Ou.objects.get(ou_id=str(item[0]).replace("(", "").replace(",)", ""))
+    # zeile = ""
+    # jahr = 2026
+    # ous = Ou.objects.values_list('ou_id', 'ou').distinct()
+    # path = "/media/daten/Invest/"
+    # with open(f'{path}Investplaung_2026_Desktop.csv', 'r') as file:
+    #     reader = csv.reader(file, delimiter=";")
+    #     next(reader)
+    #     for row in reader:
+    #         ou = str(row[0]).replace("OU0", "").replace("OU", "")
+    #         menge = row[1]
+    #         if not menge:
+    #             menge = 0
+    #         typ = row[2]
+    #         preis = str(row[3]).replace(" €", "").replace(".", "")
+    #         modell = row[4]
+    #         if int(menge) > 0:
+    #             for item in ous:
+    #                 if str(item[1]).replace("(", "").replace(",)", "") == ou:
+    #                     ou_id = Ou.objects.get(ou_id=str(item[0]).replace("(", "").replace(",)", ""))
                         # Detail_Investmittelplan_Soll.objects.create(ou_id=ou_id, jahr=jahr, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis)
                         # alt_gesamt = Invest.objects.values_list('investmittel_gesamt').filter(jahr=jahr).filter(ou_id=str(item[0]).replace("(", "").replace(",)", "")).filter(typ="Planung")
                         # alt_gesamt = float(str(alt_gesamt[0]).replace("(Decimal('", "").replace("'),)", ""))
@@ -1221,6 +1221,29 @@ def some_view(request):
                         # neu_gesamt = alt_gesamt + kosten
                         # invest_id = Invest.objects.values_list('id').filter(ou_id=ou_id).filter(jahr=jahr).filter(typ="Planung")
                         # Invest.objects.update_or_create(id=str(invest_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_gesamt})            
+
+    # Liste = []
+    # Ausgabe = []
+    # x = 0
+    # with open('/Users/voigttim/Downloads/Speechmikes.csv', 'r') as file:
+    #     reader = csv.reader(file, delimiter=";")
+    #     next(reader)
+    #     for row in reader:
+    #         try:
+    #             values = Lagerliste.objects.values_list("inventarnummer", "klinik", "ausgabe").get(pk=row[0])
+    #             Ausgabe.append(values)
+    #         except ObjectDoesNotExist:
+    #             continue
+    
+    # mappe1 = open('/Users/voigttim/Downloads/Mappe1.csv', 'w')
+    # f = csv.writer(mappe1)
+    # f.writerow(["Inventarnummer", "OU", "Ausgabe_Datum"])
+
+    # for _ in Ausgabe:
+    #     f.writerow([Ausgabe[x][0], Ausgabe[x][1], Ausgabe[x][2]])
+    #     x = x + 1
+    
+    # mappe1.close()
 
     return render(request, "webapplication/csv.html")
 
