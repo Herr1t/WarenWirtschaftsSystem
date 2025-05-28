@@ -1213,15 +1213,15 @@ def some_view(request):
             if int(menge) > 0:
                 for item in ous:
                     if str(item[1]).replace("(", "").replace(",)", "") == ou:
-                        ou_id = Ou.objects.get(ou_id=str(item[0]).replace("(", "").replace(",)", ""))
-                        Detail_Investmittelplan_Soll.objects.create(ou_id=ou_id, jahr=jahr, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis)
-                        alt_gesamt = Invest.objects.values_list('investmittel_gesamt').filter(jahr=jahr).filter(ou_id=str(item[0]).replace("(", "").replace(",)", "")).filter(typ="Planung")
-                        alt_gesamt = float(str(alt_gesamt[0]).replace("(Decimal('", "").replace("'),)", ""))
-                        kosten = int(menge) * int(preis)
-                        neu_gesamt = alt_gesamt + kosten
-                        invest_id = Invest.objects.values_list('id').filter(ou_id=ou_id).filter(jahr=jahr).filter(typ="Planung")
-                        Invest.objects.update_or_create(id=str(invest_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_gesamt})
-        
+                        # ou_id = Ou.objects.get(ou_id=str(item[0]).replace("(", "").replace(",)", ""))
+                        # Detail_Investmittelplan_Soll.objects.create(ou_id=ou_id, jahr=jahr, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis)
+                        # alt_gesamt = Invest.objects.values_list('investmittel_gesamt').filter(jahr=jahr).filter(ou_id=str(item[0]).replace("(", "").replace(",)", "")).filter(typ="Planung")
+                        # alt_gesamt = float(str(alt_gesamt[0]).replace("(Decimal('", "").replace("'),)", ""))
+                        # kosten = int(menge) * int(preis)
+                        # neu_gesamt = alt_gesamt + kosten
+                        # invest_id = Invest.objects.values_list('id').filter(ou_id=ou_id).filter(jahr=jahr).filter(typ="Planung")
+                        # Invest.objects.update_or_create(id=str(invest_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_gesamt})            
+
     return render(request, "webapplication/csv.html")
 
 def download(request, typ, input):
