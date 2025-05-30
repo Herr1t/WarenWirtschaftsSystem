@@ -1482,15 +1482,9 @@ def invest_soll(request):
     })
 
 def detail_invest_soll(request, ou, jahr):
-    x = 0
-    files = Download.objects.all()
-    conf = 0
-    typ = "invest_planung"
-
     return render(request, "webapplication/detail_invest_soll.html", {
         "ou": ou,
         "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.values('id', 'ou_id__ou', 'typ', 'modell', 'preis_pro_stück', 'spezifikation', 'admin', 'menge').filter(ou_id__ou=ou).filter(jahr=jahr),
-        "files": files,
         "jahr": jahr
     })
 
@@ -1582,8 +1576,29 @@ def update_detail_invest_soll(request, ou, id, jahr):
             "jahr": jahr
         })
 
-def löschen_detail_invest_soll(request, id):
-    pass
+def löschen_detail_invest_soll(request, ou, id, jahr):
+    if request.method == "POST":
+        items = Detail_Investmittelplan_Soll.objects.values_list("menge", "preis_pro_stück").get(pk=id)
+        invest_gesamt = Invest.objects.values_list("id", "investmittel_gesamt").filter(ou_id__ou=ou).filter(jahr=jahr).filter(typ="Planung")
+        menge = int(str(items[0]).replace("(", "").replace(",)", ""))
+        preis_pro_stück = float(str(items[1]).replace("(", "").replace(",)", ""))
+        inv_id = str(invest_gesamt[0][0]).replace("(", "").replace(",)", "")
+        invest_gesamt_alt = float(str(invest_gesamt[0][1]).replace("(Decimal('", "").replace(",)", "").replace("')", ""))
+        invest_gesamt_neu = invest_gesamt_alt - (menge * preis_pro_stück)
+        Invest.objects.update_or_create(id=inv_id, defaults={'investmittel_gesamt': invest_gesamt_neu})
+        Detail_Investmittelplan_Soll.objects.filter(id=id).delete()
+        
+        return render(request, "webapplication/detail_invest_soll.html", {
+            "ou": ou,
+            "jahr": jahr,
+            "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.values('id', 'ou_id__ou', 'typ', 'modell', 'preis_pro_stück', 'spezifikation', 'admin', 'menge').filter(ou_id__ou=ou).filter(jahr=jahr)
+        })
+    else:
+        return render(request, "webapplication/löschen_detail_invest_soll.html", {
+            "id": id,
+            "ou": ou,
+            "jahr": jahr
+        })
 
 def test(request):
     if group_check(request.user) == '1':
