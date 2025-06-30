@@ -60,7 +60,7 @@
 
         // Automatically select current year in the "jahr" select box
         window.addEventListener('DOMContentLoaded', function () {
-            const currentYear = new Date().getFullYear().toString();
+            const currentYear = (new Date().getFullYear() + 1).toString();
             const jahrSelect = document.getElementById("id_jahr");
             for (let i = 0; i < jahrSelect.options.length; i++) {
                 if (jahrSelect.options[i].value === currentYear) {
