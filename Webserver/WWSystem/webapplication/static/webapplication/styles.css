@@ -82,6 +82,30 @@ h2 {
   margin-right: 7px;
 }
 
+.form-create {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  flex: 0 0 15%;
+  margin-left: 0.4%;
+}
+
+.form-cont {
+  flex: 0 0 85%;
+  max-width: 85%;
+  margin-bottom: 0.5rem;
+}
+
+.error {
+  display: block;
+  color: red;
+  font-size: 0.9em;
+  margin-left: calc(15% + 0.4%);
+}
+
 .sortable th {
   cursor: pointer;
 }
