@@ -71,10 +71,12 @@
                 <text style="display: block; width: 150px;">Link:</text>
                 <input style="flex: 1;" class="form-control" type="url" name="link" placeholder="">
             </div>
-            <div style="display: none;" class="form-group">
-                <text style="display: block; width: 150px;">Anzahl geliefert:</text>
-                <input style="flex: 1;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
-            </div>
+            {% if item.investmittel == 'Nein' %}
+                <div class="form-group" style="display: flex; gap: 15px; align-items: center; margin-top: 10px;">
+                    <text style="display: block; width: 150px;">Anzahl geliefert:</text>
+                    <input style="flex: 1;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
+                </div>
+            {% endif %}
             {% if message %}
                 <div class="alert alert-success" role="alert">{{ message }}</div>
             {% endif %}

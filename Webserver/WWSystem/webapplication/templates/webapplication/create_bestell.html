@@ -42,8 +42,8 @@
                         <option value="option16">Fußschalter</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <text style="float: left; margin-top: 1%; margin-left: 0.4%;">SAP Bestell-Nr.: </text>
+                <!--<div class="form-group">
+                    <text style="float: left; margin-top: 0.5%; margin-left: 0.4%;">SAP Bestell-Nr.: </text>
                     <input autofocus class="form-control" style="float: right; width: 85%; margin-bottom: 1.5%;" type="text" name="sap_bestell_nr" required>
                 </div>
                 <div class="form-group">
@@ -93,6 +93,67 @@
                 <div class="form-group">
                     <text style="float: left; margin-top: 2.8%; margin-left: 0.4%;">Link: </text>
                     <input class="form-control" style="float: right; width: 85%; margin-bottom: 1.5%;" type="url" name="link">
+                </div> -->
+                <div class="form-group form-create">
+                    <label class="form-label" for="sap_bestell_nr">SAP Bestell-Nr.:</label>
+                    <input autofocus class="form-control form-cont" type="text" name="sap_bestell_nr" id="sap_bestell_nr" required>
+                </div>
+
+                <div class="form-group form-create">
+                    <label class="form-label" for="modell">Modell:</label>
+                    <input class="form-control form-cont" type="text" name="modell" id="modell" required>
+                    <span class="error" id="modellError"></span>
+                </div>
+
+                <div class="form-group form-create">
+                    <label class="form-label" for="typ">Typ:</label>
+                    <select required name="typ" id="typ" class="form-control form-cont"
+                    onchange="if(this.options[this.selectedIndex].value=='customOption'){
+                        toggleField(this,this.nextElementSibling);
+                        this.selectedIndex='0';
+                    }">
+                    <option value="">Bitte Typ auswählen</option>
+                    <option value="customOption">[Eigenen Typ eintragen]</option>
+                    <option value="Monitor">Monitor</option>
+                    <option value="Notebook">Notebook</option>
+                    <option value="Desktop-PC">Desktop-PC</option>
+                    <option value="Drucker">Drucker</option>
+                    <option value="Scanner">Scanner</option>
+                    <option value="Dockingstation">Dockingstation</option>
+                    <option value="Diktiergerät">Diktiergerät</option>
+                    <option value="Transkription">Transkription</option>
+                    </select>
+                    <input class="form-control form-cont" name="typ" id="type" style="display:none;" disabled
+                    onblur="if(this.value==''){toggleField(this,this.previousElementSibling);}">
+                    <span class="error" id="typeError"></span>
+                </div>
+
+                <div class="form-group form-create">
+                    <label class="form-label" for="menge">Menge:</label>
+                    <input class="form-control form-cont" type="number" name="menge" id="menge" required>
+                    <span class="error" id="mengeError"></span>
+                </div>
+
+                <div class="form-group form-create">
+                    <label class="form-label" for="preis_pro_stück">Preis pro Stück:</label>
+                    <input class="form-control form-cont" type="number" name="preis_pro_stück" id="preis_pro_stück" required>
+                    <span class="error" id="preisError"></span>
+                </div>
+
+                <div class="form-group form-create">
+                    <label class="form-label" for="zuweisung">Zuweisung:</label>
+                    <input class="form-control form-cont" type="text" name="zuweisung" id="zuweisung" required>
+                </div>
+
+                <div class="form-group form-create">
+                    <label class="form-label" for="spezifikation">Spezifikation:</label>
+                    <input class="form-control form-cont" type="text" name="spezifikation" id="spezifikation">
+                    <span class="error" id="spezifikationError"></span>
+                </div>
+
+                <div class="form-group form-create">
+                    <label class="form-label" for="link">Link:</label>
+                    <input class="form-control form-cont" type="url" name="link" id="link">
                 </div>
                 <div class="form-group">
                     <select class="form-control" name="investmittel">
