@@ -1,0 +1,38 @@
+{% extends "webapplication/layout.html" %}
+
+{% block body %}
+    <h1 class="header" style="text-align: center;">Standardartikel</h1>
+    <input class="searchbar" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+    <input style="margin-left: 1.5%;" class="button" value="Standardartikel hinzufügen" type="button" onclick="window.location.href='{% url 'create_lager_standard' %}'"></input>
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+    <table id="myTable" class="sortable tables">
+        <thead>
+            <tr style="position: sticky; top: 0; overflow: hidden;">
+                <th>SAP Nr.</th>
+                <th>Name</th>
+                <th>Modell</th>
+                <th>Spezifikation</th>
+                <th>Menge</th>
+                <th>Kommentar</th>
+            </tr>
+        </thead>
+        {% for item in lager_standard %}
+            <tbody>
+                <tr class="custom_row">
+                    <td>
+                        <a class="link" href="{% url 'update_lager_standard' item.id %}">
+                            {{ item.sap_nr }}
+                        </a>
+                    </td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.modell }}</td>
+                    <td>{{ item.spezifikation }}</td>
+                    <td>{{ item.menge }}</td>
+                    <td>{{ item.kommentar }}</td>
+                </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}

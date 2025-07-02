@@ -16,7 +16,7 @@ from webapplication.external_functions.create_lager import *
 from django.db.models import Count
 
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Achievements, Download, Invest, Ou
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Achievements, Download, Invest, Ou, Lager_Standard, Lager_Standard_Entry
 #from .forms import UploadForm
 
 this_year = str(int(datetime.date.today().year))
@@ -139,44 +139,37 @@ def register(request):
 
 # View function for handling password reset functionality
 def pw_reset(request):
-    # Check if the user is in the reset group (group '1') before allowing password reset
-    if reset_group_check(request.user) == '1':
-        # If the request is a POST request (form submission)
-        if request.method == "POST":
-            # Get the username, new password, and confirmation password from POST data
-            uname = request.POST["username"]
-            new_pw = request.POST["new_password"]
-            confirm_pw = request.POST["confirm_password"]
+    # If the request is a POST request (form submission)
+    if request.method == "POST":
+        # Get the username, new password, and confirmation password from POST data
+        uname = request.user
+        new_pw = request.POST["new_password"]
+        confirm_pw = request.POST["confirm_password"]
 
-            # Check if the new password and confirmation password match
-            if new_pw != confirm_pw:
-                return render(request, "webapplication/pw_reset.html", {
-                    "message": "Passwörter müssen sich gleichen."  # Passwords must match
-                })
-            else:
-                try:
-                    # Attempt to find the user by username
-                    u = User.objects.get(username=uname)
-                    # Set the new password and save the user
-                    u.set_password(new_pw)
-                    u.save()
-                    # Show confirmation that password reset was successful
-                    return render(request, "webapplication/pw_reset.html", {
-                        "confirm": "1"  # Show success message
-                    })
-                except ObjectDoesNotExist:
-                    # If user does not exist, show an error message
-                    return render(request, "webapplication/pw_reset.html", {
-                        "message": "Nutzername exisitert nicht!"  # Username does not exist
-                    })
+        # Check if the new password and confirmation password match
+        if new_pw != confirm_pw:
+            return render(request, "webapplication/pw_reset.html", {
+                "message": "Passwörter müssen sich gleichen."  # Passwords must match
+            })
         else:
-            # If the request is not a POST request, just render the password reset page
-            return render(request, "webapplication/pw_reset.html")
+            try:
+                # Attempt to find the user by username
+                u = User.objects.get(username=uname)
+                # Set the new password and save the user
+                u.set_password(new_pw)
+                u.save()
+                # Show confirmation that password reset was successful
+                return render(request, "webapplication/pw_reset.html", {
+                    "confirm": "1"  # Show success message
+                })
+            except ObjectDoesNotExist:
+                # If user does not exist, show an error message
+                return render(request, "webapplication/pw_reset.html", {
+                    "message": "Nutzername exisitert nicht!"  # Username does not exist
+                })
     else:
-        # If the user is not authorized to reset passwords, show a different message
-        return render(request, "webapplication/pw_reset.html", {
-            "check": "1"  # Show that the user does not have permission for this action
-        })
+        # If the request is not a POST request, just render the password reset page
+        return render(request, "webapplication/pw_reset.html")
         
 def pw_reset_msg(request):
     return render(request, "webapplication/pw_reset_msg.html")
@@ -270,7 +263,7 @@ def lager(request):
         'notebook14': count_matching(mengen, 'Notebook', '14 Zoll'),
         'notebook15': count_matching(mengen, 'Notebook', '15 Zoll'),
         'pcsff': count_matching(mengen, 'Desktop-PC', 'Small Form Factor'),
-        'pcmff': count_matching(mengen, 'Desktop-PC', 'Micro-Desktop-PC') + count_matching(mengen, 'Desktop-PC', 'Micro'),
+        'pcmff': count_matching(mengen, 'Desktop-PC', 'Micro'),
         'drucker': sum(item['Menge'] for item in mengen if item['typ'] == 'Drucker'),
         'scanner': sum(item['Menge'] for item in mengen if item['typ'] == 'Scanner'),
         'dock': sum(item['Menge'] for item in mengen if item['typ'] == 'Dockingstation'),
@@ -345,441 +338,326 @@ def create_lager(request):
 
 # View Function that handles the "austragung" of entries from the Lagerliste
 def handout_lager(request):
-    # Redirect users in a restricted group to another view
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
-
-    # Handle POST request (form submission)
-    if request.method == "POST":
-        # Initialize variables for tracking user achievements, errors, and handout operations
-        handout_count = 0                # Number of items handed out by user
-        achieved_level = 0               # Achievement level unlocked (50, 200, 500 items)
-        dne_entries = []                 # Items not found in Lagerliste (Does Not Exist)
-        fail_entries = []                # Items that were already marked as 'ausgegeben'
-        items_to_process = []            # Valid selected inventory numbers to process
-        ausgegeben = 1                   # Status flag to mark item as handed out
-        ausgabe_time = timezone.now()    # Timestamp of the handout
-        clinic = request.POST["klinik"]  # Target clinic receiving the items
-        issuer = request.user            # Logged-in user performing the handout
-        annahme = request.POST["annahme"]
-
-        # Collect up to 50 selected items from the form data
-        index = 0
-        while True:
-            item = request.POST.get(str(index), False)
-            if item:
-                items_to_process.append(item)  # Add selected item to processing list
-                index += 1
-            else:
-                index += 1
-                if index == 50:  # Limit processing to 50 items
-                    break
-
-        # Process each selected inventory number
-        for item in items_to_process:
-            try:
-                inventory_number = str(item)  # Ensure it's a string for DB lookup
-
-                # Only proceed if item is not already marked as issued
-                if Lagerliste.objects.filter(pk=inventory_number, ausgegeben="0").exists():
-                    # Retrieve related BestellNr for pricing and budgeting updates
-                    bestell_nr = Lagerliste.objects.values_list('bestell_nr_field', flat=True).get(pk=inventory_number)
-                    price_per_item = BestellListe.objects.values_list('preis_pro_stück', flat=True).get(pk=bestell_nr)
-
-                    # Retrieve target clinic's ID for filtering budget entries
-                    clinic_ou_id = Ou.objects.values_list('ou_id', flat=True).filter(ou=clinic).first()
-                    
-                    # Get the current active investment plan for the clinic this year
-                    invest = Invest.objects.filter(
-                        ou_id=clinic_ou_id, typ="Aktiv", jahr=this_year
-                    ).first()
-                    
-                    # Get current budget and spent values
-                    remaining_funds = invest.investmittel_übrig
-                    spent_funds = invest.investmittel_verausgabt
-
-                    # Calculate updated values
-                    new_remaining_funds = remaining_funds - price_per_item
-                    new_spent_funds = spent_funds + price_per_item
-
-                    # Update the investment entry with new financial values
-                    Invest.objects.filter(id=invest.id).update(
-                        investmittel_übrig=new_remaining_funds,
-                        investmittel_verausgabt=new_spent_funds
-                    )
-
-                    # Mark the inventory item as handed out in Lagerliste
-                    Lagerliste.objects.filter(pk=inventory_number).update(
-                        ausgegeben=ausgegeben,
-                        klinik=clinic,
-                        ausgabe=ausgabe_time,
-                        herausgeber=issuer,
-                        ausgegeben_an=annahme
-                    )
-
-                    # Retrieve current handout count for the user (if exists)
-                    handout_count = Achievements.objects.filter(
-                        user=issuer
-                    ).values_list('handout_count', flat=True).first() or 0
-
-                    # Increment handout count
-                    new_handout_count = handout_count + 1
-
-                    # Create or update the achievement record with new count
-                    Achievements.objects.update_or_create(
-                        user=issuer,
-                        defaults={'handout_count': new_handout_count}
-                    )
-
-                    # Check for achievement unlocks at thresholds
-                    if new_handout_count == 50:
-                        achieved_level = 1
-                    elif new_handout_count == 200:
-                        achieved_level = 2
-                    elif new_handout_count == 500:
-                        achieved_level = 3
-
+    else:
+        if request.method == "POST":
+            x = 0
+            c = 0
+            ach = 0
+            list = []
+            ausgegeben = 1
+            ausgabe = timezone.now
+            klinik = request.POST["klinik"]
+            herausgeber = request.user
+            dne = ""
+            fail = ""
+            # Appends all entries in the obejct "list"
+            while True:
+                check = request.POST.get(f"{x}", False)
+                if check:
+                    list.append(request.POST[f"{x}"])
+                    x = x + 1
                 else:
-                    # Inventory item is already handed out; add to failure list
-                    fail_entries.append(inventory_number)
-
-            except ObjectDoesNotExist:
-                # Inventory item doesn't exist in database; add to dne list
-                dne_entries.append(inventory_number)
-
-        # Update user's achievement level if unlocked
-        if achieved_level > 0:
-            Achievements.objects.filter(user=issuer).update(handout_achievement=achieved_level)
-
-        # Display result page with failure message if any items were already issued
-        if fail_entries:
-            return render(request, "webapplication/handout_lager.html", {
-                "dne": ", ".join(dne_entries),      # Items not found
-                "fail": ", ".join(fail_entries),    # Items already issued
-                "unlock": achieved_level            # Achievement level unlocked
-            })
-
-        # Display result page if any items did not exist
-        if dne_entries:
-            return render(request, "webapplication/handout_lager.html", {
-                "dne": ", ".join(dne_entries),
-                "unlock": achieved_level
-            })
-
-        # Check if the clinic's budget went below 0 after handout
-        remaining_budget = Investmittelplan.objects.values_list(
-            'investmittel_übrig_in_euro', flat=True
-        ).filter(klinik_ou=clinic).first()
-
-        # Display warning if overspending occurred
-        if float(remaining_budget) < 0:
-            return render(request, "webapplication/handout_lager.html", {
-                "message": "Einträge erfolgreich ausgetragen",  # Success message
-                "alarm": clinic,                                # Clinic name
-                "geld": float(remaining_budget),                # Remaining budget
-                "unlock": achieved_level                        # Achievement unlocked
-            })
-
-        # Generic success message if everything went well
-        return render(request, "webapplication/handout_lager.html", {
-            "message": "Einträge erfolgreich ausgetragen",
-            "unlock": achieved_level
-        })
-
-    # For GET request: render the initial handout form page
-    return render(request, "webapplication/handout_lager.html")
+                    x = x + 1
+                    c = c + 1
+                    if c == 50:
+                        break
+            # "Austragung" of the entries in "list"
+            for _ in list:
+                inventarnummer = str(_)
+                try:
+                    handout_count = Achievements.objects.filter(user=request.user).values_list('handout_count')
+                    ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
+                    # Checks if entry isnt already "ausgegeben"
+                    if ausgabe_check in "('0',)":
+                        ___ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
+                        temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=___[0])
+                        ou_id = Ou.objects.values_list('ou_id').filter(ou=klinik)
+                        inv_id = Invest.objects.values_list('id').filter(ou_id=str(ou_id[0]).replace("(", "").replace(",)", "")).filter(typ="Aktiv").filter(jahr=this_year)
+                        __ = Invest.objects.values_list('investmittel_übrig').get(pk=str(inv_id[0]).replace("(", "").replace(",)", ""))
+                        ____ = Invest.objects.values_list('investmittel_verausgabt').get(pk=str(inv_id[0]).replace("(", "").replace(",)", ""))
+                        # Subtracting the "preis_pro_stück" of the entries in "list" from the column "investmittel_übrig_in_euro" of the selected "ou" in Investmittelplan
+                        abzug = __[0] - temp[0]
+                        addition = ____[0] + temp[0]
+                        abrechnung = Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_übrig': abzug})
+                        aufrechnung = Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_verausgabt': addition})
+                        # "Austragung" of the entries in Lagerliste
+                        ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
+                        if handout_count:
+                            temp = str(handout_count[0]).replace('(', '').replace(',)', '')
+                            if temp == "None":
+                                new = 0
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
+                            else:
+                                new = int(str(handout_count[0]).replace('(', '').replace(',)', '')) + 1
+                                achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
+                        else:
+                            new = 0
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
+                        if new == 50:
+                            ach = 1
+                        if new == 200:
+                            ach = 2
+                        if new == 500:
+                            ach = 3
+                    # Output if entry is already "ausgetragen"
+                    else:
+                        fail = fail + inventarnummer + ", "
+                        continue 
+                # If entry does not exist in Lagerliste then it gets appended to the variable "dne"
+                except ObjectDoesNotExist:
+                    dne = dne + inventarnummer + ", "
+                    continue
+                # except ValueError:
+                #     return render(request, "webapplication/login.html", {
+                #         "message": "Sie sind nicht angemeldet!"
+                #     })
+            if ach == 1:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(handout_achievement=1)
+            if ach == 2:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(handout_achievement=2)
+            if ach == 3:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(handout_achievement=3)
+            # If there is at least one entry in "fail" then is uses this output
+            if fail:
+                fail = fail[:-2]
+                return render(request, "webapplication/handout_lager.html", {
+                    "dne": dne,
+                    "fail": fail,
+                    "unlock": ach
+                })
+            # If there is at least one entry in "dne" then it uses this output
+            if dne:
+                dne = dne[:-2]
+                return render(request, "webapplication/handout_lager.html", {
+                    "dne": dne,
+                    "unlock": ach
+                })
+            # Checks if column "investmittel_übrig_in_euro" from Investmittelplan is below 0
+            check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(klinik_ou=klinik)
+            if float(check[0]) < 0:
+                    return render(request, "webapplication/handout_lager.html", {
+                    "message": "Einträge erfolgreich ausgetragen",
+                    "alarm": klinik,
+                    "geld": float(check[0]),
+                    "unlock": ach
+                })
+            else:
+                return render(request, "webapplication/handout_lager.html", {
+                    "message": "Einträge erfolgreich ausgetragen",
+                    "unlock": ach
+                })
+        return render(request, "webapplication/handout_lager.html")
 
 # View function to handle the bulk "handout" (Austragung) of inventory items from the warehouse list (Lagerliste)
 # based on a common order number (bestell_nr)
 def handout_lager_all(request, bestell_nr):
-    # Step 1: Authorization check — if user group is '1', redirect to another page
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    else:
+        if request.method == 'POST':
+            x = 0
+            c = 0
+            ach = 0
+            klinik = request.POST["klinik"]
+            bestellung = Lagerliste.objects.values_list('inventarnummer').filter(bestell_nr_field=bestell_nr)
+            ausgegeben = 1
+            ausgabe = timezone.now
+            herausgeber = request.user
+            dne = ""
+            fail = ""
 
-    # Step 2: Handle form submission (POST method)
-    if request.method == 'POST':
-        # Initialize tracking variables
-        achievement_level = 0  # Used to determine whether an achievement milestone is reached
-        clinic = request.POST["klinik"]  # Clinic name from the form submission
-        user = request.user  # Currently logged-in user
-        issue_time = timezone.now()  # Timestamp of when items are handed out
-        issued_flag = 1  # Value indicating that an item is now "issued"
-        annahme = request.POST["annahme"]
-
-        # Lists to collect inventory numbers that failed for specific reasons
-        dne_items = []     # Items that "Do Not Exist" in the Lagerliste table
-        failed_items = []  # Items already marked as "ausgegeben" (handed out)
-
-        # Step 3: Fetch all unissued inventory items (inventarnummern) for the given Bestellnummer
-        inventory_numbers = Lagerliste.objects.filter(
-            bestell_nr_field=bestell_nr,
-            ausgegeben=0  # Only include items not yet handed out
-        ).values_list('inventarnummer', flat=True)
-
-        # Step 4: Iterate only over unissued inventory numbers
-        for inv_number in inventory_numbers:
-            try:
-                # Step 4a: Check if the item has already been handed out
-                is_issued = Lagerliste.objects.get(pk=inv_number).ausgegeben
-                if str(is_issued) != '0':
-                    # Skip and record items already handed out
-                    failed_items.append(str(inv_number))
+            for _ in bestellung:
+                inventarnummer = str(_).replace("('", "").replace("',)", "")
+                try:
+                    handout_count = Achievements.objects.filter(user=request.user).values_list('handout_count')
+                    ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
+                    # Checks if entry isnt already "ausgegeben"
+                    if ausgabe_check in "('0',)":
+                        ___ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
+                        temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=___[0])
+                        ou_id = Ou.objects.values_list('ou_id').filter(ou=klinik)
+                        inv_id = Invest.objects.values_list('id').filter(ou_id=str(ou_id[0]).replace("(", "").replace(",)", "")).filter(typ="Aktiv").filter(jahr=this_year)
+                        __ = Invest.objects.values_list('investmittel_übrig').get(pk=str(inv_id[0]).replace("(", "").replace(",)", ""))
+                        ____ = Invest.objects.values_list('investmittel_verausgabt').get(pk=str(inv_id[0]).replace("(", "").replace(",)", ""))
+                        # Subtracting the "preis_pro_stück" of the entries in "list" from the column "investmittel_übrig_in_euro" of the selected "ou" in Investmittelplan
+                        abzug = __[0] - temp[0]
+                        addition = ____[0] + temp[0]
+                        abrechnung = Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_übrig': abzug})
+                        aufrechnung = Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_verausgabt': addition})
+                        # "Austragung" of the entries in Lagerliste
+                        ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben, 'klinik': klinik, 'ausgabe': ausgabe, 'herausgeber': herausgeber})
+                        if handout_count:
+                            temp = str(handout_count[0]).replace('(', '').replace(',)', '')
+                            if temp == "None":
+                                new = 0
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
+                            else:
+                                new = int(str(handout_count[0]).replace('(', '').replace(',)', '')) + 1
+                                achievement_count = Achievements.objects.filter(user=request.user).update(handout_count=new)
+                        else:
+                            new = 0
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 1, 'handout_achievement': 0, 'rueckgabe_count': 0, 'rueckgabe_achievement': 0})
+                        if new == 50:
+                            ach = 1
+                        if new == 200:
+                            ach = 2
+                        if new == 500:
+                            ach = 3
+                    # Output if entry is already "ausgetragen"
+                    else:
+                        fail = fail + inventarnummer + ", "
+                        continue 
+                # If entry does not exist in Lagerliste then it gets appended to the variable "dne"
+                except ObjectDoesNotExist:
+                    dne = dne + inventarnummer + ", "
                     continue
-
-                # Step 4b: Retrieve the price of the item from the BestellListe table
-                bestell_entry = Lagerliste.objects.get(pk=inv_number).bestell_nr_field
-                price = BestellListe.objects.get(pk=bestell_entry).preis_pro_stück
-
-                # Step 4c: Get the organizational unit ID (ou_id) for the clinic
-                ou_id = Ou.objects.filter(ou=clinic).values_list('ou_id', flat=True).first()
-
-                # Step 4d: Retrieve the active investment entry for this clinic for the current year
-                invest = Invest.objects.filter(
-                    ou_id=ou_id, typ="Aktiv", jahr=this_year
-                ).first()
-
-                # Step 4e: Update budget values — subtract item price from available funds, add to spent
-                invest.investmittel_übrig -= price
-                invest.investmittel_verausgabt += price
-                invest.save()
-
-                # Step 4f: Mark the item in Lagerliste as issued (ausgegeben), and record metadata
-                Lagerliste.objects.filter(pk=inv_number).update(
-                    ausgegeben=issued_flag,      # Set item as issued
-                    klinik=clinic,               # Record issuing clinic
-                    ausgabe=issue_time,          # Timestamp of issue
-                    herausgeber=user,             # User who issued the item
-                    ausgegeben_an=annahme
-                )
-
-                # Step 4g: Track achievements by updating handout counts
-                handout_record, created = Achievements.objects.get_or_create(user=user)
-
-                if created:
-                    # If the user has no record yet, initialize all achievement fields
-                    handout_record.lager_count = 0
-                    handout_record.lager_achievement = 0
-                    handout_record.bestell_count = 0
-                    handout_record.bestell_achievement = 0
-                    handout_record.handout_count = 1
-                    handout_record.handout_achievement = 0
-                    handout_record.rueckgabe_count = 0
-                    handout_record.rueckgabe_achievement = 0
-                else:
-                    # Otherwise, increment the count for handouts
-                    handout_record.handout_count += 1
-
-                handout_record.save()  # Save the updated achievement record
-
-                # Step 4h: Unlock achievement levels at defined thresholds
-                if handout_record.handout_count == 50:
-                    achievement_level = 1
-                elif handout_record.handout_count == 200:
-                    achievement_level = 2
-                elif handout_record.handout_count == 500:
-                    achievement_level = 3
-
-                # Update the achievement level in the record if any was reached
-                if achievement_level:
-                    handout_record.handout_achievement = achievement_level
-                    handout_record.save()
-
-            except Lagerliste.DoesNotExist:
-                # Case: Item does not exist in Lagerliste table
-                dne_items.append(str(inv_number))
-                continue
-            except (BestellListe.DoesNotExist, Invest.DoesNotExist, Ou.DoesNotExist):
-                # Case: Required related data is missing — treat as non-existent
-                dne_items.append(str(inv_number))
-                continue
-            except ValueError:
-                # Case: Request user is somehow invalid (e.g., not authenticated)
-                return render(request, "webapplication/login.html", {
-                    "message": "Sie sind nicht angemeldet!"  # Not logged in
+                except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
+            # If there is at least one entry in "fail" then is uses this output
+            if fail:
+                fail = fail[:-2]
+                return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "dne": dne,
+                    "fail": fail,
+                    "unlock": ach
                 })
-
-        # Step 5: Handle any failures (either already issued or missing items)
-        if failed_items:
-            # Remove trailing comma and return result with error message
-            return render(request, "webapplication/handout_lager_all.html", {
-                "bestell_nr": bestell_nr,
-                "dne": ", ".join(dne_items),   # Items not found
-                "fail": ", ".join(failed_items),  # Already issued items
-                "unlock": achievement_level     # Achievement unlock status
-            })
-
-        if dne_items:
-            return render(request, "webapplication/handout_lager_all.html", {
-                "bestell_nr": bestell_nr,
-                "dne": ", ".join(dne_items),
-                "unlock": achievement_level
-            })
-
-        # Step 6: Check for budget overspending
-        remaining_funds = Investmittelplan.objects.filter(
-            klinik_ou=clinic
-        ).values_list('investmittel_übrig_in_euro', flat=True).first()
-
-        if remaining_funds is not None and float(remaining_funds) < 0:
-            # Warn user about overspending from investment budget
-            return render(request, "webapplication/handout_lager_all.html", {
-                "bestell_nr": bestell_nr,
-                "message": "Einträge erfolgreich ausgetragen",  # Success message
-                "alarm": clinic,
-                "geld": float(remaining_funds),  # Remaining budget (negative)
-                "unlock": achievement_level
-            })
-
-        # Step 7: Default case — render success message
+            # If there is at least one entry in "dne" then it uses this output
+            if dne:
+                dne = dne[:-2]
+                return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "dne": dne,
+                    "unlock": ach
+                })
+            # Checks if column "investmittel_übrig_in_euro" from Investmittelplan is below 0
+            check = Investmittelplan.objects.values_list('investmittel_übrig_in_euro').get(klinik_ou=klinik)
+            if float(check[0]) < 0:
+                    return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "message": "Einträge erfolgreich ausgetragen",
+                    "alarm": klinik,
+                    "geld": float(check[0]),
+                    "unlock": ach
+                })
+            else:    
+                return render(request, "webapplication/handout_lager_all.html", {
+                    "bestell_nr": bestell_nr,
+                    "message": "Einträge erfolgreich ausgetragen",
+                    "unlock": ach
+                })
         return render(request, "webapplication/handout_lager_all.html", {
-            "bestell_nr": bestell_nr,
-            "message": "Einträge erfolgreich ausgetragen",
-            "unlock": achievement_level
+            "bestell_nr": bestell_nr
         })
-
-    # Step 8: Render initial view for GET requests (form loading)
-    return render(request, "webapplication/handout_lager_all.html", {
-        "bestell_nr": bestell_nr
-    })
 
 # View Function that handles the "Rückgabe" of already "ausgegebenen" entries in Lagerliste
 def rückgabe(request):
-    # Redirects users with permission level '1' away from this view
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
-
-    if request.method == 'POST':
-        index = 0  # Iteration counter to collect submitted items
-        empty_count = 0  # Counter for blank fields to limit unnecessary iterations
-        achievement_level = 0  # Achievement unlock level
-        submitted_items = []  # List to collect all submitted Inventarnummern
-        dne_items = []  # Inventarnummern not found in database
-        already_returned = []  # Inventarnummern that were not issued
-
-        # Status flags for Rückgabe (return)
-        ausgegeben = 0  # Marking item as 'not issued'
-        herausgeber_reset = None
-        ausgabe_reset = None
-        klinik_reset = None
-
-        # Loop to extract up to 50 entries from POST data
-        while True:
-            value = request.POST.get(str(index), False)
-            if value:
-                submitted_items.append(value)
-                empty_count = 0  # Reset empty streak if value found
-            else:
-                empty_count += 1
-                if empty_count == 50:  # Stop if 50 consecutive empty values
-                    break
-            index += 1
-
-        # Process each Inventarnummer
-        # Iterate through each submitted inventory number
-        for inventarnummer in submitted_items:
-            try:
-                # Attempt to retrieve the Lagerliste entry (inventory item) by its primary key (inventory number)
-                item = Lagerliste.objects.get(pk=inventarnummer)
-
-                # Convert 'ausgegeben' to an integer for reliable comparison
-                # If the item is not currently marked as issued (ausgegeben == 1), then it cannot be returned
-                if int(item.ausgegeben) != 1:
-                    # Append the inventory number to the list of items that are already returned
-                    already_returned.append(inventarnummer)
-                    continue  # Skip to the next item in the loop
-
-                # Retrieve the related order number from the Lagerliste item
-                bestell_nr = item.bestell_nr_field
-
-                # Retrieve the unit price of the item from the order list using the bestell_nr
-                preis_pro_stueck = BestellListe.objects.get(pk=bestell_nr).preis_pro_stück
-
-                # Retrieve the organizational unit (OU) where the item was issued
-                klinik_ou = item.klinik
-
-                # Get the OU ID from the OU table using the clinic short name (e.g., "CHM", "RAD", etc.)
-                ou_id = Ou.objects.get(ou=klinik_ou).ou_id
-
-                # Retrieve the current year's active investment entry for the specific OU
-                invest_entry = Invest.objects.get(
-                    ou_id=ou_id,
-                    typ="Aktiv",       # We only deal with active budget entries
-                    jahr=this_year     # Only the current year is relevant
-                )
-
-                # Add the unit price back to the remaining budget (investmittel_übrig),
-                # because the item has been returned and is no longer counted as spent
-                invest_entry.investmittel_übrig += preis_pro_stueck
-
-                # Subtract the unit price from the amount already spent (investmittel_verausgabt)
-                invest_entry.investmittel_verausgabt -= preis_pro_stueck
-
-                # Save the updated financial records
-                invest_entry.save()
-
-                # Update the Lagerliste item to reflect it is no longer issued
-                item.ausgegeben = 0                 # Mark as not issued
-                item.herausgeber = None             # Clear the user who issued it
-                item.klinik = None                  # Clear the clinic OU association
-                item.ausgabe = None                 # Clear the issue date
-                item.save()                         # Persist the changes to the database
-
-                # Update the user’s achievements for returning items
-                # Either retrieve the existing record or create a new one
-                achievement_record, _ = Achievements.objects.get_or_create(user=request.user)
-
-                # If the return count is None (never set), initialize it
-                if achievement_record.rueckgabe_count is None:
-                    achievement_record.rueckgabe_count = 1
+    else:
+        if request.method == 'POST':
+            x = 0
+            c = 0
+            ach = 0
+            list = []
+            ausgegeben = 0
+            ausgabe = ""
+            herausgeber = User.objects.get(pk=1)
+            fail = ""
+            dne = ""
+            # Appends all entries in the obejct "list"
+            while True:
+                check = request.POST.get(f"{x}", False)
+                if check:
+                    list.append(request.POST[f"{x}"])
+                    x = x + 1
                 else:
-                    # Otherwise, increment the return counter
-                    achievement_record.rueckgabe_count += 1
-
-                # Determine the achievement level based on the return count
-                if achievement_record.rueckgabe_count == 10:
-                    achievement_level = 1
-                elif achievement_record.rueckgabe_count == 50:
-                    achievement_level = 2
-                elif achievement_record.rueckgabe_count == 150:
-                    achievement_level = 3
-                else:
-                    achievement_level = achievement_record.rueckgabe_achievement or 0  # Default or existing level
-
-                # Update the user's achievement level
-                achievement_record.rueckgabe_achievement = achievement_level
-
-                # Save the updated achievement record
-                achievement_record.save()
-
-            # If the inventory number doesn't exist in the Lagerliste, add it to the "does not exist" list
-            except Lagerliste.DoesNotExist:
-                dne_items.append(inventarnummer)
-                continue
-
-            # If the user is not properly logged in or a value error occurs, redirect them to login
-            except ValueError:
-                return render(request, "webapplication/login.html", {
-                    "message": "Sie sind nicht angemeldet!"
+                    x = x + 1
+                    c = c + 1
+                    if c == 50:
+                        break
+            # "Rückgabe" of the entries in "list"
+            for _ in list:
+                inventarnummer = str(_)
+                try:
+                    rueckgabe_count = Achievements.objects.filter(user=request.user).values_list('rueckgabe_count')
+                    klinik_ou = Lagerliste.objects.values_list('klinik').get(pk=inventarnummer)[0]
+                    ausgabe_check = str(Lagerliste.objects.values_list('ausgegeben').get(pk=inventarnummer))
+                    # Checks if entry isnt already "zurückgegeben"
+                    if ausgabe_check[0] in "('1',)":
+                        _ = Lagerliste.objects.values_list('bestell_nr_field').get(pk=inventarnummer)
+                        temp = BestellListe.objects.values_list('preis_pro_stück').get(pk=_[0])
+                        ou_id = Ou.objects.values_list('ou_id').filter(ou=klinik_ou)
+                        inv_id = Invest.objects.values_list('id').filter(ou_id=str(ou_id[0]).replace("(", "").replace(",)", "")).filter(typ="Aktiv").filter(jahr=this_year)
+                        __ = Invest.objects.values_list('investmittel_übrig').get(pk=str(inv_id[0]).replace("(", "").replace(",)", ""))
+                        ____ = Invest.objects.values_list('investmittel_verausgabt').get(pk=str(inv_id[0]).replace("(", "").replace(",)", ""))
+                        # Adding the "preis_pro_stück" of the entries in "list" to the column "investmittel_übrig_in_euro" of the previously selected "ou" in Investmittelplan
+                        abzug = __[0] + temp[0]
+                        addition = ____[0] - temp[0]
+                        abrechnung = Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_übrig': abzug})
+                        aufrechnung = Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_verausgabt': addition})
+                        # Updating the information of the "zurückgegebenen" entries in Lagerliste
+                        ausgeben = Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'ausgegeben': ausgegeben})
+                        ausgeben2 = Lagerliste.objects.filter(inventarnummer=inventarnummer).update(herausgeber=None, klinik=None, ausgabe=None)
+                        if rueckgabe_count:
+                            temp = str(rueckgabe_count[0]).replace('(', '').replace(',)', '')
+                            if temp == "None":
+                                new = 0
+                                achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 1, 'rueckgabe_achievement': 0})
+                            else:
+                                new = int(str(rueckgabe_count[0]).replace('(', '').replace(',)', '')) + 1
+                                achievement_count = Achievements.objects.filter(user=request.user).update(rueckgabe_count=new)
+                        else:
+                            new = 0
+                            achievement_count = Achievements.objects.update_or_create(user=request.user, defaults={'lager_count': 0, 'lager_achievement': 0, 'bestell_count': 0, 'bestell_achievement': 0, 'handout_count': 0, 'handout_achievement': 0, 'rueckgabe_count': 1, 'rueckgabe_achievement': 0})
+                        if new == 10:
+                            ach = 1
+                        if new == 50:
+                            ach = 2
+                        if new == 150:
+                            ach = 3
+                    # Output if entry is already "zurückgegeben"
+                    else:
+                        fail = fail + inventarnummer + ", "
+                        continue
+                # If entry does not exist in Lagerliste then it gets appended to the variable "dne"
+                except ObjectDoesNotExist:
+                    dne = dne + inventarnummer + ", "
+                    continue
+                except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
+            if ach == 1:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement=1)
+            if ach == 2:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement=2)
+            if ach == 3:
+                achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement=3)
+            # Output if there is at least one entry in fail then it uses this output
+            if fail:
+                fail = fail[:-2]
+                return render(request, "webapplication/rückgabe.html", {
+                    "fail": fail,
+                    "dne": dne,
+                    "unlock": ach
                 })
-
-        # Prepare output based on errors or success
-        context = {
-            "unlock": achievement_level
-        }
-
-        if already_returned:
-            context["fail"] = ", ".join(already_returned)
-
-        if dne_items:
-            context["dne"] = ", ".join(dne_items)
-
-        if not already_returned and not dne_items:
-            context["message"] = "Geräte erfolgreich zurückgegeben"
-
-        return render(request, "webapplication/rückgabe.html", context)
-
-    # For GET request, show empty form
-    return render(request, "webapplication/rückgabe.html")
+            # If there is at least one entry in "dne" then it uses this output
+            if dne:
+                dne = dne[:-2]
+                return render(request, "webapplication/rückgabe.html", {
+                    "dne": dne,
+                    "unlock": ach
+                })
+            return render(request, "webapplication/rückgabe.html", {
+                "message": "Geräte erfolgreich zurückgegeben",
+                "unlock": ach
+            }) 
+        return render(request, "webapplication/rückgabe.html")
 
 # View Function that proscesses the deletion of all entries with a specific Bestell_Nr. in Lagerliste
 def löschen_lager(request, bestell_nr):
@@ -799,6 +677,88 @@ def löschen_lager(request, bestell_nr):
                 return HttpResponseRedirect(reverse('detail_lager', args=[bestell_nr]))
         return render(request, "webapplication/löschen_lager.html", {
             "bestell_nr": bestell_nr
+        })
+
+def lager_standard(request):
+    lager_standard = Lager_Standard.objects.values("id", "sap_nr", "name", "modell", "spezifikation", "menge", "kommentar")
+    return render(request, "webapplication/lager_standard.html", {
+        "lager_standard": lager_standard
+    })
+
+def create_lager_standard(request):
+    if request.method == "POST":
+        sap_nr = request.POST["sap_nr"]
+        name = request.POST["name"]
+        modell = request.POST["modell"]
+        spezi = request.POST["spezifikation"]
+        menge = request.POST["menge"]
+        kommentar = request.POST["kommentar"]
+        
+        Lager_Standard.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezi, menge=menge, kommentar=kommentar)
+        
+        return render(request, "webapplication/create_lager_standard.html", {
+            "message": "Artikel erfolgreich angelegt!"
+        })
+    else:
+        return render(request, "webapplication/create_lager_standard.html")
+
+def update_lager_standard(request, id):
+    lager_standard = Lager_Standard.objects.values("menge", "kommentar").filter(id=id)
+    old_menge = Lager_Standard.objects.values_list("menge").filter(id=id)
+    
+    if request.method == "POST":
+        if request.POST["add_menge"]:
+            add_menge = request.POST["add_menge"]
+            menge = int(add_menge) + int(str(old_menge[0]).replace("(", "").replace(",)", ""))
+            Lager_Standard.objects.update_or_create(id=id, defaults={'menge': menge})
+            
+        if request.POST["remove_menge"]:
+            remove_menge = request.POST["remove_menge"]
+            herausgeber = request.user
+            ausgabe = timezone.now()
+            info = Lager_Standard.objects.values_list("sap_nr", "name", "modell", "spezifikation", "kommentar").filter(id=id)
+            sap_nr = str(info[0][0]).replace("(", "").replace(",)", "")
+            name = str(info[0][1]).replace("(", "").replace(",)", "")
+            modell = str(info[0][2]).replace("(", "").replace(",)", "")
+            spezifikation = str(info[0][3]).replace("(", "").replace(",)", "")
+            kommentar = str(info[0][4]).replace("(", "").replace(",)", "")
+            menge = int(str(old_menge[0]).replace("(", "").replace(",)", "")) - int(remove_menge)
+            if menge < 0:
+                return render(request, "webapplication/update_lager_standard.html", {
+                    "id": id,
+                    "lager_standard": lager_standard,
+                    "alert": "Nicht genügend Artikelmenge verfügbar"
+                })
+            else:
+                Lager_Standard.objects.update_or_create(id=id, defaults={'menge': menge})
+                Lager_Standard_Entry.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezifikation, menge=str(remove_menge), kommentar=kommentar, ausgabe=ausgabe, herausgeber=herausgeber)
+
+        if request.POST["kommentar"]:
+            kommentar = request.POST["kommentar"]
+            Lager_Standard.objects.update_or_create(id=id, defaults={'kommentar': kommentar})
+        
+        return render(request, "webapplication/update_lager_standard.html", {
+            "id": id,
+            "lager_standard": lager_standard,
+            "message": "Artikel erfolgreich angepasst!"
+        })
+    else:
+        return render(request, "webapplication/update_lager_standard.html", {
+            "id": id,
+            "lager_standard": lager_standard
+        })
+
+def löschen_lager_standard(request, id):
+    if request.method == "POST":
+        if request.POST["confirm"] == "yes":
+            Lager_Standard.objects.get(pk=id).delete()
+        else:
+            return render(request, "webapplication/lager_standard.html", {
+                "lager_standard": Lager_Standard.objects.values("menge", "kommentar").filter(id=id)
+            })
+    else:
+        return render(request, "webapplication/löschen_lager_standard.html", {
+            "id": id
         })
 
 # View Function that represents the content of Lagerliste_ohne_Invest
@@ -1020,7 +980,7 @@ def update(request, bestell_nr):
         files = Download.objects.all()
         nr = bestell_nr
         if request.method == "POST":
-            items = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'menge', 'preis_pro_stück', 'spezifikation', 'geliefert_anzahl', 'zuweisung').get(pk=nr)
+            items = BestellListe.objects.values_list('sap_bestell_nr_field', 'modell', 'typ', 'menge', 'preis_pro_stück', 'spezifikation', 'geliefert_anzahl', 'zuweisung', 'investmittel', 'geliefert').get(pk=nr)
             sap_bestell_nr_field = request.POST["sap_bestell_nr_field"] or items[0]
             modell = request.POST["modell"] or items[1]
             typ = request.POST["typ"] or items[2]
@@ -1029,9 +989,10 @@ def update(request, bestell_nr):
             spezi = request.POST["spezifikation"] or items[5]
             geliefert_anzahl = request.POST["geliefert_anzahl"] or items[6]
             zuweisung = request.POST["zuweisung"] or items[7]
-            geliefert = 1
+            geliefert = items[9]
             anzahl = int(BestellListe.objects.values_list('geliefert_anzahl').get(pk=bestell_nr)[0])
             link = request.POST["link"] or ' '
+            investmittel = items[8]
             update_ach = Achievements.objects.filter(user=request.user).values_list('update_achievement')
             ach = 0
             
@@ -1137,7 +1098,7 @@ def profile(request, user_id):
         username = user_name[0]
         return render(request, "webapplication/profile.html", {
             "user_id": user_id,
-            "bestell_liste": BestellListe.objects.all(),
+            "lager_standard_entry": Lager_Standard_Entry.objects.all(),
             "user_name": request.user,
             "username": username,
             "users": user,
@@ -1195,6 +1156,53 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
         })
 
 def some_view(request):
+    ou = Ou.objects.values_list("ou")
+    preis = 0.00
+    anfang = 0.00
+    übrig = 0.00
+    for _ in ou:
+        gesamt = 0.00
+        übrig = 0.00
+        _ = str(_).replace("(", "").replace(",)", "")
+        ausgetragen = Lagerliste.objects.values_list("bestell_nr_field").filter(ausgegeben=1).filter(klinik=_).filter(ausgabe__year=2025)
+        inv_id = Invest.objects.values_list("id").filter(jahr=2025).filter(typ="Aktiv").filter(ou_id__ou=_)
+        for item in ausgetragen:
+            item = str(item).replace("(", "").replace(",)", "").replace("'", "")
+            preis = BestellListe.objects.values_list("preis_pro_stück").filter(sap_bestell_nr_field=item)
+            gesamt = gesamt + float(str(preis[0]).replace("(Decimal('", "").replace("'),)", ""))
+            gesamt = round(gesamt, 2)
+        anfang = Invest.objects.values_list("investmittel_gesamt").filter(jahr=2025).filter(typ="Aktiv").filter(ou_id__ou=_)
+        übrig = float(str(anfang[0]).replace("(Decimal('", "").replace("'),)", "")) - gesamt
+        übrig = round(übrig, 2)
+        Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={"investmittel_verausgabt": gesamt})
+        Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={"investmittel_übrig": übrig})
+    
+    # x = 0
+    # Entries = Detail_Investmittelplan_Soll.objects.values_list("ou_id__ou", "typ", "modell", "spezifikation", "preis_pro_stück", "menge").filter(jahr=2026)
+    
+    # mappe1 = open('/media/daten/Invest/Detail_Investplanung_2026.csv', 'w')
+    # f = csv.writer(mappe1)
+    # f.writerow(["OU", "Typ", "Modell", "Spezifikation", "Preis pro Stück", "Menge"])
+
+    # for _ in Entries:
+    #     f.writerow([Entries[x][0], Entries[x][1], Entries[x][2], Entries[x][3], Entries[x][4], Entries[x][5]])
+    #     x = x + 1
+    
+    # mappe1.close()
+    
+    # ous = Ou.objects.values_list("ou").exclude(ou_id=1)
+    # for ou in ous:
+    #     ou = str(ou).replace("(", "").replace(",)", "")
+    #     mittel = Detail_Investmittelplan_Soll.objects.values_list("menge", "preis_pro_stück").filter(ou_id__ou=ou).filter(jahr=2026)
+    #     gesamt_mittel = 0.00
+    #     for _ in mittel:
+    #         menge = int(_[0])
+    #         preis = float(_[1])
+    #         gesamt_mittel = gesamt_mittel + (menge * preis)
+    #     Inv_id = Invest.objects.values_list("id").filter(ou_id__ou=ou).filter(jahr=2026).filter(typ="Planung")
+    #     Inv_id = str(Inv_id[0]).replace("(", "").replace(",)", "")
+    #     Invest.objects.update_or_create(id=Inv_id, defaults={'investmittel_gesamt': gesamt_mittel})
+            
     # zeile = ""
     # jahr = 2026
     # ous = Ou.objects.values_list('ou_id', 'ou').distinct()
@@ -1245,7 +1253,9 @@ def some_view(request):
     
     # mappe1.close()
 
-    return render(request, "webapplication/csv.html")
+    return render(request, "webapplication/csv.html", {
+        "message": übrig
+    })
 
 def download(request, typ, input):
     files = Download.objects.all()
@@ -1489,6 +1499,8 @@ def detail_invest_soll(request, ou, jahr):
     })
 
 def create_invest_soll(request, ou, jahr):
+    ou_id = Ou.objects.values_list('ou_id').filter(ou=ou)
+    ou_invsoll = Ou.objects.get(ou_id=str(ou_id[0]).replace("(", "").replace(",", "").replace(")", ""))
     if request.method == "POST":
         ou_id = Ou.objects.values_list('ou_id').filter(ou=ou)
         ou_invsoll = Ou.objects.get(ou_id=str(ou_id[0]).replace("(", "").replace(",", "").replace(")", ""))
@@ -1496,16 +1508,16 @@ def create_invest_soll(request, ou, jahr):
         typ = request.POST["typ"]
         modell = request.POST["modell"]
         menge = request.POST["menge"]
-        preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(",", ".")
+        preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(".", "").replace(",", ".")
         admin = request.user
         spezifikation = request.POST["spezifikation"]
         try:
             invest_planung = Detail_Investmittelplan_Soll.objects.create(ou_id=ou_invsoll, jahr=jahr, typ=typ, modell=modell, menge=menge, preis_pro_stück=preis_pro_stück, admin=admin, spezifikation=spezifikation)
-            preis = Detail_Investmittelplan_Soll.objects.values_list('preis_pro_stück').filter(ou_id=ou_invsoll)
-            meng = Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_id=ou_invsoll)
-            length = len(preis) - 1
-            gesamt = float(str(preis[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(meng[length]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
-            jetzt = Invest.objects.values_list('investmittel_gesamt').filter(ou_id=ou_invsoll).filter(typ="Planung").filter(jahr=this_year)
+            #preis = Detail_Investmittelplan_Soll.objects.values_list('preis_pro_stück').filter(ou_id=ou_invsoll).filter(jahr=jahr)
+            #meng = Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_id=ou_invsoll).filter(jahr=jahr)
+            #length = len(preis) - 1
+            gesamt = preis_pro_stück * menge
+            jetzt = Invest.objects.values_list('investmittel_gesamt').filter(ou_id=ou_invsoll).filter(typ="Planung").filter(jahr=jahr)
             neu = float(str(jetzt[0]).replace("(Decimal('", "").replace("'),)", "")) + gesamt
             Invest.objects.update_or_create(id = str(id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu})
             return render(request, "webapplication/create_invest_soll.html", {
@@ -1521,7 +1533,8 @@ def create_invest_soll(request, ou, jahr):
             })
     return render(request, "webapplication/create_invest_soll.html", {
         "ou": ou,
-        "jahr": jahr
+        "jahr": jahr,
+        "message": Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_id=ou_invsoll).filter(jahr=jahr)
     })
 
 def update_detail_invest_soll(request, ou, id, jahr):
@@ -1530,10 +1543,10 @@ def update_detail_invest_soll(request, ou, id, jahr):
         modell = request.POST["modell"] or items[0]
         typ = request.POST["typ"] or items[1]
         menge = str(request.POST["menge"]).replace("-", "") or items[2]
-        preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(",", ".") or items[3]
+        preis_pro_stück = str(request.POST["preis_pro_stück"]).replace(".", "").replace(",", ".") or items[3]
         spezifikation = request.POST["spezifikation"] or items[4]
         ou_id = Ou.objects.values_list('ou_id').filter(ou=ou)
-        inv_id = Invest.objects.values_list("id").filter(ou_id__in=ou_id).filter(typ="Planung").filter(jahr=this_year)
+        inv_id = Invest.objects.values_list("id").filter(ou_id__in=ou_id).filter(typ="Planung").filter(jahr=jahr)
 
         preis_alt = Detail_Investmittelplan_Soll.objects.values_list("preis_pro_stück").filter(id=id)
         menge_alt = Detail_Investmittelplan_Soll.objects.values_list("menge").filter(id=id)
@@ -1541,14 +1554,14 @@ def update_detail_invest_soll(request, ou, id, jahr):
         gesamt_alt = float(str(preis_alt[length_alt]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(menge_alt[length_alt]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
         jetzt_alt = Invest.objects.values_list('investmittel_gesamt').get(id=str(inv_id[0]).replace("(", "").replace(",)", ""))
         neu_alt = float(jetzt_alt[0]) - gesamt_alt
-        Invest.objects.update_or_create(id = str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_alt})
+        #Invest.objects.update_or_create(id = str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_alt})
         update = Detail_Investmittelplan_Soll.objects.filter(id=id).update(modell=modell, typ=typ, menge=menge, preis_pro_stück=preis_pro_stück, spezifikation=spezifikation)
-        preis_neu = Detail_Investmittelplan_Soll.objects.values_list("preis_pro_stück").filter(id=id)
-        menge_neu = Detail_Investmittelplan_Soll.objects.values_list("menge").filter(id=id)
-        length_neu = len(preis_neu) - 1
-        gesamt_neu = float(str(preis_neu[length_neu]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", "")) * float(str(menge_neu[length_neu]).replace("(", "").replace(")", "").replace("Decimal", "").replace("'", "").replace(",", ""))
-        jetzt_neu = Invest.objects.values_list('investmittel_gesamt').get(id=str(inv_id[0]).replace("(", "").replace(",)", ""))
-        neu_neu = float(jetzt_neu[0]) + gesamt_neu
+        #preis_neu = Detail_Investmittelplan_Soll.objects.values_list("preis_pro_stück").filter(id=id)
+        #menge_neu = Detail_Investmittelplan_Soll.objects.values_list("menge").filter(id=id)
+        #length_neu = len(preis_neu) - 1
+        gesamt_neu = float(preis_pro_stück) * int(menge)
+        #jetzt_neu = Invest.objects.values_list('investmittel_gesamt').get(id=str(inv_id[0]).replace("(", "").replace(",)", ""))
+        neu_neu = float(neu_alt) + gesamt_neu
         Invest.objects.update_or_create(id = str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={'investmittel_gesamt': neu_neu})
 
         if menge == "0":

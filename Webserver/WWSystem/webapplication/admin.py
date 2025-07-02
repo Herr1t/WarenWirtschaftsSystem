@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements, Download, Investmittelplan_Alt, Invest
+from .models import Lagerliste, BestellListe, Investmittelplan, User, Lagerliste_ohne_Invest, Detail_Investmittelplan_Soll, Investmittelplan_Soll, Achievements, Download, Investmittelplan_Alt, Invest, Lager_Standard, Lager_Standard_Entry
 # Register your models here.
 
 class Achievements_SollAdmin(admin.ModelAdmin):
@@ -22,6 +22,14 @@ class Bestell_ListeAdmin(admin.ModelAdmin):
     list_display = ("sap_bestell_nr_field", "modell", "typ", "menge", "preis_pro_stück", "spezifikation", "zuweisung", "link", "investmittel", "bearbeitet", "ersteller", "geliefert", "geliefert_anzahl")
     list_filter = ("ersteller", "investmittel")
     search_fields = ("sap_bestell_nr_field", "typ")
+
+class Lager_StandardAdmin(admin.ModelAdmin):
+    list_display = ("id", "sap_nr", "name", "modell", "spezifikation", "menge", "kommentar")
+    search_fields = ("sap_nr", )
+
+class Lager_Standard_EntryAdmin(admin.ModelAdmin):
+    list_display = ("id", "sap_nr", "name", "modell", "spezifikation", "menge", "kommentar", "herausgeber", "ausgabe")
+    search_fields = ("sap_nr", "herausgeber")
 
 class LagerlisteAdmin(admin.ModelAdmin):
     list_display = ("inventarnummer", "klinik", "typ", "modell", "spezifikation", "zuweisung", "bestell_nr_field", "herausgeber", "ausgabe", "ausgegeben")
@@ -59,3 +67,5 @@ admin.site.register(Achievements, Achievements_SollAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Download)
 admin.site.register(Investmittelplan_Alt, Investmittelpan_AltAdmin)
+admin.site.register(Lager_Standard, Lager_StandardAdmin)
+admin.site.register(Lager_Standard_Entry, Lager_Standard_EntryAdmin)

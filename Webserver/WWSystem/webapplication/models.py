@@ -11,6 +11,9 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     pass
 
+    def __str__(self):
+        return str(self.username)
+
 class Ou(models.Model):
     ou_id = models.AutoField(db_column='OU_id', primary_key=True)  # Field name made lowercase.
     ou = models.IntegerField(db_column='OU')  # Field name made lowercase.
@@ -78,6 +81,40 @@ class Lagerliste(models.Model):
     def __str__(self):
         return str(self.bestell_nr_field)
     
+class Lager_Standard(models.Model):
+    id = models.IntegerField(db_column='Id', primary_key=True)
+    sap_nr = models.CharField(db_column='SAP_Nr.', max_length=40)  # Field name made lowercase.
+    name = models.CharField(db_column='Name', max_length=40)  # Field name made lowercase.
+    modell = models.CharField(db_column='Modell', max_length=40)  # Field name made lowercase.
+    spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
+    menge = models.IntegerField(db_column='Menge')
+    kommentar = models.TextField(db_column='Kommentar', blank=True, null=True)
+    
+    class Meta:
+        managed = False
+        db_table = 'Lager_Standard'
+
+    def __str__(self):
+        return str(self.id)
+ 
+class Lager_Standard_Entry(models.Model):
+    id = models.IntegerField(db_column='Id', primary_key=True)
+    sap_nr = models.CharField(db_column='SAP_Nr.', max_length=40)  # Field name made lowercase.
+    name = models.CharField(db_column='Name', max_length=40)  # Field name made lowercase.
+    modell = models.CharField(db_column='Modell', max_length=40)  # Field name made lowercase.
+    spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
+    menge = models.IntegerField(db_column='Menge')
+    kommentar = models.TextField(db_column='Kommentar', blank=True, null=True)
+    ausgabe = models.DateTimeField(db_column='Ausgabe', blank=True, null=True)
+    herausgeber = models.ForeignKey(User, models.DO_NOTHING, db_column='Herausgeber', to_field='username', blank=True, null=True)
+    
+    class Meta:
+        managed = False
+        db_table = 'Lager_Standard_Entry'
+
+    def __str__(self):
+        return str(self.id)
+
 class Lagerliste_ohne_Invest(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True)  # Field name made lowercase.
     typ = models.CharField(db_column='Typ', max_length=50)  # Field name made lowercase.
