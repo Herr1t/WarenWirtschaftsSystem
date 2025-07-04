@@ -50,12 +50,12 @@
             </div>
             <div class="form-group" style="display: flex; gap: 15px; align-items: center; margin-top: 10px;">
                 <text style="display: block; width: 150px;">Menge:</text>
-                <input style="flex: 1;" class="form-control" type="number" name="menge" id="menge" placeholder="{{ item.menge }}">
+                <input style="flex: 1;" class="form-control" type="text" inputmode="numeric" name="menge" id="menge" placeholder="{{ item.menge }}">
                 <span style="color: red;" id="mengeError" class="error"></span>
             </div>
             <div class="form-group" style="display: flex; gap: 15px; align-items: center; margin-top: 10px;">
                 <text style="display: block; width: 150px;">Preis pro Stück:</text>
-                <input style="flex: 1;" class="form-control" type="text" name="preis_pro_stück" placeholder="{{ item.preis_pro_stück }}">
+                <input style="flex: 1;" class="form-control" type="text" inputmode="numeric" pattern="\d*(\,|.\d*)?" name="preis_pro_stück" placeholder="{{ item.preis_pro_stück }}">
                 <span style="color: red;" id="preisError" class="error"></span>
             </div>
             <div class="form-group" style="display: flex; gap: 15px; align-items: center; margin-top: 10px;">
