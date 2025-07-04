@@ -76,6 +76,11 @@
                     <text style="display: block; width: 150px;">Anzahl geliefert:</text>
                     <input style="flex: 1;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
                 </div>
+            {% else %}
+                <div hidden class="form-group" style="display: flex; gap: 15px; align-items: center; margin-top: 10px;">
+                    <text style="display: block; width: 150px;">Anzahl geliefert:</text>
+                    <input style="flex: 1;" class="form-control" type="text" name="geliefert_anzahl" placeholder="{{ item.geliefert_anzahl }}">
+                </div>
             {% endif %}
             {% if message %}
                 <div class="alert alert-success" role="alert">{{ message }}</div>
