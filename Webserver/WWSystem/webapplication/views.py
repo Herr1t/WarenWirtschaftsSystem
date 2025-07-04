@@ -435,7 +435,7 @@ def handout_lager(request):
                     "unlock": ach
                 })
             # Checks if column "investmittel_übrig_in_euro" from Investmittelplan is below 0
-            check = Invest.objects.values_list('investmittel_übrig').filter(jahr=this_year).filter(typ="Aktiv").filter(ou=klinik)
+            check = Invest.objects.values_list('investmittel_übrig').filter(id=str(inv_id[0]).replace("(", "").replace(",)", ""))
             if float(str(check[0]).replace("(Decimal('", "").replace("'),)", "")) < 0:
                     return render(request, "webapplication/handout_lager.html", {
                     "message": "Einträge erfolgreich ausgetragen",
