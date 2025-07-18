@@ -632,6 +632,10 @@ def rückgabe(request):
                     return render(request, "webapplication/login.html", {
                         "message": "Sie sind nicht angemeldet!"
                     })
+                except IndexError:
+                    return render(request, "webapplication/rückgabe.html", {
+                        "message": "Gerät(e) ist/sind nicht ausgegeben!"
+                    })
             if ach == 1:
                 achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement=1)
             if ach == 2:
