@@ -634,7 +634,7 @@ def rückgabe(request):
                     })
                 except IndexError:
                     return render(request, "webapplication/rückgabe.html", {
-                        "message": "Gerät(e) ist/sind nicht ausgegeben!"
+                        "alert": "Gerät(e) ist/sind nicht ausgegeben!"
                     })
             if ach == 1:
                 achievement_unlock = Achievements.objects.filter(user=request.user).update(rueckgabe_achievement=1)
