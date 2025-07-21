@@ -85,7 +85,8 @@
                 var selectedUsername = this.value; // Get the selected username
                     
                 // Get all rows of the table
-                var rows = document.getElementById("myTable2").querySelectorAll('table tr');
+                var rows = document.getElementById("myTable").querySelectorAll('table tr');
+                var rows2 = document.getElementById("myTable2").querySelectorAll('table tr');
                 
                 // Loop through each row
                 rows.forEach(function(row, index) {
@@ -101,21 +102,9 @@
                         }
                     }
                 });
-            };
-            select.onchange();
-        };
 
-        window.onload = function() {
-            var select = document.getElementById('usernameSelect');
-            // Function to handle the change event of the select element
-            select.onchange = function() {
-                var selectedUsername = this.value; // Get the selected username
-                    
-                // Get all rows of the table
-                var rows = document.getElementById("myTable").querySelectorAll('table tr');
-                
                 // Loop through each row
-                rows.forEach(function(row, index) {
+                rows2.forEach(function(row, index) {
                     if (index !== 0) { // Skip header row
                         // Get the value of the username column in the current row
                         var usernameColumn = row.cells[5].textContent.trim(); // Assuming the username column is the second column (index 1)
