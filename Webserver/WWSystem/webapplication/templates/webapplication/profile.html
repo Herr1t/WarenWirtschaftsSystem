@@ -2,13 +2,10 @@
 {% block body %}
     <h1 class="header" style="text-align: center;">Profil Verlauf</h1>
     <input style="margin-left: 1.2%;" class="button" value="Achievements" type="button" onclick="window.location.href='{% url 'achievements' user.id %}'"></input>
-    <input style="margin-left: 1.2%;" class="button" value="Lagerliste ohne Invest" type="button" onclick="window.location.href='{% url 'profile_lager_ohne' user_id %}'"></input>
     <div>
-        <h2 style="float: left; margin-left: 1%;">Erstellte Bestellungen</h2>
-        <input style="float: left; margin-left: 26%;" class="searchbar1" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
+        <h2 style="float: left; margin-left: 1%;">Standardartikel</h2>
+        <input style="float: left; margin-left: 29.5%;" class="searchbar1" type="text" id="myInput" onkeyup="myFunction()" placeholder="Suchen...">
         <input style="float: left; margin-left: 1.25%;" class="searchbar1" type="text" id="myInput2" onkeyup="myFunction2()" placeholder="Suchen...">
-        <input style="float: left;" class="button" value="Heute" type="button" id="today" onclick="today2()">
-        <input style="float: left;" class="button" value="Alle" type="button" id="today" onclick="undo()">
         <select style="width: 7%; float: left; margin-top: 0.14cm; margin-left: 7px;" class="form-control" name="herausgeber" id="usernameSelect">
             <option value="{{ username }}">{{ username }}</option>
             {% for item in users %}
@@ -22,29 +19,25 @@
             <thead>
                 <tr style="position: sticky; top: 0; overflow: hidden;">
                     <th>SAP Bestell-Nr.</th>
+                    <th>Name</th>
                     <th>Modell</th>
-                    <th>Typ</th>
                     <th>Spezifikation</th>
-                    <th>Zuweisung</th>
-                    <th>Ersteller</th>
                     <th>Menge</th>
-                    <th>Anzahl Geliefert</th>
+                    <th>Herausgeber</th>
+                    <th>Ausgabe</th>
                 </tr>
             </thead>
             <tbody>
-            {% for item in bestell_liste %}
-                {% if user_name == item.ersteller %}
-                    <tr class="custom_row">
-                        <td>{{ item.sap_bestell_nr_field }}</td>
-                        <td>{{ item.modell }}</td>
-                        <td>{{ item.typ }}</td>
-                        <td>{{ item.spezifikation }}</td>
-                        <td>{{ item.zuweisung }}</td>
-                        <td>{{ item.ersteller }}</td>
-                        <td>{{ item.menge }}</td>
-                        <td>{{ item.geliefert_anzahl }}</td>
-                    </tr>
-                {% endif %}
+            {% for item in lager_standard_entry %}
+                <tr class="custom_row">
+                    <td>{{ item.sap_nr }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.modell }}</td>
+                    <td>{{ item.spezifikation }}</td>
+                    <td>{{ item.menge }}</td>
+                    <td>{{ item.herausgeber }}</td>
+                    <td>{{ item.ausgabe }}</td>
+                </tr>
             {% endfor %}
             </tbody>
         </table>
@@ -93,6 +86,33 @@
                     
                 // Get all rows of the table
                 var rows = document.getElementById("myTable2").querySelectorAll('table tr');
+                
+                // Loop through each row
+                rows.forEach(function(row, index) {
+                    if (index !== 0) { // Skip header row
+                        // Get the value of the username column in the current row
+                        var usernameColumn = row.cells[5].textContent.trim(); // Assuming the username column is the second column (index 1)
+                            
+                        // Check if the username matches the selected username
+                        if (usernameColumn === selectedUsername) {
+                            row.classList.remove("hidden"); // Show the row
+                        } else {
+                            row.classList.add("hidden"); // Hide the row
+                        }
+                    }
+                });
+            };
+            select.onchange();
+        };
+
+        window.onload = function() {
+            var select = document.getElementById('usernameSelect');
+            // Function to handle the change event of the select element
+            select.onchange = function() {
+                var selectedUsername = this.value; // Get the selected username
+                    
+                // Get all rows of the table
+                var rows = document.getElementById("myTable").querySelectorAll('table tr');
                 
                 // Loop through each row
                 rows.forEach(function(row, index) {
