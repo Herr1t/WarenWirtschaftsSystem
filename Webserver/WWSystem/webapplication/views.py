@@ -684,7 +684,7 @@ def löschen_lager(request, bestell_nr):
         })
 
 def lager_standard(request):
-    lager_standard = Lager_Standard.objects.values("id", "sap_nr", "name", "modell", "spezifikation", "menge", "kommentar")
+    lager_standard = Lager_Standard.objects.values("id", "sap_nr", "name", "modell", "spezifikation", "menge", "hersteller", "kommentar")
     return render(request, "webapplication/lager_standard.html", {
         "lager_standard": lager_standard
     })
@@ -696,9 +696,10 @@ def create_lager_standard(request):
         modell = request.POST["modell"]
         spezi = request.POST["spezifikation"]
         menge = request.POST["menge"]
+        hersteller = request.POST["hersteller"]
         kommentar = request.POST["kommentar"]
         
-        Lager_Standard.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezi, menge=menge, kommentar=kommentar)
+        Lager_Standard.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezi, menge=menge, hersteller=hersteller, kommentar=kommentar)
         
         return render(request, "webapplication/create_lager_standard.html", {
             "message": "Artikel erfolgreich angelegt!"
@@ -720,12 +721,13 @@ def update_lager_standard(request, id):
             remove_menge = request.POST["remove_menge"]
             herausgeber = request.user
             ausgabe = timezone.now()
-            info = Lager_Standard.objects.values_list("sap_nr", "name", "modell", "spezifikation", "kommentar").filter(id=id)
+            info = Lager_Standard.objects.values_list("sap_nr", "name", "modell", "spezifikation", "hersteller", "kommentar").filter(id=id)
             sap_nr = str(info[0][0]).replace("(", "").replace(",)", "")
             name = str(info[0][1]).replace("(", "").replace(",)", "")
             modell = str(info[0][2]).replace("(", "").replace(",)", "")
             spezifikation = str(info[0][3]).replace("(", "").replace(",)", "")
-            kommentar = str(info[0][4]).replace("(", "").replace(",)", "")
+            hersteller = str(info[0][4]).replace("(", "").replace(",)", "")
+            kommentar = str(info[0][5]).replace("(", "").replace(",)", "")
             menge = int(str(old_menge[0]).replace("(", "").replace(",)", "")) - int(remove_menge)
             if menge < 0:
                 return render(request, "webapplication/update_lager_standard.html", {
@@ -735,7 +737,7 @@ def update_lager_standard(request, id):
                 })
             else:
                 Lager_Standard.objects.update_or_create(id=id, defaults={'menge': menge})
-                Lager_Standard_Entry.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezifikation, menge=str(remove_menge), kommentar=kommentar, ausgabe=ausgabe, herausgeber=herausgeber)
+                Lager_Standard_Entry.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezifikation, menge=str(remove_menge), hersteller=hersteller, kommentar=kommentar, ausgabe=ausgabe, herausgeber=herausgeber)
 
         if request.POST["kommentar"]:
             kommentar = request.POST["kommentar"]

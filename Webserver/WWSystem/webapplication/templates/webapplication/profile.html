@@ -19,6 +19,7 @@
             <thead>
                 <tr style="position: sticky; top: 0; overflow: hidden;">
                     <th>SAP Bestell-Nr.</th>
+                    <th>Hersteller</th>
                     <th>Name</th>
                     <th>Modell</th>
                     <th>Spezifikation</th>
@@ -31,6 +32,7 @@
             {% for item in lager_standard_entry %}
                 <tr class="custom_row">
                     <td>{{ item.sap_nr }}</td>
+                    <td>{{ item.hersteller }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.modell }}</td>
                     <td>{{ item.spezifikation }}</td>
@@ -92,7 +94,7 @@
                 rows.forEach(function(row, index) {
                     if (index !== 0) { // Skip header row
                         // Get the value of the username column in the current row
-                        var usernameColumn = row.cells[5].textContent.trim(); // Assuming the username column is the second column (index 1)
+                        var usernameColumn = row.cells[6].textContent.trim(); // Assuming the username column is the second column (index 1)
                             
                         // Check if the username matches the selected username
                         if (usernameColumn === selectedUsername) {

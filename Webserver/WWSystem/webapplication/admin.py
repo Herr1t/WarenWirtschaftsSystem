@@ -24,11 +24,11 @@ class Bestell_ListeAdmin(admin.ModelAdmin):
     search_fields = ("sap_bestell_nr_field", "typ")
 
 class Lager_StandardAdmin(admin.ModelAdmin):
-    list_display = ("id", "sap_nr", "name", "modell", "spezifikation", "menge", "kommentar")
+    list_display = ("id", "sap_nr", "name", "modell", "spezifikation", "menge", "hersteller", "kommentar")
     search_fields = ("sap_nr", )
 
 class Lager_Standard_EntryAdmin(admin.ModelAdmin):
-    list_display = ("id", "sap_nr", "name", "modell", "spezifikation", "menge", "kommentar", "herausgeber", "ausgabe")
+    list_display = ("id", "sap_nr", "name", "modell", "spezifikation", "menge", "hersteller", "kommentar", "herausgeber", "ausgabe")
     search_fields = ("sap_nr", "herausgeber")
 
 class LagerlisteAdmin(admin.ModelAdmin):

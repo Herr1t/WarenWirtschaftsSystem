@@ -88,6 +88,7 @@ class Lager_Standard(models.Model):
     modell = models.CharField(db_column='Modell', max_length=40)  # Field name made lowercase.
     spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
     menge = models.IntegerField(db_column='Menge')
+    hersteller = models.CharField(db_column='Hersteller', max_length=50)
     kommentar = models.TextField(db_column='Kommentar', blank=True, null=True)
     
     class Meta:
@@ -104,6 +105,7 @@ class Lager_Standard_Entry(models.Model):
     modell = models.CharField(db_column='Modell', max_length=40)  # Field name made lowercase.
     spezifikation = models.TextField(db_column='Spezifikation', blank=True, null=True)  # Field name made lowercase.
     menge = models.IntegerField(db_column='Menge')
+    hersteller = models.CharField(db_column='Hersteller', max_length=50)
     kommentar = models.TextField(db_column='Kommentar', blank=True, null=True)
     ausgabe = models.DateTimeField(db_column='Ausgabe', blank=True, null=True)
     herausgeber = models.ForeignKey(User, models.DO_NOTHING, db_column='Herausgeber', to_field='username', blank=True, null=True)
