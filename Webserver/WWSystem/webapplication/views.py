@@ -1162,26 +1162,26 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
         })
 
 def some_view(request):
-    ou = Ou.objects.values_list("ou")
-    preis = 0.00
-    anfang = 0.00
-    übrig = 0.00
-    for _ in ou:
-        gesamt = 0.00
-        übrig = 0.00
-        _ = str(_).replace("(", "").replace(",)", "")
-        ausgetragen = Lagerliste.objects.values_list("bestell_nr_field").filter(ausgegeben=1).filter(klinik=_).filter(ausgabe__year=2025)
-        inv_id = Invest.objects.values_list("id").filter(jahr=2025).filter(typ="Aktiv").filter(ou_id__ou=_)
-        for item in ausgetragen:
-            item = str(item).replace("(", "").replace(",)", "").replace("'", "")
-            preis = BestellListe.objects.values_list("preis_pro_stück").filter(sap_bestell_nr_field=item)
-            gesamt = gesamt + float(str(preis[0]).replace("(Decimal('", "").replace("'),)", ""))
-            gesamt = round(gesamt, 2)
-        anfang = Invest.objects.values_list("investmittel_gesamt").filter(jahr=2025).filter(typ="Aktiv").filter(ou_id__ou=_)
-        übrig = float(str(anfang[0]).replace("(Decimal('", "").replace("'),)", "")) - gesamt
-        übrig = round(übrig, 2)
-        Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={"investmittel_verausgabt": gesamt})
-        Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={"investmittel_übrig": übrig})
+    # ou = Ou.objects.values_list("ou")
+    # preis = 0.00
+    # anfang = 0.00
+    # übrig = 0.00
+    # for _ in ou:
+    #     gesamt = 0.00
+    #     übrig = 0.00
+    #     _ = str(_).replace("(", "").replace(",)", "")
+    #     ausgetragen = Lagerliste.objects.values_list("bestell_nr_field").filter(ausgegeben=1).filter(klinik=_).filter(ausgabe__year=2025)
+    #     inv_id = Invest.objects.values_list("id").filter(jahr=2025).filter(typ="Aktiv").filter(ou_id__ou=_)
+    #     for item in ausgetragen:
+    #         item = str(item).replace("(", "").replace(",)", "").replace("'", "")
+    #         preis = BestellListe.objects.values_list("preis_pro_stück").filter(sap_bestell_nr_field=item)
+    #         gesamt = gesamt + float(str(preis[0]).replace("(Decimal('", "").replace("'),)", ""))
+    #         gesamt = round(gesamt, 2)
+    #     anfang = Invest.objects.values_list("investmittel_gesamt").filter(jahr=2025).filter(typ="Aktiv").filter(ou_id__ou=_)
+    #     übrig = float(str(anfang[0]).replace("(Decimal('", "").replace("'),)", "")) - gesamt
+    #     übrig = round(übrig, 2)
+    #     Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={"investmittel_verausgabt": gesamt})
+    #     Invest.objects.update_or_create(id=str(inv_id[0]).replace("(", "").replace(",)", ""), defaults={"investmittel_übrig": übrig})
     
     # x = 0
     # Entries = Detail_Investmittelplan_Soll.objects.values_list("ou_id__ou", "typ", "modell", "spezifikation", "preis_pro_stück", "menge").filter(jahr=2026)
@@ -1259,9 +1259,7 @@ def some_view(request):
     
     # mappe1.close()
 
-    return render(request, "webapplication/csv.html", {
-        "message": übrig
-    })
+    return render(request, "webapplication/frontpage.html")
 
 def download(request, typ, input):
     files = Download.objects.all()
