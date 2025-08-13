@@ -1384,24 +1384,21 @@ def InvestAktiv(request):
 
 # View Function that represents the content of Investmittelplan
 def invest(request):
-    if group_check(request.user) == '1':
-        return HttpResponseRedirect(reverse("investmittel_soll"))
+    files = Download.objects.all()
+    Jahre = Invest.objects.values('jahr').distinct()
+    typ = "invest_aktiv"
+    if reset_group_check(request.user) == '1':
+        allowed = 1
     else:
-        files = Download.objects.all()
-        Jahre = Invest.objects.values('jahr').distinct()
-        typ = "invest_aktiv"
-        if reset_group_check(request.user) == '1':
-            allowed = 1
-        else:
-            allowed = 0
-        
-        return render(request, "webapplication/invest.html", {
-            "files": files,
-            "allowed": allowed,
-            "Jahre": Jahre,
-            "rows": Invest.objects.values('ou_id__ou').filter(typ="Aktiv").distinct(),
-            "typ": typ
-        })
+        allowed = 0
+    
+    return render(request, "webapplication/invest.html", {
+        "files": files,
+        "allowed": allowed,
+        "Jahre": Jahre,
+        "rows": Invest.objects.values('ou_id__ou').filter(typ="Aktiv").distinct(),
+        "typ": typ
+    })
 
 def ModifyInvest(request):
     return getModifyInvest(request)
@@ -1442,44 +1439,41 @@ def modify_invest(request, jahr):
 
 # View Function that represents the detailed content of a selected "ou" which shows the entries that are related to said "ou" in Investmittelplan
 def detail_invest(request, klinik_ou, jahr):
-    if group_check(request.user) == '1':
-        return HttpResponseRedirect(reverse("investmittel_soll"))
-    else:
-        files = Download.objects.all()
+    files = Download.objects.all()
 
-        ou = klinik_ou
-        nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
-        detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück', 'ausgegeben_an').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
-        d_i_s = [{"typ": "Monitor", "menge": 0}, {"typ": "Notebook", "menge": 0}, {"typ": "Desktop-PC", "menge": 0}, {"typ": "Drucker", "menge": 0}, {"typ": "Scanner", "menge": 0}, {"typ": "Dockingstation", "menge": 0}, {"typ": "Diktiergerät", "menge": 0}, {"typ": "Transkription", "menge": 0}]            
-        d_i = [{"typ": "Monitor", "menge": 0}, {"typ": "Notebook", "menge": 0}, {"typ": "Desktop-PC", "menge": 0}, {"typ": "Drucker", "menge": 0}, {"typ": "Scanner", "menge": 0}, {"typ": "Dockingstation", "menge": 0}, {"typ": "Diktiergerät", "menge": 0}, {"typ": "Transkription", "menge": 0}]            
-        items_d_i_s = Detail_Investmittelplan_Soll.objects.values_list('typ', 'menge').filter(ou_id__ou=klinik_ou).filter(jahr=jahr)
-        items_d_i = Lagerliste.objects.select_related().values_list('bestell_nr_field', 'typ').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
-        
-        for item in items_d_i_s:
-            typ = str(item[0]).replace("(", "").replace(",)", "")
-            menge = str(item[1]).replace("(", "").replace(",)", "")
-            x = 0
-            for entry in d_i_s:
-                if entry["typ"] == typ:
-                    d_i_s[x]["menge"] = d_i_s[x]["menge"] + int(menge)
-                x = x + 1
-        
-        for item in items_d_i:
-            typ = str(item[1]).replace("(", "").replace(",)", "")
-            menge = str(item[2]).replace("(", "").replace(",)", "")
-            x = 0
-            for entry in d_i:
-                if entry["typ"] == typ:
-                    d_i[x]["menge"] = d_i[x]["menge"] + int(menge)
-                x = x + 1
-        
-        return render(request, "webapplication/detail_invest.html", {
-            "detail_invest": detail_invest,
-            "detail_invest_soll_geplant": d_i_s,
-            "detail_invest_soll_ausgegeben": d_i,
-            "klinik_ou": ou,
-            "files": files
-        })
+    ou = klinik_ou
+    nr = Lagerliste.objects.values_list('bestell_nr_field').filter(klinik=ou)
+    detail_invest = Lagerliste.objects.select_related().values('klinik', 'bestell_nr_field', 'modell', 'typ', 'spezifikation', 'bestell_nr_field__preis_pro_stück', 'ausgegeben_an').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
+    d_i_s = [{"typ": "Monitor", "menge": 0}, {"typ": "Notebook", "menge": 0}, {"typ": "Desktop-PC", "menge": 0}, {"typ": "Drucker", "menge": 0}, {"typ": "Scanner", "menge": 0}, {"typ": "Dockingstation", "menge": 0}, {"typ": "Diktiergerät", "menge": 0}, {"typ": "Transkription", "menge": 0}]            
+    d_i = [{"typ": "Monitor", "menge": 0}, {"typ": "Notebook", "menge": 0}, {"typ": "Desktop-PC", "menge": 0}, {"typ": "Drucker", "menge": 0}, {"typ": "Scanner", "menge": 0}, {"typ": "Dockingstation", "menge": 0}, {"typ": "Diktiergerät", "menge": 0}, {"typ": "Transkription", "menge": 0}]            
+    items_d_i_s = Detail_Investmittelplan_Soll.objects.values_list('typ', 'menge').filter(ou_id__ou=klinik_ou).filter(jahr=jahr)
+    items_d_i = Lagerliste.objects.select_related().values_list('bestell_nr_field', 'typ').filter(bestell_nr_field__in=nr[0:]).filter(klinik=ou).filter(ausgabe__year=jahr).annotate(Menge=Count("bestell_nr_field"))
+    
+    for item in items_d_i_s:
+        typ = str(item[0]).replace("(", "").replace(",)", "")
+        menge = str(item[1]).replace("(", "").replace(",)", "")
+        x = 0
+        for entry in d_i_s:
+            if entry["typ"] == typ:
+                d_i_s[x]["menge"] = d_i_s[x]["menge"] + int(menge)
+            x = x + 1
+    
+    for item in items_d_i:
+        typ = str(item[1]).replace("(", "").replace(",)", "")
+        menge = str(item[2]).replace("(", "").replace(",)", "")
+        x = 0
+        for entry in d_i:
+            if entry["typ"] == typ:
+                d_i[x]["menge"] = d_i[x]["menge"] + int(menge)
+            x = x + 1
+    
+    return render(request, "webapplication/detail_invest.html", {
+        "detail_invest": detail_invest,
+        "detail_invest_soll_geplant": d_i_s,
+        "detail_invest_soll_ausgegeben": d_i,
+        "klinik_ou": ou,
+        "files": files
+    })
     
 def InvestSoll(request):
     return getInvestSoll(request)
