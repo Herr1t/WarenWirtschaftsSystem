@@ -1538,7 +1538,6 @@ def create_invest_soll(request, ou, jahr):
     return render(request, "webapplication/create_invest_soll.html", {
         "ou": ou,
         "jahr": jahr,
-        "message": Detail_Investmittelplan_Soll.objects.values_list('menge').filter(ou_id=ou_invsoll).filter(jahr=jahr)
     })
 
 def update_detail_invest_soll(request, ou, id, jahr):
