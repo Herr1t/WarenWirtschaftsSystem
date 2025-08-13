@@ -179,6 +179,8 @@ def lager(request):
     # Check if the user is part of group '1' and redirect to a different page if true
     if group_check(request.user) == '1':
         return redirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
 
     # Retrieve all download files available to the user
     files = Download.objects.all()
@@ -284,6 +286,8 @@ def detail_lager(request, bestell_nr):
     # Check if the user is in the restricted group; redirect if so
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         # Store the provided BestellNr (order number) in 'nr'
         nr = bestell_nr
@@ -302,6 +306,8 @@ def create_lager(request):
     # Check if the user is in the restricted group; redirect if so
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
 
     # Check if the request method is POST (indicating form submission)
     if request.method == "POST":
@@ -340,6 +346,8 @@ def create_lager(request):
 def handout_lager(request):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         if request.method == "POST":
             x = 0
@@ -455,6 +463,8 @@ def handout_lager(request):
 def handout_lager_all(request, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         if request.method == 'POST':
             x = 0
@@ -558,6 +568,8 @@ def handout_lager_all(request, bestell_nr):
 def rückgabe(request):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         if request.method == 'POST':
             x = 0
@@ -667,6 +679,8 @@ def rückgabe(request):
 def löschen_lager(request, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         if request.method == 'POST':
             # Double checking if the user really wants to delete the selected entries
@@ -684,93 +698,115 @@ def löschen_lager(request, bestell_nr):
         })
 
 def lager_standard(request):
-    lager_standard = Lager_Standard.objects.values("id", "sap_nr", "name", "modell", "spezifikation", "menge", "hersteller", "kommentar")
-    return render(request, "webapplication/lager_standard.html", {
-        "lager_standard": lager_standard
-    })
-
-def create_lager_standard(request):
-    if request.method == "POST":
-        sap_nr = request.POST["sap_nr"]
-        name = request.POST["name"]
-        modell = request.POST["modell"]
-        spezi = request.POST["spezifikation"]
-        menge = request.POST["menge"]
-        hersteller = request.POST["hersteller"]
-        kommentar = request.POST["kommentar"]
-        
-        Lager_Standard.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezi, menge=menge, hersteller=hersteller, kommentar=kommentar)
-        
-        return render(request, "webapplication/create_lager_standard.html", {
-            "message": "Artikel erfolgreich angelegt!"
-        })
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
-        return render(request, "webapplication/create_lager_standard.html")
-
-def update_lager_standard(request, id):
-    lager_standard = Lager_Standard.objects.values("menge", "kommentar").filter(id=id)
-    old_menge = Lager_Standard.objects.values_list("menge").filter(id=id)
-    
-    if request.method == "POST":
-        if request.POST["add_menge"]:
-            add_menge = request.POST["add_menge"]
-            menge = int(add_menge) + int(str(old_menge[0]).replace("(", "").replace(",)", ""))
-            Lager_Standard.objects.update_or_create(id=id, defaults={'menge': menge})
-            
-        if request.POST["remove_menge"]:
-            remove_menge = request.POST["remove_menge"]
-            herausgeber = request.user
-            ausgabe = timezone.now()
-            info = Lager_Standard.objects.values_list("sap_nr", "name", "modell", "spezifikation", "hersteller", "kommentar").filter(id=id)
-            sap_nr = str(info[0][0]).replace("(", "").replace(",)", "")
-            name = str(info[0][1]).replace("(", "").replace(",)", "")
-            modell = str(info[0][2]).replace("(", "").replace(",)", "")
-            spezifikation = str(info[0][3]).replace("(", "").replace(",)", "")
-            hersteller = str(info[0][4]).replace("(", "").replace(",)", "")
-            kommentar = str(info[0][5]).replace("(", "").replace(",)", "")
-            menge = int(str(old_menge[0]).replace("(", "").replace(",)", "")) - int(remove_menge)
-            if menge < 0:
-                return render(request, "webapplication/update_lager_standard.html", {
-                    "id": id,
-                    "lager_standard": lager_standard,
-                    "alert": "Nicht genügend Artikelmenge verfügbar"
-                })
-            else:
-                Lager_Standard.objects.update_or_create(id=id, defaults={'menge': menge})
-                Lager_Standard_Entry.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezifikation, menge=str(remove_menge), hersteller=hersteller, kommentar=kommentar, ausgabe=ausgabe, herausgeber=herausgeber)
-
-        if request.POST["kommentar"]:
-            kommentar = request.POST["kommentar"]
-            Lager_Standard.objects.update_or_create(id=id, defaults={'kommentar': kommentar})
-        
-        return render(request, "webapplication/update_lager_standard.html", {
-            "id": id,
-            "lager_standard": lager_standard,
-            "message": "Artikel erfolgreich angepasst!"
-        })
-    else:
-        return render(request, "webapplication/update_lager_standard.html", {
-            "id": id,
+        lager_standard = Lager_Standard.objects.values("id", "sap_nr", "name", "modell", "spezifikation", "menge", "hersteller", "kommentar")
+        return render(request, "webapplication/lager_standard.html", {
             "lager_standard": lager_standard
         })
 
-def löschen_lager_standard(request, id):
-    if request.method == "POST":
-        if request.POST["confirm"] == "yes":
-            Lager_Standard.objects.get(pk=id).delete()
-        else:
-            return render(request, "webapplication/lager_standard.html", {
-                "lager_standard": Lager_Standard.objects.values("menge", "kommentar").filter(id=id)
-            })
+def create_lager_standard(request):
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
-        return render(request, "webapplication/löschen_lager_standard.html", {
-            "id": id
-        })
+        if request.method == "POST":
+            sap_nr = request.POST["sap_nr"]
+            name = request.POST["name"]
+            modell = request.POST["modell"]
+            spezi = request.POST["spezifikation"]
+            menge = request.POST["menge"]
+            hersteller = request.POST["hersteller"]
+            kommentar = request.POST["kommentar"]
+            
+            Lager_Standard.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezi, menge=menge, hersteller=hersteller, kommentar=kommentar)
+            
+            return render(request, "webapplication/create_lager_standard.html", {
+                "message": "Artikel erfolgreich angelegt!"
+            })
+        else:
+            return render(request, "webapplication/create_lager_standard.html")
+
+def update_lager_standard(request, id):
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    else:
+        lager_standard = Lager_Standard.objects.values("menge", "kommentar").filter(id=id)
+        old_menge = Lager_Standard.objects.values_list("menge").filter(id=id)
+        
+        if request.method == "POST":
+            if request.POST["add_menge"]:
+                add_menge = request.POST["add_menge"]
+                menge = int(add_menge) + int(str(old_menge[0]).replace("(", "").replace(",)", ""))
+                Lager_Standard.objects.update_or_create(id=id, defaults={'menge': menge})
+                
+            if request.POST["remove_menge"]:
+                remove_menge = request.POST["remove_menge"]
+                herausgeber = request.user
+                ausgabe = timezone.now()
+                info = Lager_Standard.objects.values_list("sap_nr", "name", "modell", "spezifikation", "hersteller", "kommentar").filter(id=id)
+                sap_nr = str(info[0][0]).replace("(", "").replace(",)", "")
+                name = str(info[0][1]).replace("(", "").replace(",)", "")
+                modell = str(info[0][2]).replace("(", "").replace(",)", "")
+                spezifikation = str(info[0][3]).replace("(", "").replace(",)", "")
+                hersteller = str(info[0][4]).replace("(", "").replace(",)", "")
+                kommentar = str(info[0][5]).replace("(", "").replace(",)", "")
+                menge = int(str(old_menge[0]).replace("(", "").replace(",)", "")) - int(remove_menge)
+                if menge < 0:
+                    return render(request, "webapplication/update_lager_standard.html", {
+                        "id": id,
+                        "lager_standard": lager_standard,
+                        "alert": "Nicht genügend Artikelmenge verfügbar"
+                    })
+                else:
+                    Lager_Standard.objects.update_or_create(id=id, defaults={'menge': menge})
+                    Lager_Standard_Entry.objects.create(sap_nr=sap_nr, name=name, modell=modell, spezifikation=spezifikation, menge=str(remove_menge), hersteller=hersteller, kommentar=kommentar, ausgabe=ausgabe, herausgeber=herausgeber)
+
+            if request.POST["kommentar"]:
+                kommentar = request.POST["kommentar"]
+                Lager_Standard.objects.update_or_create(id=id, defaults={'kommentar': kommentar})
+            
+            return render(request, "webapplication/update_lager_standard.html", {
+                "id": id,
+                "lager_standard": lager_standard,
+                "message": "Artikel erfolgreich angepasst!"
+            })
+        else:
+            return render(request, "webapplication/update_lager_standard.html", {
+                "id": id,
+                "lager_standard": lager_standard
+            })
+
+def löschen_lager_standard(request, id):
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    else:
+        if request.method == "POST":
+            if request.POST["confirm"] == "yes":
+                Lager_Standard.objects.get(pk=id).delete()
+            else:
+                return render(request, "webapplication/lager_standard.html", {
+                    "lager_standard": Lager_Standard.objects.values("menge", "kommentar").filter(id=id)
+                })
+        else:
+            return render(request, "webapplication/löschen_lager_standard.html", {
+                "id": id
+            })
 
 # View Function that represents the content of Lagerliste_ohne_Invest
 def lager_ohne_invest(request):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         Menge =  Lagerliste_ohne_Invest.objects.values_list('zuweisung', 'id')
         y = 0
@@ -786,37 +822,44 @@ def lager_ohne_invest(request):
         })
 
 def create_lager_ohne(request):
-    nr = BestellListe.objects.values('sap_bestell_nr_field').exclude(investmittel="Ja").exclude(geliefert=1)
-    
-    if request.method == "POST":
-        bestell_nr = request.POST["bestell_nr"]
-        bestellung = BestellListe.objects.values_list("menge", "typ", "modell", "spezifikation", "zuweisung").filter(sap_bestell_nr_field=bestell_nr)
-        menge = str(bestellung[0][0]).replace("(", "").replace(",)", "")
-        typ = str(bestellung[0][1]).replace("(", "").replace(",)", "")
-        modell = str(bestellung[0][2]).replace("(", "").replace(",)", "")
-        spezifikation = str(bestellung[0][3]).replace("(", "").replace(",)", "")
-        zuweisung = str(bestellung[0][4]).replace("(", "").replace(",)", "")
-        bestell_nr_field = BestellListe.objects.get(pk=bestell_nr)
-        i = 0
-        
-        while i < int(menge):
-            Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bestell_nr_field, ausgegeben=0)
-            i = i + 1
-        bestellung = BestellListe.objects.update_or_create(sap_bestell_nr_field=bestell_nr, defaults={'geliefert': 1})
-        
-        return render(request, "webapplication/create_lager_ohne.html", {
-            "bestell_nr": nr,
-            "message": "Einträge erfolgreich erstellt!"
-        })
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
-        return render(request, "webapplication/create_lager_ohne.html", {
-            "bestell_nr": nr
-        })
+        nr = BestellListe.objects.values('sap_bestell_nr_field').exclude(investmittel="Ja").exclude(geliefert=1)
+        
+        if request.method == "POST":
+            bestell_nr = request.POST["bestell_nr"]
+            bestellung = BestellListe.objects.values_list("menge", "typ", "modell", "spezifikation", "zuweisung").filter(sap_bestell_nr_field=bestell_nr)
+            menge = str(bestellung[0][0]).replace("(", "").replace(",)", "")
+            typ = str(bestellung[0][1]).replace("(", "").replace(",)", "")
+            modell = str(bestellung[0][2]).replace("(", "").replace(",)", "")
+            spezifikation = str(bestellung[0][3]).replace("(", "").replace(",)", "")
+            zuweisung = str(bestellung[0][4]).replace("(", "").replace(",)", "")
+            bestell_nr_field = BestellListe.objects.get(pk=bestell_nr)
+            i = 0
+            
+            while i < int(menge):
+                Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezifikation, zuweisung=zuweisung, bestell_nr_field=bestell_nr_field, ausgegeben=0)
+                i = i + 1
+            bestellung = BestellListe.objects.update_or_create(sap_bestell_nr_field=bestell_nr, defaults={'geliefert': 1})
+            
+            return render(request, "webapplication/create_lager_ohne.html", {
+                "bestell_nr": nr,
+                "message": "Einträge erfolgreich erstellt!"
+            })
+        else:
+            return render(request, "webapplication/create_lager_ohne.html", {
+                "bestell_nr": nr
+            })
 
 # View Function that handles the "austragung" from entries in Lagerliste_ohne_Invest
 def handout_lager_ohne(request, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         nr = bestell_nr
         if request.method == "POST":
@@ -873,6 +916,8 @@ def handout_lager_ohne(request, bestell_nr):
 def löschen_lager_ohne(request, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         if request.method == 'POST':
             # Double checking if the user really wants to delete the selected entries
@@ -893,6 +938,8 @@ def löschen_lager_ohne(request, bestell_nr):
 def bestell(request):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         x = 0
         files = Download.objects.all()
@@ -917,6 +964,8 @@ def bestell(request):
 def create_bestell(request):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         if request.method == "POST":
             bestell_nr = request.POST["sap_bestell_nr"]
@@ -982,6 +1031,8 @@ def create_bestell(request):
 def update(request, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         files = Download.objects.all()
         nr = bestell_nr
@@ -1071,6 +1122,8 @@ def update(request, bestell_nr):
 def löschen_bestell(request, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         if request.method == 'POST':
             # Double Checking if the user really wants to delete the entry
@@ -1098,6 +1151,8 @@ def löschen_bestell(request, bestell_nr):
 def profile(request, user_id):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         user_name = User.objects.values_list('username').get(pk=user_id)
         user = User.objects.values('username').exclude(pk=user_id).exclude(is_staff="0")
@@ -1115,6 +1170,8 @@ def profile(request, user_id):
 def achievements(request, user_id):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         achievements = Achievements.objects.all().filter(user=request.user)
         return render(request, "webapplication/achievements.html", {
@@ -1125,6 +1182,8 @@ def achievements(request, user_id):
 def profile_lager_ohne(request, user_id):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         user_name = User.objects.values_list('username').get(pk=user_id)
         username = user_name[0]
@@ -1138,6 +1197,8 @@ def profile_lager_ohne(request, user_id):
 def detail_lager_profile(request, user_id, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         user_name = User.objects.values_list('username').get(pk=user_id)
         username = user_name[0]
@@ -1151,6 +1212,8 @@ def detail_lager_profile(request, user_id, bestell_nr):
 def detail_profile_lager_ohne(request, user_id, bestell_nr):
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         user_name = User.objects.values_list('username').get(pk=user_id)
         username = user_name[0]
@@ -1349,6 +1412,8 @@ def investmittelplanung(request):
         return HttpResponseRedirect(reverse("investmittel"))
     elif reset_group_check(request.user) == '0':
         return HttpResponseRedirect(reverse("investmittel"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         Jahre = Invest.objects.values('jahr').distinct()
         if request.method == "POST":
@@ -1384,6 +1449,9 @@ def InvestAktiv(request):
 
 # View Function that represents the content of Investmittelplan
 def invest(request):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     files = Download.objects.all()
     Jahre = Invest.objects.values('jahr').distinct()
     typ = "invest_aktiv"
@@ -1408,6 +1476,8 @@ def modify_invest(request, jahr):
         return HttpResponseRedirect(reverse("investmittel"))
     elif reset_group_check(request.user) == '0':
         return HttpResponseRedirect(reverse("investmittel"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
     else:
         Jahre = Invest.objects.values('jahr').filter(jahr=jahr)
         if request.method == "POST":
@@ -1439,6 +1509,9 @@ def modify_invest(request, jahr):
 
 # View Function that represents the detailed content of a selected "ou" which shows the entries that are related to said "ou" in Investmittelplan
 def detail_invest(request, klinik_ou, jahr):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     files = Download.objects.all()
 
     ou = klinik_ou
@@ -1479,6 +1552,9 @@ def InvestSoll(request):
     return getInvestSoll(request)
 
 def invest_soll(request):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     files = Download.objects.all()
     typ = "invest_planung"
     Jahre = Invest.objects.values('jahr').distinct()
@@ -1490,6 +1566,9 @@ def invest_soll(request):
     })
 
 def detail_invest_soll(request, ou, jahr):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     return render(request, "webapplication/detail_invest_soll.html", {
         "ou": ou,
         "detail_investmittelplan_soll": Detail_Investmittelplan_Soll.objects.values('id', 'ou_id__ou', 'typ', 'modell', 'preis_pro_stück', 'spezifikation', 'admin', 'menge').filter(ou_id__ou=ou).filter(jahr=jahr),
@@ -1497,6 +1576,9 @@ def detail_invest_soll(request, ou, jahr):
     })
 
 def create_invest_soll(request, ou, jahr):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     ou_id = Ou.objects.values_list('ou_id').filter(ou=ou)
     ou_invsoll = Ou.objects.get(ou_id=str(ou_id[0]).replace("(", "").replace(",", "").replace(")", ""))
     if request.method == "POST":
@@ -1535,6 +1617,9 @@ def create_invest_soll(request, ou, jahr):
     })
 
 def update_detail_invest_soll(request, ou, id, jahr):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     if request.method == "POST":
         items = Detail_Investmittelplan_Soll.objects.values_list("modell", "typ", "menge", "preis_pro_stück", "spezifikation").get(pk=id)
         modell = request.POST["modell"] or items[0]
@@ -1587,6 +1672,9 @@ def update_detail_invest_soll(request, ou, id, jahr):
         })
 
 def löschen_detail_invest_soll(request, ou, id, jahr):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     if request.method == "POST":
         items = Detail_Investmittelplan_Soll.objects.values_list("menge", "preis_pro_stück").get(pk=id)
         invest_gesamt = Invest.objects.values_list("id", "investmittel_gesamt").filter(ou_id__ou=ou).filter(jahr=jahr).filter(typ="Planung")
@@ -1611,6 +1699,9 @@ def löschen_detail_invest_soll(request, ou, id, jahr):
         })
 
 def test(request):
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+    
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
     else:
