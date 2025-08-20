@@ -367,9 +367,10 @@ def create_lager(request):
                         zuweisung=zuweisung,
                         bestell_nr_field=bnr,
                         ausgegeben=ausgegeben,
-                        inventarisierer=request.user,
-                        inventarisiert=timezone.now
+                        inventarisierer=request.user
                     )
+
+                    Lagerliste.objects.update_or_create(inventarnummer=inventarnummer, defaults={'inventarisiert': timezone.now})
 
                     obj = Lagerliste.objects.get(pk=inventarnummer)
 
