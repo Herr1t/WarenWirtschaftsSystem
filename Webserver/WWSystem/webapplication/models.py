@@ -73,6 +73,8 @@ class Lagerliste(models.Model):
     ausgabe = models.DateTimeField(db_column='Ausgabe', blank=True, null=True)  # Field name made lowercase.
     ausgegeben = models.CharField(db_column='Ausgegeben', max_length=1)  # Field name made lowercase.
     ausgegeben_an = models.CharField(db_column='Ausgegeben_an', max_length=50)
+    inventarisierer = models.ForeignKey(User, models.DO_NOTHING, db_column='Inventarisierer', related_name='inventarisierer', to_field='username', blank=True, null=True)  # Field name made lowercase.
+    inventarisiert = models.DateTimeField(db_column='Inventarisiert', blank=True, null=True)  # Field name made lowercase.
     
     class Meta:
         managed = False
