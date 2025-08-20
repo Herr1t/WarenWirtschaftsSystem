@@ -3,6 +3,46 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from webapplication.models import BestellListe, Lagerliste, Achievements
 
+def create_lager(request):
+    # Check if the user is in the restricted group; redirect if so
+    if group_check(request.user) == '1':
+        return HttpResponseRedirect(reverse("investmittel_soll"))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+
+    # Check if the request method is POST (indicating form submission)
+    if request.method == "POST":
+        # Attempt to get the BestellNr (order number) from the request
+        bnr = get_bestell_nr(request)
+        
+        # If no BestellNr is provided or it's invalid, return an error message and render the form again
+        if not bnr:
+            return render(request, "webapplication/create_lager.html", {
+                "message": "Bitte wähle eine Bestell_Nr. aus",  # Error message for missing BestellNr
+                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")  # Provide valid BestellNr options
+            })
+
+        # Extract the selected items from the request (the items to be created in Lagerliste)
+        selected_items = get_selected_items(request)
+        
+        # If no items were selected, return an error message
+        if not selected_items:
+            return render(request, "webapplication/create_lager.html", {
+                "message": "Bitte wähle mindestens ein Element aus.",  # Error message for no selected items
+                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")  # Provide valid BestellNr options
+            })
+
+        # Fetch the details (type, model, specification, and assignment) for the given BestellNr
+        typ, modell, spezifikation, zuweisung = get_bestell_details(bnr)
+
+        # Process the selected items and handle the creation of Lagerliste entries
+        return process_selected_items(request, selected_items, typ, modell, spezifikation, zuweisung, bnr)
+
+    # If the method is not POST, simply render the create page with available BestellNr options
+    return render(request, "webapplication/create_lager.html", {
+        "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")  # Provide valid BestellNr options
+    })
+
 # Attempts to fetch a BestellListe entry by the submitted order number (bestell_nr) from the POST request
 def get_bestell_nr(request):
     try:
