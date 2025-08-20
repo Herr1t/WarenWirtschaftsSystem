@@ -32,7 +32,7 @@ class Lager_Standard_EntryAdmin(admin.ModelAdmin):
     search_fields = ("sap_nr", "herausgeber")
 
 class LagerlisteAdmin(admin.ModelAdmin):
-    list_display = ("inventarnummer", "klinik", "typ", "modell", "spezifikation", "zuweisung", "bestell_nr_field", "herausgeber", "ausgabe", "ausgegeben", "inventarisierer", "inventarisiert")
+    list_display = ("inventarnummer", "klinik", "typ", "modell", "spezifikation", "zuweisung", "bestell_nr_field", "herausgeber", "ausgabe", "ausgegeben")
     list_filter = ("herausgeber", "klinik")
     search_fields = ("inventarnummer", "bestell_nr_field__sap_bestell_nr_field", "modell", "typ")
 
