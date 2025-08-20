@@ -12,7 +12,6 @@ from django.contrib.auth.models import Group
 import csv, datetime
 from django.http import HttpResponse, JsonResponse
 from webapplication.external_functions.getmethod import *
-from webapplication.external_functions.create_lager import *
 from django.db.models import Count
 
 
@@ -199,13 +198,13 @@ def lager(request):
     # Retrieve all Lagerliste entries that are not marked as "ausgegeben" (issued) 
     # and get their order number (bestell_nr_field), type (typ), model (modell),
     # specification (spezifikation), and assignment (zuweisung).
-    raw_lager = Lagerliste.objects.exclude(ausgegeben="1").values(
+    raw_lager = Lagerliste.objects.exclude(ausgegeben=1).values(
         'bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung'
     ).annotate(Menge=Count('bestell_nr_field'))  # Add a "Menge" (count) for each order number
 
     # Retrieve a separate list of Lagerliste entries to count the number of items
     # for each unique bestell_nr_field and typ.
-    nr_list = Lagerliste.objects.exclude(ausgegeben="1").values_list(
+    nr_list = Lagerliste.objects.exclude(ausgegeben=1).values_list(
         'bestell_nr_field', 'typ'
     ).annotate(Menge=Count('bestell_nr_field'))
 
@@ -253,7 +252,7 @@ def lager(request):
     # Retrieve a summary of Lagerliste data with counts per item type and specification
     mengen = Lagerliste.objects.values(
         'bestell_nr_field', 'typ', 'spezifikation', 'modell'
-    ).annotate(Menge=Count("bestell_nr_field")).exclude(ausgegeben="1")
+    ).annotate(Menge=Count("bestell_nr_field")).exclude(ausgegeben=1)
 
     # Create a dictionary of device counts by type and specification
     # Each key represents a device type, and the value is the total number of that device
@@ -278,7 +277,7 @@ def lager(request):
         "lagerliste": lagerliste,  # Pass the enriched Lagerliste data
         **device_counts,  # Expand device counts into the context dictionary
         "files": files,  # Pass all available files for download
-        "typ": type  # Pass the type (lager) for current view
+        "typ": type # Pass the type (lager) for current view
     })
 
 # View Function that represents the detailed list of items for a specific Bestell_Nr. inside the Lagerliste
@@ -303,44 +302,174 @@ def detail_lager(request, bestell_nr):
 
 # View Function that handles the creation of new entries for the Lagerliste
 def create_lager(request):
-    # Check if the user is in the restricted group; redirect if so
     if group_check(request.user) == '1':
         return HttpResponseRedirect(reverse("investmittel_soll"))
     if not request.user.is_authenticated:
         return redirect(reverse("login"))
+    else:
+        if request.method == "POST":
+            x = int(0)
+            y = int(0)
+            c = 0
+            ach = 0
+            list = []
+            dupe = ""
+            fail = ""
 
-    # Check if the request method is POST (indicating form submission)
-    if request.method == "POST":
-        # Attempt to get the BestellNr (order number) from the request
-        bnr = get_bestell_nr(request)
-        
-        # If no BestellNr is provided or it's invalid, return an error message and render the form again
-        if not bnr:
+            entrys = BestellListe.objects.values_list(
+                'sap_bestell_nr_field', 'typ', 'modell', 'spezifikation', 'zuweisung'
+            )
+
+            # Checks if a Bestell_Nr. was selected
+            try:
+                bnr = BestellListe.objects.get(pk=str(request.POST["bestell_nr"]))
+            except ValueError:
+                return render(request, "webapplication/create_lager.html", {
+                    "message": "Bitte wähle eine Bestell_Nr. aus",
+                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
+                })
+
+            ausgegeben = 0
+
+            # Appends all entries in the object "list"
+            while True:
+                check = request.POST.get(f"{x}", False)
+                if check:
+                    list.append(request.POST[f"{x}"])
+                    x = x + 1
+                else:
+                    x = x + 1
+                    c = c + 1
+                    if c == 100:
+                        break
+
+            # Assigning the values to their respective variable
+            for __ in entrys:
+                if str(bnr) in str(entrys[y][0]):
+                    typ = entrys[y][1]
+                    modell = entrys[y][2]
+                    spezifikation = entrys[y][3]
+                    zuweisung = entrys[y][4]
+                else:
+                    y = y + 1
+
+            # Creating the new entries in "list" for Lagerliste
+            for _ in list:
+                inventarnummer = _
+                try:
+                    lager_count = Achievements.objects.filter(user=request.user).values_list('lager_count')
+
+                    Lagerliste.objects.create(
+                        inventarnummer=inventarnummer,
+                        typ=typ,
+                        modell=modell,
+                        spezifikation=spezifikation,
+                        zuweisung=zuweisung,
+                        bestell_nr_field=bnr,
+                        ausgegeben=ausgegeben,
+                        inventarisierer=request.user,
+                        inventarisiert=timezone.now
+                    )
+
+                    obj = Lagerliste.objects.get(pk=inventarnummer)
+
+                    # Checking if creation of entry was successful
+                    if obj is None:
+                        fail = fail + inventarnummer + ", "
+
+                    # Achievement check
+                    if lager_count:
+                        temp = str(lager_count[0]).replace('(', '').replace(',)', '')
+                        if temp == "None":
+                            new = 0
+                            Achievements.objects.update_or_create(
+                                user=request.user,
+                                defaults={
+                                    'lager_count': 1,
+                                    'lager_achievement': 0,
+                                    'bestell_count': 0,
+                                    'bestell_achievement': 0,
+                                    'handout_count': 0,
+                                    'handout_achievement': 0,
+                                    'rueckgabe_count': 0,
+                                    'rueckgabe_achievement': 0
+                                }
+                            )
+                        else:
+                            new = int(str(lager_count[0]).replace('(', '').replace(',)', '')) + 1
+                            Achievements.objects.filter(user=request.user).update(lager_count=new)
+                    else:
+                        new = 0
+                        Achievements.objects.update_or_create(
+                            user=request.user,
+                            defaults={
+                                'lager_count': 1,
+                                'lager_achievement': 0,
+                                'bestell_count': 0,
+                                'bestell_achievement': 0,
+                                'handout_count': 0,
+                                'handout_achievement': 0,
+                                'rueckgabe_count': 0,
+                                'rueckgabe_achievement': 0
+                            }
+                        )
+
+                    # If count reaches milestones for Lagereinträge then Achievement unlock
+                    if new == 50:
+                        ach = 1
+                    if new == 200:
+                        ach = 2
+                    if new == 500:
+                        ach = 3
+
+                # Checking if entry already exists
+                except IntegrityError:
+                    dupe = dupe + inventarnummer + ", "
+                    continue
+
+                except ValueError:
+                    return render(request, "webapplication/login.html", {
+                        "message": "Sie sind nicht angemeldet!"
+                    })
+
+            # Check if achievement unlocked
+            if ach == 1:
+                Achievements.objects.filter(user=request.user).update(lager_achievement=1)
+            if ach == 2:
+                Achievements.objects.filter(user=request.user).update(lager_achievement=2)
+            if ach == 3:
+                Achievements.objects.filter(user=request.user).update(lager_achievement=3)
+
+            # Output if creation of at least one entry failed
+            if fail:
+                fail = fail[:-2]
+                return render(request, "webapplication/create_lager.html", {
+                    "dupe": dupe,
+                    "fail": fail,
+                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
+                    "unlock": ach
+                })
+
+            # Output if at least one of the entries already existed
+            if dupe:
+                dupe = dupe[:-2]
+                return render(request, "webapplication/create_lager.html", {
+                    "dupe": dupe,
+                    "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein"),
+                    "unlock": ach
+                })
+
+            # Output if everything went fine
             return render(request, "webapplication/create_lager.html", {
-                "message": "Bitte wähle eine Bestell_Nr. aus",  # Error message for missing BestellNr
-                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")  # Provide valid BestellNr options
+                "message": "Einträge erfolgreich angelegt",
+                "unlock": ach,
+                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
             })
 
-        # Extract the selected items from the request (the items to be created in Lagerliste)
-        selected_items = get_selected_items(request)
-        
-        # If no items were selected, return an error message
-        if not selected_items:
-            return render(request, "webapplication/create_lager.html", {
-                "message": "Bitte wähle mindestens ein Element aus.",  # Error message for no selected items
-                "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")  # Provide valid BestellNr options
-            })
-
-        # Fetch the details (type, model, specification, and assignment) for the given BestellNr
-        typ, modell, spezifikation, zuweisung = get_bestell_details(bnr)
-
-        # Process the selected items and handle the creation of Lagerliste entries
-        return process_selected_items(request, selected_items, typ, modell, spezifikation, zuweisung, bnr)
-
-    # If the method is not POST, simply render the create page with available BestellNr options
-    return render(request, "webapplication/create_lager.html", {
-        "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")  # Provide valid BestellNr options
-    })
+        # If request method is not POST → just render selection
+        return render(request, "webapplication/create_lager.html", {
+            "bestell_nr": BestellListe.objects.all().exclude(geliefert="1").exclude(investmittel="Nein")
+        })
 
 # View Function that handles the "austragung" of entries from the Lagerliste
 def handout_lager(request):
@@ -1329,7 +1458,7 @@ def download(request, typ, input):
     download_id=""
     inputs = ""
     x = 0
-    path = "/home/adminukd/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/"
+    path = "/home/voigttim2/WarenWirtschaftsSystem/Webserver/WWSystem/media/Download/"
     if input == 1:
         pass
     else:
