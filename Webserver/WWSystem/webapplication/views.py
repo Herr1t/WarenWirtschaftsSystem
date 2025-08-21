@@ -1215,21 +1215,12 @@ def update(request, bestell_nr):
             if geliefert_anzahl:
                 # If the column "geliefert_anzahl" is equal to the column "Menge" then set the column "geliefert" to "1"
                 if int(geliefert_anzahl) == int(menge) :
-                    bestellung = BestellListe.objects.update_or_create(sap_bestell_nr_field=sap_bestell_nr_field, defaults={'geliefert': geliefert})
-                # Checks if the updated entry has the value "Nein" for the column "Investmittel"
-                if str(BestellListe.objects.values_list('investmittel').filter(sap_bestell_nr_field=sap_bestell_nr_field))[13:17] in "Nein":
-                    if int(geliefert_anzahl) > anzahl:
-                        y = "test"
-                        i = anzahl
-                        # Creation of entries for Lagerliste_ohne_Invest until the number of new entries is equal to the value in column "Menge"
-                        while i < int(geliefert_anzahl):
-                            Lagerliste_ohne_Invest.objects.create(typ=typ, modell=modell, spezifikation=spezi, bestell_nr_field=bnr, zuweisung=zuweisung, ausgegeben=0)
-                            i = i + 1
+                    bestellung = BestellListe.objects.update_or_create(sap_bestell_nr_field=sap_bestell_nr_field, defaults={'geliefert': 1})
             # If the column "Menge" is equal to "geliefert_anzahl" it uses this output
             if int(geliefert_anzahl) == int(menge):
                 return render(request, "webapplication/bestell.html", {
                     "bestell_nr": bestell_nr,
-                    "bestell_liste": BestellListe.objects.all(),
+                    "bestell_liste": BestellListe.objects.all().exclude(geliefert=1),
                     "unlock": ach,
                     "files": files,
                     "typ": "bestellliste"
