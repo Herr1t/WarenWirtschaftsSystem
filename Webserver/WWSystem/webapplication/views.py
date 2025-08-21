@@ -208,37 +208,48 @@ def lager(request):
         'bestell_nr_field', 'typ'
     ).annotate(Menge=Count('bestell_nr_field'))
 
-    # Create a list of raw Lagerliste data (lagerliste) to work with and a list to hold enriched data
+    # Create a list of raw Lagerliste data (lagerliste) to work with
     lagerliste = list(raw_lager)
+
+    # Build a dict so enrichment can be matched correctly by bestell_nr + typ
+    lager_dict = {
+        (item['bestell_nr_field'], item['typ']): item
+        for item in lagerliste
+    }
+
     enriched_data = []
 
-    # Iterate over the nr_list to enrich the Lagerliste data with additional information
-    for index, (bestell_nr, typ, menge) in enumerate(nr_list):
-        pk = str(bestell_nr).strip("(),")  # Clean the primary key value
-
-        # Fetch associated data from BestellListe (purchase order list) for each bestell_nr
+    for bestell_nr, typ, menge in nr_list:
+        # Fetch data from BestellListe directly using the bestell_nr
         bestell_info = BestellListe.objects.values(
-            'menge', 'geliefert_anzahl'  # Retrieve quantity and delivered quantity
-        ).filter(pk=pk).first()  # Use the first matching result (there should be only one)
+            'menge', 'geliefert_anzahl'
+        ).filter(pk=bestell_nr).first()
 
-        delivered = bestell_info.get('geliefert_anzahl') if bestell_info else 0  # Handle case where no data exists
-        total = bestell_info.get('menge') if bestell_info else 0  # Total quantity from BestellListe
+        delivered = bestell_info['geliefert_anzahl'] if bestell_info else 0
+        total = bestell_info['menge'] if bestell_info else 0
 
-        # Count how many items with this bestell_nr_field have been issued (ausgegeben="1")
+        # Count how many were issued
         issued_count = Lagerliste.objects.filter(
             bestell_nr_field=bestell_nr,
             ausgegeben=1
         ).count()
 
-        # Append enriched data to the list
-        enriched_data.append({
-            'menge': total,  # Total quantity from BestellListe
-            'geliefert_anzahl': delivered or total,  # Delivered quantity or total if none delivered
-            'ausgegeben': issued_count  # Count of issued items
-        })
+        # Prepare enriched info
+        enriched_entry = {
+            'menge': total,
+            'geliefert_anzahl': delivered or total,
+            'ausgegeben': issued_count
+        }
 
-        # Update the raw lager list with the enriched data for this entry
-        lagerliste[index].update(enriched_data[index])
+        # Merge into the correct lagerliste entry
+        key = (bestell_nr, typ)
+        if key in lager_dict:
+            lager_dict[key].update(enriched_entry)
+
+        enriched_data.append(enriched_entry)
+
+    # Final lagerliste with enrichment applied correctly
+    lagerliste = list(lager_dict.values())
 
     # Function to count matching items for a specific type and partial specification
     # This helps in counting items for specific devices like monitors, notebooks, etc.
