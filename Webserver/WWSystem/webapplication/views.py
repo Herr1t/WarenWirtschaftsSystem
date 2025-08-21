@@ -1360,6 +1360,21 @@ def detail_profile_lager_ohne(request, user_id, bestell_nr):
         })
 
 def some_view(request):
+    data = Invest.objects.values_list('ou_id', 'team', 'bereich').filter(jahr=2024).filter(typ="Aktiv")
+    for item in data:
+        ou_id = str(item[0]).strip("(),")
+        ou = Ou.objects.get(pk=ou_id)
+        team = str(item[1]).strip("(),")
+        bereich = str(item[2]).strip("(),")
+        Invest.objects.create(
+            ou=ou,
+            investmittel_verausgabt=0,
+            investmittel_übrig=0,
+            investmittel_gesamt=0,
+            team=team,
+            bereich=bereich,
+            jahr=2024,
+            typ="Planung")
     # ou = Ou.objects.values_list("ou")
     # preis = 0.00
     # anfang = 0.00
@@ -1457,7 +1472,7 @@ def some_view(request):
     
     # mappe1.close()
 
-    return render(request, "webapplication/frontpage.html")
+    return render(request, "webapplication/csv.html")
 
 def download(request, typ, input):
     files = Download.objects.all()
