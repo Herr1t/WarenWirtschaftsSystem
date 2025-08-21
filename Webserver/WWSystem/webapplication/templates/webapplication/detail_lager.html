@@ -17,20 +17,22 @@
                 <th>Spezifikation</th>
                 <th>Zuweisung</th>
                 <th>Bestell-Nr.</th>
+                <th>Inventarisiert am</th>
+                <th>Inventarisierer</th>
             </tr>
         </thead>
         <tbody>
         {% for item in detail_lagerliste %}
-            {% if item.ausgegeben == '0' %}
-                <tr class="custom_row">
-                    <td>{{ item.inventarnummer }}</td>
-                    <td>{{ item.typ }}</td>
-                    <td>{{ item.modell }}</td>
-                    <td>{{ item.spezifikation }}</td>
-                    <td>{{ item.zuweisung }}</td>
-                    <td>{{ item.bestell_nr_field }}</td>
-                </tr>
-            {% endif %}
+            <tr class="custom_row">
+                <td>{{ item.inventarnummer }}</td>
+                <td>{{ item.typ }}</td>
+                <td>{{ item.modell }}</td>
+                <td>{{ item.spezifikation }}</td>
+                <td>{{ item.zuweisung }}</td>
+                <td>{{ item.bestell_nr_field }}</td>
+                <td>{{ item.inventarisiert }}</td>
+                <td>{{ item.inventarisierer }}</td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>

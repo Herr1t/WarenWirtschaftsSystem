@@ -297,7 +297,7 @@ def detail_lager(request, bestell_nr):
         nr = bestell_nr
         
         # Query Lagerliste for items matching the provided BestellNr
-        bestell = Lagerliste.objects.filter(bestell_nr_field=nr)
+        bestell = Lagerliste.objects.filter(bestell_nr_field=nr).exclude(ausgegeben=1)
         
         # Render the 'detail_lager.html' template and pass the queried items and BestellNr to the template
         return render(request, "webapplication/detail_lager.html", {
