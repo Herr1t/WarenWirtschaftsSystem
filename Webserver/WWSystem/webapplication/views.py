@@ -211,16 +211,13 @@ def lager(request):
     # Create a list of raw Lagerliste data (lagerliste) to work with
     lagerliste = list(raw_lager)
 
-    # Build a dict so enrichment can be matched correctly by bestell_nr + typ
-    lager_dict = {
-        (item['bestell_nr_field'], item['typ']): item
-        for item in lagerliste
-    }
+    test = ""
 
-    enriched_data = []
+    for entry in lagerliste:
+        bestell_nr = entry['bestell_nr_field']
+        typ = entry['typ']
 
-    for bestell_nr, typ, menge in nr_list:
-        # Fetch data from BestellListe directly using the bestell_nr
+        # Get matching BestellListe entry
         bestell_info = BestellListe.objects.values(
             'menge', 'geliefert_anzahl'
         ).filter(pk=bestell_nr).first()
@@ -234,22 +231,12 @@ def lager(request):
             ausgegeben=1
         ).count()
 
-        # Prepare enriched info
-        enriched_entry = {
+        # Update entry directly (so nothing disappears)
+        entry.update({
             'menge': total,
             'geliefert_anzahl': delivered or total,
-            'ausgegeben': issued_count
-        }
-
-        # Merge into the correct lagerliste entry
-        key = (bestell_nr, typ)
-        if key in lager_dict:
-            lager_dict[key].update(enriched_entry)
-
-        enriched_data.append(enriched_entry)
-
-    # Final lagerliste with enrichment applied correctly
-    lagerliste = list(lager_dict.values())
+            'ausgegeben': issued_count,
+        })
 
     # Function to count matching items for a specific type and partial specification
     # This helps in counting items for specific devices like monitors, notebooks, etc.

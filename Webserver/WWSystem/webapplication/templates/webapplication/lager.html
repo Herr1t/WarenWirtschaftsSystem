@@ -60,23 +60,21 @@
         </thead>
         <tbody>
         {% for item in lagerliste %}
-            {% if item.ausgegeben != 1 %}
-                <tr class="custom_row">
-                    <td>
-                        <a class="link" href="{% url 'detail_lager' item.bestell_nr_field %}">        
-                            {{ item.bestell_nr_field }}
-                        </a>
-                    </td>
-                    <td>{{ item.modell }}</td>
-                    <td>{{ item.typ }}</td>
-                    <td>{{ item.spezifikation }}</td>
-                    <td>{{ item.zuweisung }}</td>
-                    <td>{{ item.Menge }}</td>
-                    <td>{{ item.ausgegeben }}</td>
-                    <td>{{ item.menge }}</td>
-                    <td>{{ item.geliefert_anzahl }}</td>
-                </tr>
-            {% endif %}
+            <tr class="custom_row">
+                <td>
+                    <a class="link" href="{% url 'detail_lager' item.bestell_nr_field %}">        
+                        {{ item.bestell_nr_field }}
+                    </a>
+                </td>
+                <td>{{ item.modell }}</td>
+                <td>{{ item.typ }}</td>
+                <td>{{ item.spezifikation }}</td>
+                <td>{{ item.zuweisung }}</td>
+                <td>{{ item.Menge }}</td>
+                <td>{{ item.ausgegeben }}</td>
+                <td>{{ item.menge }}</td>
+                <td>{{ item.geliefert_anzahl }}</td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
