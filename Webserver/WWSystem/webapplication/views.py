@@ -242,11 +242,18 @@ def lager(request):
 
     # Function to count matching items for a specific type and partial specification
     # This helps in counting items for specific devices like monitors, notebooks, etc.
-    def count_matching(queryset, typ_value, partial_spec):
+    def count_matching_typ(queryset, typ_value, partial_spec):
         # Sum up the 'Menge' for matching typ and partial specification
         return sum(
             row['Menge'] for row in queryset
             if row['typ'] == typ_value and partial_spec.lower() in row['spezifikation'].lower()
+        )
+        
+    def count_matching_modell(queryset, typ_value, partial_spec):
+        # Sum up the 'Menge' for matching typ and partial specification
+        return sum(
+            row['Menge'] for row in queryset
+            if row['typ'] == typ_value and partial_spec.lower() in row['modell'].lower() and row['spezifikation'] == ""
         )
 
     # Retrieve a summary of Lagerliste data with counts per item type and specification
@@ -257,14 +264,14 @@ def lager(request):
     # Create a dictionary of device counts by type and specification
     # Each key represents a device type, and the value is the total number of that device
     device_counts = {
-        'monitor24': count_matching(mengen, 'Monitor', '24 Zoll'),
-        'monitor27': count_matching(mengen, 'Monitor', '27 Zoll'),
-        'monitor32': count_matching(mengen, 'Monitor', '32 Zoll'),
-        'notebook13': count_matching(mengen, 'Notebook', '13 Zoll'),
-        'notebook14': count_matching(mengen, 'Notebook', '14 Zoll'),
-        'notebook15': count_matching(mengen, 'Notebook', '15 Zoll'),
-        'pcsff': count_matching(mengen, 'Desktop-PC', 'Small Form Factor'),
-        'pcmff': count_matching(mengen, 'Desktop-PC', 'Micro'),
+        'monitor24': count_matching_typ(mengen, 'Monitor', '24"') + count_matching_typ(mengen, 'Monitor', '24 Zoll'),
+        'monitor27': count_matching_typ(mengen, 'Monitor', '27"') + count_matching_typ(mengen, 'Monitor', '27 Zoll'),
+        'monitor32': count_matching_typ(mengen, 'Monitor', '32"') + count_matching_typ(mengen, 'Monitor', '32 Zoll'),
+        'notebook13': count_matching_modell(mengen, 'Notebook', '13') + count_matching_typ(mengen, 'Notebook', '13 Zoll'),
+        'notebook14': count_matching_modell(mengen, 'Notebook', '14') + count_matching_typ(mengen, 'Notebook', '14 Zoll'),
+        'notebook15': count_matching_modell(mengen, 'Notebook', '16') + count_matching_typ(mengen, 'Notebook', '15 Zoll'),
+        'pcsff': count_matching_typ(mengen, 'Desktop-PC', 'Small Form Factor'),
+        'pcmff': count_matching_typ(mengen, 'Desktop-PC', 'Micro'),
         'drucker': sum(item['Menge'] for item in mengen if item['typ'] == 'Drucker'),
         'scanner': sum(item['Menge'] for item in mengen if item['typ'] == 'Scanner'),
         'dock': sum(item['Menge'] for item in mengen if item['typ'] == 'Dockingstation'),
