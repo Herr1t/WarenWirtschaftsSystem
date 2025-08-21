@@ -227,7 +227,7 @@ def lager(request):
         # Count how many items with this bestell_nr_field have been issued (ausgegeben="1")
         issued_count = Lagerliste.objects.filter(
             bestell_nr_field=bestell_nr,
-            ausgegeben="1"
+            ausgegeben=1
         ).count()
 
         # Append enriched data to the list
@@ -238,7 +238,8 @@ def lager(request):
         })
 
         # Update the raw lager list with the enriched data for this entry
-        lagerliste[index].update(enriched_data[index])
+        if bestell_nr in lagerliste[index]:
+            lagerliste[index].update(enriched_data[index])
 
     # Function to count matching items for a specific type and partial specification
     # This helps in counting items for specific devices like monitors, notebooks, etc.
