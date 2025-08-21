@@ -1090,7 +1090,7 @@ def bestell(request):
             else:
                 y = y + 1
         return render(request, "webapplication/bestell.html", {
-            "bestell_liste": BestellListe.objects.all(),
+            "bestell_liste": BestellListe.objects.all().exclude(geliefert=1),
             "files": files,
             "typ": typ
         })

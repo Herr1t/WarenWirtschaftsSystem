@@ -30,34 +30,32 @@
         </thead>
         <tbody>
         {% for item in bestell_liste %}
-            {% if item.geliefert != "1" %}
-                <tr class="custom_row">
+            <tr class="custom_row">
+                <td>
+                    <a class="link" href="{% url 'update_bestell' item.sap_bestell_nr_field %}">
+                        {{ item.sap_bestell_nr_field }}
+                    </a>
+                </td>
+                <td>{{ item.modell }}</td>
+                <td>{{ item.typ }}</td>
+                <td>{{ item.spezifikation }}</td>
+                <td>{{ item.zuweisung }}</td>
+                {% if item.link != ' ' %}
                     <td>
-                        <a class="link" href="{% url 'update_bestell' item.sap_bestell_nr_field %}">
-                            {{ item.sap_bestell_nr_field }}
+                        <a class="link" href="{{ item.link }}">
+                            Link
                         </a>
                     </td>
-                    <td>{{ item.modell }}</td>
-                    <td>{{ item.typ }}</td>
-                    <td>{{ item.spezifikation }}</td>
-                    <td>{{ item.zuweisung }}</td>
-                    {% if item.link != ' ' %}
-                        <td>
-                            <a class="link" href="{{ item.link }}">
-                                Link
-                            </a>
-                        </td>
-                    {% else %}
-                        <td>{{ item.link }}</td>
-                    {% endif %}
-                    <td>{{ item.ersteller }}</td>
-                    <td>{{ item.bearbeitet|date:"d. E Y - H:i" }}</td>
-                    <td>{{ item.investmittel }}</td>
-                    <td>{{ item.preis_pro_stück|intcomma }}€</td>
-                    <td>{{ item.menge }}</td>
-                    <td>{{ item.geliefert_anzahl }}</td>
-                </tr>
-            {% endif %}
+                {% else %}
+                    <td>{{ item.link }}</td>
+                {% endif %}
+                <td>{{ item.ersteller }}</td>
+                <td>{{ item.bearbeitet|date:"d. E Y - H:i" }}</td>
+                <td>{{ item.investmittel }}</td>
+                <td>{{ item.preis_pro_stück|intcomma }}€</td>
+                <td>{{ item.menge }}</td>
+                <td>{{ item.geliefert_anzahl }}</td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
