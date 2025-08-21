@@ -238,8 +238,7 @@ def lager(request):
         })
 
         # Update the raw lager list with the enriched data for this entry
-        if bestell_nr in lagerliste[index]:
-            lagerliste[index].update(enriched_data[index])
+        lagerliste[index].update(enriched_data[index])
 
     # Function to count matching items for a specific type and partial specification
     # This helps in counting items for specific devices like monitors, notebooks, etc.
