@@ -279,7 +279,7 @@ def lager(request):
 
     # Return the rendered response, passing the enriched data and device counts
     return render(request, "webapplication/lager.html", {
-        "lagerliste": lagerliste,  # Pass the enriched Lagerliste data
+        "lagerliste":  lagerliste,  # Pass the enriched Lagerliste data
         **device_counts,  # Expand device counts into the context dictionary
         "files": files,  # Pass all available files for download
         "typ": type # Pass the type (lager) for current view
